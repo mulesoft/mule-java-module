@@ -13,12 +13,19 @@ import java.lang.reflect.Executable;
 import java.lang.reflect.Method;
 
 /**
- * //TODO
+ * Factory implementation for obtaining an {@link ExecutableIdentifier}
+ * from a given {@link Executable} element
+ *
+ * @since 1.0
  */
 public final class ExecutableIdentifierFactory {
 
   private ExecutableIdentifierFactory() {}
 
+  /**
+   * @param executable the {@link Executable} to represent
+   * @return a new instance of {@link ExecutableIdentifier} that identifies the {@code executable}
+   */
   public static ExecutableIdentifier create(Executable executable) {
     if (executable instanceof Constructor) {
       return new ConstructorIdentifier((Constructor) executable);

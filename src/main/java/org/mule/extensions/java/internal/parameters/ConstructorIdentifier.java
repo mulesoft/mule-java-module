@@ -17,7 +17,9 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.Executable;
 
 /**
- * //TODO
+ * A unique identifier for a given {@link Constructor}
+ *
+ * @since 1.0
  */
 public class ConstructorIdentifier extends ExecutableIdentifier {
 

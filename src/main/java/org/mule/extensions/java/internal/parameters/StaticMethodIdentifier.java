@@ -18,7 +18,7 @@ import java.lang.reflect.Executable;
 import java.lang.reflect.Method;
 
 /**
- * Represents uniquely  
+ * A unique identifier for a given static {@link Method}
  *
  * @since 1.0
  */

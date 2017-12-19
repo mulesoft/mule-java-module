@@ -11,9 +11,6 @@ import org.mule.functional.junit4.MuleArtifactFunctionalTestCase;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-/**
- * //TODO
- */
 public abstract class JavaModuleAbstractTestCase extends MuleArtifactFunctionalTestCase {
 
   public static final String RICK = "Rick";

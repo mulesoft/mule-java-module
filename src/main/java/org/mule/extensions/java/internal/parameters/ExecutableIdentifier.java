@@ -15,14 +15,15 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- * //TODO
+ * A unique identifier for a given {@link Executable} element
+ *
+ * @since 1.0
  */
 public abstract class ExecutableIdentifier {
 
   private static final String METHOD_MASK = "%s(%s)";
   private static final String ARG_SEPARATOR = ",";
   private static final Pattern METHOD_MATCHER = Pattern.compile("(.+)\\((.*)\\)");
-  // private static final String ARG_TYPE_SEPARATOR = ",";
 
   /**
    * @return the name of the declaring {@link Class} of {@code this} {@link Executable} element,
@@ -56,23 +57,6 @@ public abstract class ExecutableIdentifier {
     Matcher match = METHOD_MATCHER.matcher(getElementId().trim().replaceAll(" ", ""));
     return match.matches() ? match.group(1) : "";
   }
-  //
-  // /**
-  //  * Provides a {@link List} with the {@link Class#getSimpleName} of each
-  //  * {@link Parameter} of the {@link Executable} element.
-  //  * <p>
-  //  * For example, for method {@code public void echo(String message, int times)},
-  //  * the result of invoking this method will be a {@link List} containing {@code ["String", "int"]}.
-  //  * {@link Executable} elements without {@link Parameter}s will return an empty {@link List}.
-  //  *
-  //  * @return a {@link List} with the {@link Class#getSimpleName} of each
-  //  * {@link Parameter} of the {@link Executable} element, or an empty {@link List}
-  //  * if the {@link Executable} element has no {@link Parameter}s.
-  //  */
-  // public List<String> getArgumentTypeNames() {
-  //   Matcher match = METHOD_MATCHER.matcher(getElementId().trim().replaceAll(" ", ""));
-  //   return match.groupCount() > 1 ? Arrays.asList(match.group(2).split(ARG_TYPE_SEPARATOR)) : Collections.emptyList();
-  // }
 
   /**
    * @return whether or not {@code this} identifier matches the given {@link ExecutableIdentifierFactory identifier}

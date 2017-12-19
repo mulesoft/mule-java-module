@@ -129,24 +129,10 @@ abstract class ExecutableElementTypeResolver implements OutputTypeResolver<Execu
 
     Class targetClass = loadClass(clazz);
 
-    // Map<String, Pair<Executable, MetadataKey>> methods = new HashMap<>();
     List<MetadataKey> methods = new LinkedList<>();
     getExecutableElements(targetClass).stream()
         .filter(method -> isPublic(method.getModifiers()))
         .forEach(method -> methods.add(buildOverloadedMethodKey(method))
-    // newKey(method.getName()).build();
-    // Pair<Executable, MetadataKey> previous =
-    //     methods.put(method.getName(), new Pair<>(method, ));
-    // if (previous != null) {
-    //   if (previous.getSecond().getId().equals(method.getName())) {
-    //     // We have to re-calculate it as key for overloaded method
-    //     methods.put(method.getName(), new Pair<>(previous.getFirst(), buildOverloadedMethodKey(previous.getFirst())));
-    //   }
-    //
-    //   // Add the current method using the full ID and NOT the method name
-    //   MetadataKey methodKey = buildOverloadedMethodKey(method);
-    //   methods.put(methodKey.getId(), new Pair<>(method, methodKey));
-    // }
     );
 
     MetadataKeyBuilder key = MetadataKeyBuilder.newKey(clazz).withDisplayName(targetClass.getSimpleName());
