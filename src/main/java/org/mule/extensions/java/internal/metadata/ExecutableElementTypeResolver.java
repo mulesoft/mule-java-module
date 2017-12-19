@@ -132,8 +132,7 @@ abstract class ExecutableElementTypeResolver implements OutputTypeResolver<Execu
     List<MetadataKey> methods = new LinkedList<>();
     getExecutableElements(targetClass).stream()
         .filter(method -> isPublic(method.getModifiers()))
-        .forEach(method -> methods.add(buildOverloadedMethodKey(method))
-    );
+        .forEach(method -> methods.add(buildOverloadedMethodKey(method)));
 
     MetadataKeyBuilder key = MetadataKeyBuilder.newKey(clazz).withDisplayName(targetClass.getSimpleName());
     methods.forEach(key::withChild);
