@@ -1,0 +1,47 @@
+<mule xmlns="http://www.mulesoft.org/schema/mule/core"
+      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xmlns:java="http://www.mulesoft.org/schema/mule/java"
+      xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+          http://www.mulesoft.org/schema/mule/java http://www.mulesoft.org/schema/mule/java/current/mule-java.xsd">
+
+    <flow name="invokeInstanceWithClass">
+        <java:invoke method="#[vars.method]" instance="#[vars.instance]">
+            <java:args>
+                #[vars.args]
+            </java:args>
+        </java:invoke>
+    </flow>
+
+    <flow name="invokeInstance">
+        <java:invoke method="#[vars.method]" instance="#[vars.instance]">
+            <java:args>
+                #[vars.args]
+            </java:args>
+        </java:invoke>
+    </flow>
+
+    <flow name="invokeStatic">
+        <java:invoke-static class="${className}" method="#[vars.method]">
+            <java:args>
+                #[vars.args]
+            </java:args>
+        </java:invoke-static>
+    </flow>
+
+    <flow name="newInstance">
+        <java:new class="#[vars.class]">
+            <java:args>
+                #[vars.args]
+            </java:args>
+        </java:new>
+    </flow>
+
+    <flow name="newInstanceWithConstructor">
+        <java:new class="#[vars.class]" constructor="#[vars.constructor]">
+            <java:args>
+                #[vars.args]
+            </java:args>
+        </java:new>
+    </flow>
+
+</mule>

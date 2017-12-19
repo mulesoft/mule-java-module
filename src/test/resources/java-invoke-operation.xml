@@ -1,0 +1,52 @@
+<mule xmlns="http://www.mulesoft.org/schema/mule/core"
+      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xmlns:java="http://www.mulesoft.org/schema/mule/java"
+      xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+          http://www.mulesoft.org/schema/mule/java http://www.mulesoft.org/schema/mule/java/current/mule-java.xsd">
+
+    <flow name="invokeInstanceNoArgs">
+        <java:invoke class="${className}" method="#[vars.method]" instance="#[vars.instance]"/>
+    </flow>
+
+    <flow name="invokeInstanceWithArgs">
+        <java:invoke class="${className}" method="#[vars.method]" instance="#[vars.instance]">
+            <java:args>
+                #[vars.args]
+            </java:args>
+        </java:invoke>
+    </flow>
+
+    <flow name="invokeEnrichInputWithInlineArgs">
+        <java:invoke class="${className}" method="addToMap(Map)" instance="#[vars.instance]">
+            <java:args>
+                #[{
+                    'input': {'aList': [137]}
+                }]
+            </java:args>
+        </java:invoke>
+    </flow>
+
+    <flow name="invokeOverloadedMethodWithInlineArgs">
+        <java:invoke class="${className}" method="sayHi(String,int)" instance="#[vars.instance]">
+            <java:args>
+                #[{
+                    name: 'Rick',
+                    id: 137
+                }]
+            </java:args>
+        </java:invoke>
+    </flow>
+
+    <flow name="invokeStaticNoArgs">
+        <java:invoke-static class="${className}" method="#[vars.method]"/>
+    </flow>
+
+    <flow name="invokeStaticWithArgs">
+        <java:invoke-static class="${className}" method="#[vars.method]">
+            <java:args>
+                #[vars.args]
+            </java:args>
+        </java:invoke-static>
+    </flow>
+
+</mule>
