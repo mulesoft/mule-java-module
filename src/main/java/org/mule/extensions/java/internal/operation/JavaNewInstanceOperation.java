@@ -88,22 +88,20 @@ public class JavaNewInstanceOperation {
         .orElse(null))
         .orElseThrow(() -> new NoSuchConstructorModuleException(identifier, targetClass, args));
 
-    return withContextClassLoader(Thread.currentThread().getContextClassLoader(), () -> {
-      try {
-        List<Object> sortedArgs = JavaModuleUtils.getSortedArgs(args, constructor.getParameters());
-        if (sortedArgs.size() == constructor.getParameters().length) {
-          return constructor.newInstance(sortedArgs.toArray());
-        }
-
-        throw new ArgumentMismatchModuleException(failureMsg(identifier), constructor, args);
-      } catch (IllegalArgumentException e) {
-        throw new ArgumentMismatchModuleException(failureMsg(identifier), constructor, args, e);
-      } catch (InstantiationException e) {
-        throw new NonInstantiableTypeModuleException(identifier, args, e);
-      } catch (InvocationTargetException e) {
-        throw new InvocationModuleException(failureMsg(identifier), args, e);
+    try {
+      List<Object> sortedArgs = JavaModuleUtils.getSortedArgs(args, constructor.getParameters());
+      if (sortedArgs.size() == constructor.getParameters().length) {
+        return constructor.newInstance(sortedArgs.toArray());
       }
-    });
+
+      throw new ArgumentMismatchModuleException(failureMsg(identifier), constructor, args);
+    } catch (IllegalArgumentException e) {
+      throw new ArgumentMismatchModuleException(failureMsg(identifier), constructor, args, e);
+    } catch (InstantiationException e) {
+      throw new NonInstantiableTypeModuleException(identifier, args, e);
+    } catch (IllegalAccessException | InvocationTargetException e) {
+      throw new InvocationModuleException(failureMsg(identifier), args, e);
+    }
   }
 
   private String failureMsg(ExecutableIdentifier identifier) {

@@ -38,6 +38,8 @@ import java.util.function.Supplier;
  */
 public final class JavaModuleUtils {
 
+  private JavaModuleUtils() {}
+
   public static void validateType(String clazz, Object instance, boolean acceptSubtypes, JavaModuleLoadingCache cache)
       throws ClassNotFoundModuleException, WrongTypeModuleException {
 
@@ -57,21 +59,19 @@ public final class JavaModuleUtils {
                                     Object instance, Supplier<String> failureMessageProvider)
       throws ArgumentMismatchModuleException, InvocationModuleException, NoSuchMethodModuleException {
 
-    return withContextClassLoader(Thread.currentThread().getContextClassLoader(), () -> {
-      try {
-        List<Object> sortedArgs = JavaModuleUtils.getSortedArgs(args, method.getParameters());
-        if (sortedArgs.size() == method.getParameters().length) {
-          return method.invoke(instance, sortedArgs.toArray());
-        }
-
-        throw new ArgumentMismatchModuleException(failureMessageProvider.get(), method, args);
-      } catch (IllegalArgumentException e) {
-        throw new ArgumentMismatchModuleException(failureMessageProvider.get(), method, args, e);
-
-      } catch (InvocationTargetException e) {
-        throw new InvocationModuleException(failureMessageProvider.get(), args, e);
+    try {
+      List<Object> sortedArgs = JavaModuleUtils.getSortedArgs(args, method.getParameters());
+      if (sortedArgs.size() == method.getParameters().length) {
+        return method.invoke(instance, sortedArgs.toArray());
       }
-    });
+
+      throw new ArgumentMismatchModuleException(failureMessageProvider.get(), method, args);
+    } catch (IllegalArgumentException e) {
+      throw new ArgumentMismatchModuleException(failureMessageProvider.get(), method, args, e);
+
+    } catch (IllegalAccessException | InvocationTargetException e) {
+      throw new InvocationModuleException(failureMessageProvider.get(), args, e);
+    }
   }
 
   public static List<Object> getSortedArgs(Map<String, TypedValue<Object>> args, Parameter[] parameters) {

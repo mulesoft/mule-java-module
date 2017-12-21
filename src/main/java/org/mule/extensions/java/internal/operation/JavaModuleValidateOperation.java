@@ -32,6 +32,16 @@ public class JavaModuleValidateOperation {
   @Inject
   private JavaModuleLoadingCache cache;
 
+  /**
+   * Operation that allows the user to validate that a given {@code instance} is an {@code instanceof} the specified {@code class}.
+   *
+   * @param clazz the fully qualified name of the expected {@link Class} for the instance
+   * @param instance the object whose type is expected to be an {@code instanceof} of the given {@code class}
+   * @param acceptSubtypes whether or not to accept sub types of the given {@code class} or if the instance has to be
+   *                       of the exact same {@code class}
+   * @throws ClassNotFoundException if the given {@code class} is not found in the current context
+   * @throws WrongTypeModuleException if the validation fails because the {@code instance} is not of the expected {@code class} type
+   */
   @Validator
   @Throws(JavaValidateTypeErrorProvider.class)
   public void validateType(@ClassValue @Alias("class") @Optional @Expression(NOT_SUPPORTED) String clazz,

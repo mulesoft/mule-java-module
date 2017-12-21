@@ -6,6 +6,9 @@
  */
 package org.mule.extensions.java.internal.metadata;
 
+import static java.lang.reflect.Modifier.isStatic;
+import static java.util.Arrays.stream;
+import static java.util.stream.Collectors.toList;
 import org.mule.extensions.java.internal.parameters.StaticMethodIdentifier;
 import org.mule.runtime.api.connection.ConnectionException;
 import org.mule.runtime.api.metadata.MetadataContext;
@@ -17,10 +20,7 @@ import org.mule.runtime.api.metadata.resolving.PartialTypeKeysResolver;
 
 import java.lang.reflect.Executable;
 import java.lang.reflect.Method;
-import java.lang.reflect.Modifier;
-import java.util.Arrays;
 import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * An {@link InputTypeResolver}, {@link OutputTypeResolver} and {@link PartialTypeKeysResolver}
@@ -40,9 +40,9 @@ public class StaticMethodTypeResolver extends ExecutableElementTypeResolver
 
   @Override
   protected List<Executable> getExecutableElements(Class<?> targetClass) {
-    return Arrays.stream(targetClass.getMethods())
-        .filter(m -> Modifier.isStatic(m.getModifiers()))
-        .collect(Collectors.toList());
+    return stream(targetClass.getMethods())
+        .filter(m -> isStatic(m.getModifiers()))
+        .collect(toList());
   }
 
   @Override

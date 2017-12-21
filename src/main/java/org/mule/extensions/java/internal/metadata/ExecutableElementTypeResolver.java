@@ -14,7 +14,6 @@ import static java.util.Collections.emptySet;
 import static java.util.stream.Collectors.toList;
 import static org.mule.runtime.api.metadata.MetadataKeyBuilder.newKey;
 import static org.mule.runtime.api.metadata.resolving.FailureCode.INVALID_METADATA_KEY;
-import static org.mule.runtime.core.api.util.ClassUtils.withContextClassLoader;
 import static org.mule.runtime.core.api.util.StringUtils.isBlank;
 import org.mule.extensions.java.internal.parameters.ExecutableIdentifier;
 import org.mule.extensions.java.internal.parameters.ExecutableIdentifierFactory;
@@ -117,18 +116,13 @@ abstract class ExecutableElementTypeResolver implements OutputTypeResolver<Execu
 
     Class<?> targetClass = loadClass(key.getClazz());
 
-    return doGetExecutableElements(targetClass).stream()
+    return getExecutableElements(targetClass).stream()
         .filter(m -> isPublic(m.getModifiers()))
         .filter(m -> hasExpectedSignature(m, key))
         .findFirst()
         .orElseThrow(() -> new MetadataResolvingException(format("No Method found in Class [%s] with signature [%s]",
                                                                  key.getClazz(), key.getElementId()),
                                                           INVALID_METADATA_KEY));
-  }
-
-  private List<Executable> doGetExecutableElements(Class<?> targetClass) {
-    return withContextClassLoader(Thread.currentThread().getContextClassLoader(),
-                                  () -> getExecutableElements(targetClass));
   }
 
   private boolean hasExpectedSignature(Executable m, ExecutableIdentifier key) {

@@ -57,12 +57,12 @@ public class JavaInvokeOperations {
    * which belongs to {@link Class} {@code org.bar.Foo}, then the identifier of the method will be {@code "echo(String)"}
    *
    * @param identifier the unique identifier for the method to be invoked.
-   * @param args the arguments used to invoke the given {@link Method}
+   * @param args       the arguments used to invoke the given {@link Method}
    * @return the result of the {@link Method} invocation with the given {@code args}
-   * @throws ClassNotFoundModuleException if the given {@code class} is not found in the current context
-   * @throws NoSuchMethodModuleException if the given {@code class} does not declare a method with the given signature
+   * @throws ClassNotFoundModuleException    if the given {@code class} is not found in the current context
+   * @throws NoSuchMethodModuleException     if the given {@code class} does not declare a method with the given signature
    * @throws ArgumentMismatchModuleException if the {@code method} requires a different set of arguments than the ones provided
-   * @throws InvocationModuleException if an error occurs during the execution of the method
+   * @throws InvocationModuleException       if an error occurs during the execution of the method
    */
   @Throws(JavaInvokeErrorProvider.class)
   @OutputResolver(output = StaticMethodTypeResolver.class)
@@ -91,14 +91,14 @@ public class JavaInvokeOperations {
    * which belongs to {@link Class} {@code org.bar.Foo}, then the identifier of the method will be {@code "echo(String)"}
    *
    * @param identifier the unique identifier for the method to be invoked
-   * @param instance the instance on which the {@code method} will be invoked
-   * @param args the arguments used to invoke the given {@link Method}
+   * @param instance   the instance on which the {@code method} will be invoked
+   * @param args       the arguments used to invoke the given {@link Method}
    * @return the result of the {@link Method} invocation with the given {@code args}
-   * @throws ClassNotFoundModuleException if the given {@code class} is not found in the current context
-   * @throws NoSuchMethodModuleException if the given {@code class} does not declare a method with the given signature
+   * @throws ClassNotFoundModuleException    if the given {@code class} is not found in the current context
+   * @throws NoSuchMethodModuleException     if the given {@code class} does not declare a method with the given signature
    * @throws ArgumentMismatchModuleException if the {@code method} requires a different set of arguments than the ones provided
-   * @throws WrongTypeModuleException if the given {@code instance} is not an instance of the expected {@code class}
-   * @throws InvocationModuleException if an error occurs during the execution of the method
+   * @throws WrongTypeModuleException        if the given {@code instance} is not an instance of the expected {@code class}
+   * @throws InvocationModuleException       if an error occurs during the execution of the method
    */
   @Throws(JavaInvokeErrorProvider.class)
   @OutputResolver(output = InstanceMethodTypeResolver.class)
