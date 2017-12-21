@@ -7,16 +7,13 @@
 package org.mule.extensions.java.internal;
 
 import org.mule.extensions.java.api.error.JavaModuleError;
-import org.mule.extensions.java.api.exception.JavaModuleExceptionHandler;
 import org.mule.extensions.java.internal.function.JavaModuleFunctions;
 import org.mule.extensions.java.internal.operation.JavaInvokeOperations;
 import org.mule.extensions.java.internal.operation.JavaModuleValidateOperation;
 import org.mule.extensions.java.internal.operation.JavaNewInstanceOperation;
 import org.mule.runtime.extension.api.annotation.ExpressionFunctions;
 import org.mule.runtime.extension.api.annotation.Extension;
-import org.mule.runtime.extension.api.annotation.OnException;
 import org.mule.runtime.extension.api.annotation.Operations;
-import org.mule.runtime.extension.api.annotation.dsl.xml.Xml;
 import org.mule.runtime.extension.api.annotation.error.ErrorTypes;
 
 
