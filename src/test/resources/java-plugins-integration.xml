@@ -1,0 +1,31 @@
+<mule xmlns="http://www.mulesoft.org/schema/mule/core"
+      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xmlns:java="http://www.mulesoft.org/schema/mule/java"
+      xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+          http://www.mulesoft.org/schema/mule/java http://www.mulesoft.org/schema/mule/java/current/mule-java.xsd">
+
+    <flow name="createEmptyPojo">
+        <java:new class="org.mule.extensions.jms.api.message.JmsxProperties" constructor="JmsxProperties()"/>
+        <java:invoke class="org.mule.extensions.jms.api.message.JmsxProperties" method="asMap()" instance="#[payload]"/>
+    </flow>
+
+    <flow name="createInitialisedPojo">
+        <java:new class="org.mule.extensions.jms.api.message.JmsxProperties"
+                  constructor="JmsxProperties(String, String, Integer, String, Integer, String, String, Long)">
+            <java:args>
+                #[{
+                JMSXUserID: 'JMSXUserID',
+                JMSXAppID: 'JMSXAppID',
+                JMSXGroupID: 'JMSXGroupID',
+                JMSXProducerTXID: 'JMSXProducerTXID',
+                JMSXConsumerTXID: 'JMSXConsumerTXID',
+                JMSXDeliveryCount: 0,
+                JMSXGroupSeq: 10,
+                JMSXRcvTimestamp: 100 as Number {class: "java.lang.Long"}
+                }]
+            </java:args>
+        </java:new>
+        <java:invoke class="org.mule.extensions.jms.api.message.JmsxProperties" method="asMap()" instance="#[payload]"/>
+    </flow>
+
+</mule>

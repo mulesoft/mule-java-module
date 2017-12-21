@@ -1,0 +1,12 @@
+<mule xmlns="http://www.mulesoft.org/schema/mule/core"
+      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xmlns:java="http://www.mulesoft.org/schema/mule/java"
+      xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+          http://www.mulesoft.org/schema/mule/java http://www.mulesoft.org/schema/mule/java/current/mule-java.xsd">
+
+    <flow name="validateType">
+        <java:validate-type class="${className}" instance="#[vars.instance]" acceptSubtypes="#[vars.acceptSubtypes]"/>
+        <set-payload value="SUCCESS"/>
+    </flow>
+
+</mule>

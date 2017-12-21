@@ -1,0 +1,19 @@
+<mule xmlns="http://www.mulesoft.org/schema/mule/core"
+      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xmlns:java="http://www.mulesoft.org/schema/mule/java"
+      xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+          http://www.mulesoft.org/schema/mule/java http://www.mulesoft.org/schema/mule/java/current/mule-java.xsd">
+
+    <flow name="invoke">
+        <set-payload value="#[Java::invoke(vars.clazz, vars.method, payload, vars.args)]"/>
+    </flow>
+
+    <flow name="invokeInlineMap">
+        <set-payload value="#[Java::invoke('org.mule.extensions.internal.model.CompositePojo', 'setChilds(Map)', payload, {childs: {'repeat': [payload, payload]}})]"/>
+    </flow>
+
+    <flow name="isInstanceOf">
+        <set-payload value="#[Java::isInstanceOf(payload, vars.clazz)]"/>
+    </flow>
+
+</mule>
