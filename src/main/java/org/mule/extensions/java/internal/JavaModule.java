@@ -29,7 +29,6 @@ import org.mule.runtime.extension.api.annotation.error.ErrorTypes;
 @Operations({JavaNewInstanceOperation.class, JavaInvokeOperations.class, JavaModuleValidateOperation.class})
 @ExpressionFunctions(JavaModuleFunctions.class)
 @ErrorTypes(JavaModuleError.class)
-@OnException(JavaModuleExceptionHandler.class)
 public class JavaModule {
 
 }
