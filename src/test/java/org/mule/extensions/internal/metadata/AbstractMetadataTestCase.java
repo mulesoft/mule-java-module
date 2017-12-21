@@ -4,7 +4,7 @@
  * license, a copy of which has been included with this distribution in the
  * LICENSE.txt file.
  */
-package org.mule.extensions.java.metadata;
+package org.mule.extensions.internal.metadata;
 
 import static org.hamcrest.Matchers.instanceOf;
 import static org.hamcrest.core.Is.is;
@@ -12,7 +12,7 @@ import static org.junit.Assert.assertThat;
 import static org.mule.metadata.api.model.MetadataFormat.JAVA;
 import static org.mule.runtime.api.component.location.Location.builder;
 import static org.mule.runtime.api.metadata.MetadataService.METADATA_SERVICE_KEY;
-import org.mule.extensions.java.JavaModuleAbstractTestCase;
+import org.mule.extensions.internal.JavaModuleAbstractTestCase;
 import org.mule.metadata.api.ClassTypeLoader;
 import org.mule.metadata.api.builder.BaseTypeBuilder;
 import org.mule.metadata.api.model.MetadataType;

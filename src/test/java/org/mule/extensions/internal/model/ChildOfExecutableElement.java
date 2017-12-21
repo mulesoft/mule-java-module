@@ -4,11 +4,8 @@
  * license, a copy of which has been included with this distribution in the
  * LICENSE.txt file.
  */
-package org.mule.extensions.java.model;
+package org.mule.extensions.internal.model;
 
-/**
- * //TODO
- */
 public class ChildOfExecutableElement extends ExecutableElement {
 
   @Override

@@ -14,8 +14,8 @@ import org.mule.runtime.extension.api.error.ErrorTypeDefinition;
 import org.mule.runtime.extension.api.exception.ModuleException;
 
 import java.lang.reflect.Parameter;
-import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Base {@link ModuleException} for all the Exceptions thrown by the {@link JavaModule} namespace
@@ -35,7 +35,7 @@ public abstract class JavaModuleException extends ModuleException {
     super(message, errorTypeDefinition, cause);
   }
 
-  static List<String> toHumanReadableArgs(LinkedHashMap<String, TypedValue<Object>> args) {
+  static List<String> toHumanReadableArgs(Map<String, TypedValue<Object>> args) {
     return args.entrySet().stream()
         .map(e -> e.getValue().getDataType().getType().getSimpleName() + " " + e.getKey())
         .collect(toList());

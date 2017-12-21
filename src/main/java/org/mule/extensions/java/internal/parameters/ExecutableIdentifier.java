@@ -74,14 +74,12 @@ public abstract class ExecutableIdentifier {
     }
 
     ExecutableIdentifier that = (ExecutableIdentifier) o;
-    return this.getClazz().equals(that.getClazz())
-        && this.getElementId().trim().replaceAll(" ", "")
-            .equals(that.getElementId().trim().replaceAll(" ", ""));
+    return this.getClazz().equals(that.getClazz()) && sanitize(getElementId()).equals(sanitize(that.getElementId()));
   }
 
   @Override
   public int hashCode() {
-    return (getClazz().hashCode() * 31) + getElementId().hashCode();
+    return (getClazz().hashCode() * 31) + sanitize(getElementId()).hashCode();
   }
 
   @Override
@@ -93,6 +91,10 @@ public abstract class ExecutableIdentifier {
     return format(METHOD_MASK,
                   elementName.trim(),
                   stream(argTypes).map(Class::getSimpleName).collect(joining(ARG_SEPARATOR)));
+  }
+
+  private String sanitize(String id) {
+    return id.trim().replaceAll(" ", "");
   }
 
 }

@@ -4,17 +4,16 @@
  * license, a copy of which has been included with this distribution in the
  * LICENSE.txt file.
  */
-package org.mule.extensions.java.execution;
+package org.mule.extensions.internal.execution;
 
 import static java.lang.String.format;
-import static java.util.Arrays.asList;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
 import static org.hamcrest.core.IsNot.not;
 import static org.hamcrest.core.IsNull.nullValue;
-import org.mule.extensions.java.JavaModuleAbstractTestCase;
-import org.mule.extensions.java.model.CompositePojo;
-import org.mule.extensions.java.model.ExecutableElement;
+import org.mule.extensions.internal.JavaModuleAbstractTestCase;
+import org.mule.extensions.internal.model.CompositePojo;
+import org.mule.extensions.internal.model.ExecutableElement;
 
 import org.junit.Rule;
 import org.junit.Test;
@@ -35,8 +34,8 @@ public class JavaFunctionsTestCase extends JavaModuleAbstractTestCase {
     Object value = flowRunner("invoke")
         .withPayload(new ExecutableElement())
         .withVariable("clazz", ExecutableElement.class.getName())
-        .withVariable("method", "sayHi")
-        .withVariable("args", asList("Rick", 137))
+        .withVariable("method", "sayHi(String, int)")
+        .withVariable("args", Args.create("name", "Rick").add("id", 137).get())
         .run().getMessage().getPayload().getValue();
     assertThat(value, is("Hi " + RICK + "::" + RICK_ID));
   }
@@ -46,7 +45,7 @@ public class JavaFunctionsTestCase extends JavaModuleAbstractTestCase {
     Object value = flowRunner("invoke")
         .withPayload(new ExecutableElement())
         .withVariable("clazz", ExecutableElement.class.getName())
-        .withVariable("method", "nextPhase")
+        .withVariable("method", "nextPhase()")
         .run().getMessage().getPayload().getValue();
     assertThat(value, is(nullValue()));
   }
@@ -76,8 +75,7 @@ public class JavaFunctionsTestCase extends JavaModuleAbstractTestCase {
   public void invokeNoSuchMethodModuleException() throws Exception {
     String className = ExecutableElement.class.getName();
     String methodName = "missingMethod";
-    expectedException.expectMessage(format("No Method found with name [%s] in class [%s] with arguments",
-                                           methodName, className));
+    expectedException.expectMessage(format("No public Method found with name [%s] in class [%s]", methodName, className));
 
     Object value = flowRunner("invoke")
         .withPayload(new ExecutableElement())
@@ -98,7 +96,7 @@ public class JavaFunctionsTestCase extends JavaModuleAbstractTestCase {
 
   @Test
   public void isInstanceOfWrongClass() throws Exception {
-    expectedException.expectMessage("Failed to load class [zarazarasa]: ClassNotFoundException");
+    expectedException.expectMessage("Failed to load class [zarazarasa]: Class not found");
 
     Boolean value = (Boolean) flowRunner("isInstanceOf")
         .withPayload(new ExecutableElement())

@@ -4,17 +4,17 @@
  * license, a copy of which has been included with this distribution in the
  * LICENSE.txt file.
  */
-package org.mule.extensions.java.execution;
+package org.mule.extensions.internal.execution;
 
 import static java.lang.String.format;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
 import static org.mule.functional.api.exception.ExpectedError.none;
-import org.mule.extensions.java.JavaModuleAbstractTestCase;
+import org.mule.extensions.internal.model.ChildOfExecutableElement;
+import org.mule.extensions.internal.model.CompositePojo;
+import org.mule.extensions.internal.model.ExecutableElement;
+import org.mule.extensions.internal.JavaModuleAbstractTestCase;
 import org.mule.extensions.java.api.exception.WrongTypeModuleException;
-import org.mule.extensions.java.model.ChildOfExecutableElement;
-import org.mule.extensions.java.model.ExecutableElement;
-import org.mule.extensions.java.model.CompositePojo;
 import org.mule.functional.api.exception.ExpectedError;
 import org.mule.tck.junit4.rule.SystemProperty;
 

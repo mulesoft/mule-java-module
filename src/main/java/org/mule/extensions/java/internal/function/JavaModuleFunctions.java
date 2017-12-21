@@ -7,75 +7,88 @@
 package org.mule.extensions.java.internal.function;
 
 import static java.lang.String.format;
-import static java.lang.reflect.Modifier.isPublic;
-import static java.lang.reflect.Modifier.isStatic;
-import static java.util.Arrays.stream;
-import static java.util.Collections.emptyList;
-import static java.util.stream.Collectors.toList;
+import static java.util.Collections.emptyMap;
+import static java.util.stream.Collectors.toMap;
 import static org.mule.extensions.java.api.error.JavaModuleError.CLASS_NOT_FOUND;
-import static org.mule.extensions.java.internal.operation.JavaModuleUtils.validateType;
+import static org.mule.extensions.java.internal.JavaModuleUtils.findMethod;
+import static org.mule.extensions.java.internal.JavaModuleUtils.invokeMethod;
+import static org.mule.extensions.java.internal.JavaModuleUtils.validateType;
 import static org.mule.runtime.api.i18n.I18nMessageFactory.createStaticMessage;
-import static org.mule.runtime.core.api.util.ClassUtils.getMethod;
 import static org.mule.runtime.core.api.util.ClassUtils.isInstance;
-import static org.mule.runtime.core.api.util.ClassUtils.loadClass;
+import org.mule.extensions.java.api.cache.JavaModuleLoadingCache;
 import org.mule.extensions.java.api.exception.ArgumentMismatchModuleException;
+import org.mule.extensions.java.api.exception.ClassNotFoundModuleException;
 import org.mule.extensions.java.api.exception.InvocationModuleException;
 import org.mule.extensions.java.api.exception.NoSuchMethodModuleException;
+import org.mule.extensions.java.api.exception.WrongTypeModuleException;
 import org.mule.extensions.java.internal.JavaModule;
+import org.mule.extensions.java.internal.parameters.MethodIdentifier;
 import org.mule.runtime.api.el.ExpressionFunction;
+import org.mule.runtime.api.metadata.TypedValue;
 import org.mule.runtime.extension.api.annotation.Alias;
 import org.mule.runtime.extension.api.annotation.param.Optional;
+import org.mule.runtime.extension.api.annotation.param.display.Summary;
 import org.mule.runtime.extension.api.exception.ModuleException;
 
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.util.List;
+import java.util.Map;
+
+import javax.inject.Inject;
 
 /**
  * The {@link ExpressionFunction}s exposed by the {@link JavaModule} that extends the EL
  * with further Java related functions.
- * 
+ *
  * @since 1.0
  */
 public class JavaModuleFunctions {
 
-  public Object invoke(@Alias("class") String clazz, @Alias("method") String methodName, Object instance,
-                       @Optional List<Object> args)
-      throws NoSuchMethodModuleException, InvocationModuleException, ClassNotFoundException {
+  @Inject
+  private JavaModuleLoadingCache cache;
 
-    args = args == null ? emptyList() : args;
-    final List<Class<?>> types = args.stream().map(Object::getClass).collect(toList());
+  /**
+   * Function that allows the user to invoke methods with the provided {@code args} on the given {@code instance}.
+   * The identifier of the {@link Method} to be invoked includes the {@code class} and {@code method} names,
+   * being the {@code method} a full description of its signature including the types of each parameter.
+   * <p>
+   * For example, if we want to invoke the method {@code echo} with signature {@code public String echo(String msg)}
+   * which belongs to {@link Class} {@code org.bar.Foo}, then the identifier of the method will be {@code "echo(String)"}
+   *
+   * @param clazz      the fully qualified name of the class whose instance is being injected
+   * @param methodName the unique identifier for the method to be invoked
+   * @param instance   the instance on which the {@code method} will be invoked
+   * @param args       the arguments used to invoke the given {@link Method}
+   * @return the result of the {@link Method} invocation with the given {@code args}
+   * @throws ClassNotFoundModuleException    if the given {@code class} is not found in the current context
+   * @throws NoSuchMethodModuleException     if the given {@code class} does not declare a method with the given signature
+   * @throws ArgumentMismatchModuleException if the {@code method} requires a different set of arguments than the ones provided
+   * @throws WrongTypeModuleException        if the given {@code instance} is not an instance of the expected {@code class}
+   * @throws InvocationModuleException       if an error occurs during the execution of the method
+   */
+  public Object invoke(@Alias("class") @Summary("Fully qualified name of the Class containing the referenced Method") String clazz,
+                       @Alias("method") @Summary("Represents the Method signature containing the method name and it's argument types.") String methodName,
+                       Object instance,
+                       @Optional Map<String, Object> args)
+      throws NoSuchMethodModuleException, ClassNotFoundModuleException, WrongTypeModuleException,
+      ArgumentMismatchModuleException, InvocationModuleException {
 
-    validateType(clazz, instance, true);
+    final Map<String, TypedValue<Object>> resolvedArgs = args == null
+        ? emptyMap()
+        : args.entrySet().stream().collect(toMap(e -> e.getKey(), e -> TypedValue.of(e.getValue())));
 
-    Method method = getMethod(instance.getClass(), methodName, types.toArray(new Class[types.size()]));
+    validateType(clazz, instance, true, cache);
 
-    if (method == null) {
-      List<Method> candidates = stream(instance.getClass().getMethods())
-          .filter(m -> !isStatic(m.getModifiers()) && isPublic(m.getModifiers()))
-          .collect(toList());
-
-      throw new NoSuchMethodModuleException(methodName, instance.getClass(), candidates, args);
-    }
-
-    try {
-      return method.invoke(instance, args.toArray());
-    } catch (IllegalArgumentException e) {
-      throw new ArgumentMismatchModuleException(format("Failed to invoke Method [%s] in Class [%s]", methodName, clazz),
-                                                method, args, e);
-    } catch (IllegalAccessException | InvocationTargetException e) {
-      throw new InvocationModuleException(format("Failed to invoke Method [%s] in Class [%s]", methodName, clazz), args, e);
-    }
+    MethodIdentifier identifier = new MethodIdentifier(clazz, methodName);
+    Method method = findMethod(identifier, instance.getClass(), false, resolvedArgs, cache);
+    return invokeMethod(method, resolvedArgs, instance,
+                        () -> format("Failed to invoke Method [%s] in Class [%s]", methodName, clazz));
   }
 
   public boolean isInstanceOf(Object instance, @Alias("class") String clazz) throws ModuleException {
-    try {
-      Class<?> declaredClass = loadClass(clazz, JavaModule.class);
-      return isInstance(declaredClass, instance);
-    } catch (ClassNotFoundException e) {
-      throw new ModuleException(createStaticMessage("Failed to load class [%s]: ClassNotFoundException", clazz),
-                                CLASS_NOT_FOUND, e);
-    }
+    Class<?> targetClass = cache.loadClass(clazz)
+        .orElseThrow(() -> new ModuleException(createStaticMessage("Failed to load class [%s]: Class not found", clazz),
+                                               CLASS_NOT_FOUND));
+    return isInstance(targetClass, instance);
   }
 
 }

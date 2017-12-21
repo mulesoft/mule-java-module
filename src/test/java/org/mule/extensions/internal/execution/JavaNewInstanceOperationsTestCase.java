@@ -4,7 +4,7 @@
  * license, a copy of which has been included with this distribution in the
  * LICENSE.txt file.
  */
-package org.mule.extensions.java.execution;
+package org.mule.extensions.internal.execution;
 
 import static java.util.Collections.singletonList;
 import static java.util.Collections.singletonMap;
@@ -12,12 +12,13 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.instanceOf;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.hamcrest.core.Is.is;
-import static org.mule.extensions.java.model.ExecutableElement.Phase.STOPPED;
-import org.mule.extensions.java.JavaModuleAbstractTestCase;
-import org.mule.extensions.java.model.ExecutableElement;
-import org.mule.extensions.java.model.CompositePojo;
+import org.mule.extensions.internal.model.CompositePojo;
+import org.mule.extensions.internal.model.ExecutableElement;
+import org.mule.extensions.internal.JavaModuleAbstractTestCase;
 import org.mule.runtime.api.metadata.TypedValue;
 
+import org.hamcrest.MatcherAssert;
+import org.hamcrest.core.Is;
 import org.junit.Test;
 
 public class JavaNewInstanceOperationsTestCase extends JavaModuleAbstractTestCase {
@@ -41,10 +42,10 @@ public class JavaNewInstanceOperationsTestCase extends JavaModuleAbstractTestCas
     TypedValue<ExecutableElement> element = flowRunner("newInstanceWithArgs")
         .withVariable("class", ExecutableElement.class.getName())
         .withVariable("constructor", "ExecutableElement(Phase)")
-        .withVariable("args", Args.create("initPhase", STOPPED).get())
+        .withVariable("args", Args.create("initPhase", ExecutableElement.Phase.STOPPED).get())
         .run().getMessage().getPayload();
     assertThat(element.getValue(), is(instanceOf(ExecutableElement.class)));
-    assertThat(element.getValue().getPhase(), is(STOPPED));
+    MatcherAssert.assertThat(element.getValue().getPhase(), Is.is(ExecutableElement.Phase.STOPPED));
   }
 
   @Test

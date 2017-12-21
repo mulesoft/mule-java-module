@@ -4,15 +4,15 @@
  * license, a copy of which has been included with this distribution in the
  * LICENSE.txt file.
  */
-package org.mule.extensions.java.metadata;
+package org.mule.extensions.internal.metadata;
 
 import static java.lang.String.format;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.instanceOf;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.fail;
-import org.mule.extensions.java.model.CompositePojo;
-import org.mule.extensions.java.model.ExecutableElement;
+import org.mule.extensions.internal.model.CompositePojo;
+import org.mule.extensions.internal.model.ExecutableElement;
 import org.mule.metadata.api.model.MetadataType;
 import org.mule.metadata.api.model.NullType;
 import org.mule.metadata.api.model.NumberType;

@@ -14,10 +14,11 @@ import static java.util.Collections.emptySet;
 import static java.util.stream.Collectors.toList;
 import static org.mule.runtime.api.metadata.MetadataKeyBuilder.newKey;
 import static org.mule.runtime.api.metadata.resolving.FailureCode.INVALID_METADATA_KEY;
+import static org.mule.runtime.core.api.util.ClassUtils.withContextClassLoader;
 import static org.mule.runtime.core.api.util.StringUtils.isBlank;
-import org.mule.extensions.java.internal.JavaModule;
 import org.mule.extensions.java.internal.parameters.ExecutableIdentifier;
 import org.mule.extensions.java.internal.parameters.ExecutableIdentifierFactory;
+import org.mule.metadata.api.ClassTypeLoader;
 import org.mule.metadata.api.builder.ObjectTypeBuilder;
 import org.mule.metadata.api.model.MetadataType;
 import org.mule.runtime.api.connection.ConnectionException;
@@ -29,9 +30,11 @@ import org.mule.runtime.api.metadata.resolving.InputTypeResolver;
 import org.mule.runtime.api.metadata.resolving.OutputTypeResolver;
 import org.mule.runtime.api.metadata.resolving.TypeKeysResolver;
 import org.mule.runtime.core.api.util.ClassUtils;
+import org.mule.runtime.extension.api.declaration.type.ExtensionsTypeLoaderFactory;
 
 import java.lang.reflect.Executable;
 import java.lang.reflect.Method;
+import java.lang.reflect.Parameter;
 import java.lang.reflect.Type;
 import java.util.LinkedList;
 import java.util.List;
@@ -60,22 +63,28 @@ abstract class ExecutableElementTypeResolver implements OutputTypeResolver<Execu
   protected abstract List<Executable> getExecutableElements(Class<?> targetClass);
 
   @Override
-  public MetadataType getInputMetadata(MetadataContext context, ExecutableIdentifier key)
+  public MetadataType getInputMetadata(MetadataContext ctx, ExecutableIdentifier key)
       throws MetadataResolvingException, ConnectionException {
 
     Executable element = findElement(key);
 
     if (element.getParameters().length == 0) {
-      return context.getTypeBuilder().nullType().build();
+      return ctx.getTypeBuilder().nullType().build();
     }
 
-    ObjectTypeBuilder inputParameters = context.getTypeBuilder().objectType().id(key.getElementId() + "_INPUT");
+    ObjectTypeBuilder inputParameters = ctx.getTypeBuilder().objectType().id(key.getElementId() + "_INPUT");
     stream(element.getParameters())
         .forEach(param -> inputParameters.addField()
             .key(param.getName())
-            .value(context.getTypeLoader().load(param.getType())));
+            .value(getTypeLoader(ctx, param).load(param.getType())));
 
     return inputParameters.build();
+  }
+
+  private ClassTypeLoader getTypeLoader(MetadataContext context, Parameter param) {
+    return param.getType().getClassLoader() == null
+        ? context.getTypeLoader()
+        : ExtensionsTypeLoaderFactory.getDefault().createTypeLoader(param.getType().getClassLoader());
   }
 
   @Override
@@ -108,13 +117,18 @@ abstract class ExecutableElementTypeResolver implements OutputTypeResolver<Execu
 
     Class<?> targetClass = loadClass(key.getClazz());
 
-    return getExecutableElements(targetClass).stream()
+    return doGetExecutableElements(targetClass).stream()
         .filter(m -> isPublic(m.getModifiers()))
         .filter(m -> hasExpectedSignature(m, key))
         .findFirst()
         .orElseThrow(() -> new MetadataResolvingException(format("No Method found in Class [%s] with signature [%s]",
                                                                  key.getClazz(), key.getElementId()),
                                                           INVALID_METADATA_KEY));
+  }
+
+  private List<Executable> doGetExecutableElements(Class<?> targetClass) {
+    return withContextClassLoader(Thread.currentThread().getContextClassLoader(),
+                                  () -> getExecutableElements(targetClass));
   }
 
   private boolean hasExpectedSignature(Executable m, ExecutableIdentifier key) {
@@ -141,7 +155,7 @@ abstract class ExecutableElementTypeResolver implements OutputTypeResolver<Execu
 
   private Class<?> loadClass(String className) throws MetadataResolvingException {
     try {
-      return ClassUtils.loadClass(className, JavaModule.class);
+      return ClassUtils.loadClass(className, Thread.currentThread().getContextClassLoader());
     } catch (ClassNotFoundException e) {
       throw new MetadataResolvingException(format("Failed to load Class with name [%s]: %s",
                                                   className, e.getMessage()),

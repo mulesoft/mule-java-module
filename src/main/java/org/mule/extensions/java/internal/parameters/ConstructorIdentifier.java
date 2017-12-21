@@ -12,6 +12,7 @@ import org.mule.runtime.extension.api.annotation.Expression;
 import org.mule.runtime.extension.api.annotation.metadata.MetadataKeyPart;
 import org.mule.runtime.extension.api.annotation.param.Parameter;
 import org.mule.runtime.extension.api.annotation.param.display.ClassValue;
+import org.mule.runtime.extension.api.annotation.param.display.Summary;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Executable;
@@ -23,23 +24,38 @@ import java.lang.reflect.Executable;
  */
 public class ConstructorIdentifier extends ExecutableIdentifier {
 
+  /**
+   * Represents the fully qualified name of the Class containing the referenced Method.
+   */
   @Parameter
   @Alias("class")
   @ClassValue
-  @Expression(SUPPORTED)
   @MetadataKeyPart(order = 1, providedByKeyResolver = false)
+  @Summary("Fully qualified name of the Class containing the referenced Method")
   private String clazz;
 
+  /**
+   * Represents the Constructor signature containing the name and it's argument types.
+   * <p>
+   * For example, for the Constructor with signature {@code public Foo(String name, Integer age)}
+   * then the identifier of the method will be {@code "Foo(String, Integer)"}
+   */
   @Parameter
-  @MetadataKeyPart(order = 2)
   @Alias("constructor")
+  @MetadataKeyPart(order = 2)
+  @Summary("Represents the Constructor signature containing the name and it's argument types.")
   private String constructorId;
 
   public ConstructorIdentifier() {}
 
-  ConstructorIdentifier(Constructor constructor) {
-    clazz = constructor.getDeclaringClass().getName();
-    constructorId = buildId(constructor.getDeclaringClass().getSimpleName(), constructor.getParameterTypes());
+  public ConstructorIdentifier(Constructor constructor) {
+    this(constructor.getDeclaringClass().getName(),
+         constructor.getDeclaringClass().getSimpleName(), constructor.getParameterTypes());
+  }
+
+  public ConstructorIdentifier(String className, String constructor, Class<?>[] argTypes) {
+    clazz = className;
+    constructorId = buildId(constructor, argTypes);
   }
 
   @Override

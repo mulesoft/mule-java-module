@@ -6,16 +6,20 @@
  */
 package org.mule.extensions.java.api.exception;
 
+import static java.lang.String.format;
+import static java.util.Arrays.stream;
 import static java.util.stream.Collectors.toList;
 import static org.mule.extensions.java.api.error.JavaModuleError.NO_SUCH_CONSTRUCTOR;
+import static org.mule.extensions.java.internal.parameters.ExecutableIdentifierFactory.create;
 import org.mule.extensions.java.api.error.JavaModuleError;
 import org.mule.extensions.java.internal.parameters.ExecutableIdentifier;
-import org.mule.extensions.java.internal.parameters.ExecutableIdentifierFactory;
 import org.mule.runtime.api.metadata.TypedValue;
 
-import java.lang.reflect.Constructor;
-import java.util.LinkedHashMap;
-import java.util.List;
+import java.lang.reflect.Modifier;
+import java.util.Map;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * A {@link JavaModuleException} related with the {@link JavaModuleError#NO_SUCH_CONSTRUCTOR} Error type
@@ -24,19 +28,26 @@ import java.util.List;
  */
 public class NoSuchConstructorModuleException extends JavaModuleException {
 
-  public NoSuchConstructorModuleException(ExecutableIdentifier id, String targetClass,
-                                          List<Constructor> constructors,
-                                          LinkedHashMap<String, TypedValue<Object>> args) {
-    super(buildMessage(id, targetClass, constructors, args), NO_SUCH_CONSTRUCTOR);
+  private static final Logger LOGGER = LoggerFactory.getLogger(NoSuchConstructorModuleException.class);
+
+  public NoSuchConstructorModuleException(ExecutableIdentifier id, Class<?> targetClass,
+                                          Map<String, TypedValue<Object>> args) {
+    super(buildMessage(id, targetClass, args), NO_SUCH_CONSTRUCTOR);
   }
 
   private static String buildMessage(ExecutableIdentifier id,
-                                     String targetClass,
-                                     List<Constructor> constructors,
-                                     LinkedHashMap<String, TypedValue<Object>> args) {
-    return String.format("No Constructor found with name [%s] and arguments %s in class [%s]. Available constructors are %s",
-                         id.getElementId(), toHumanReadableArgs(args), targetClass,
-                         constructors.stream().map(c -> ExecutableIdentifierFactory.create(c).getElementId()).collect(toList()));
+                                     Class<?> targetClass,
+                                     Map<String, TypedValue<Object>> args) {
+    String msg = format("No public Constructor found with name [%s] and arguments %s in class [%s].",
+                        id.getElementId(), toHumanReadableArgs(args), targetClass.getName());
+
+    if (LOGGER.isDebugEnabled()) {
+      LOGGER.debug(msg + " Available public Constructors are: " + stream(targetClass.getConstructors())
+          .filter(c -> Modifier.isPublic(c.getModifiers()))
+          .map(c -> create(c).getElementId()).collect(toList()));
+    }
+
+    return msg;
   }
 
 }

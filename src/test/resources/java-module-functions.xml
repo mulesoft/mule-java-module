@@ -9,7 +9,7 @@
     </flow>
 
     <flow name="invokeInlineMap">
-        <set-payload value="#[Java::invoke('org.mule.extensions.java.model.CompositePojo', 'setChilds', payload, [{'repeat': [payload, payload]}])]"/>
+        <set-payload value="#[Java::invoke('org.mule.extensions.internal.model.CompositePojo', 'setChilds(Map)', payload, {childs: {'repeat': [payload, payload]}})]"/>
     </flow>
 
     <flow name="isInstanceOf">

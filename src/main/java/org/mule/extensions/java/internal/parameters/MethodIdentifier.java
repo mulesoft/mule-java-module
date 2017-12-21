@@ -13,6 +13,7 @@ import org.mule.runtime.extension.api.annotation.Expression;
 import org.mule.runtime.extension.api.annotation.metadata.MetadataKeyPart;
 import org.mule.runtime.extension.api.annotation.param.Parameter;
 import org.mule.runtime.extension.api.annotation.param.display.ClassValue;
+import org.mule.runtime.extension.api.annotation.param.display.Summary;
 
 import java.lang.reflect.Executable;
 import java.lang.reflect.Method;
@@ -24,23 +25,39 @@ import java.lang.reflect.Method;
  */
 public class MethodIdentifier extends ExecutableIdentifier {
 
+  /**
+   * Represents the fully qualified name of the Class containing the referenced Method.
+   */
   @Parameter
   @Alias("class")
   @ClassValue
   @Expression(NOT_SUPPORTED)
   @MetadataKeyPart(order = 1, providedByKeyResolver = false)
+  @Summary("Fully qualified name of the Class containing the referenced Method")
   private String clazz;
 
+  /**
+   * Represents the Method signature containing the method name and it's argument types.
+   * <p>
+   * For example, for the method with signature {@code public String log(String msg, boolean verbose)}
+   * then the identifier of the method will be {@code "log(String, boolean)"}
+   */
   @Parameter
   @MetadataKeyPart(order = 2)
   @Alias("method")
+  @Summary("Represents the Method signature containing the method name and it's argument types.")
   private String methodId;
 
   public MethodIdentifier() {}
 
-  MethodIdentifier(Method method) {
+  public MethodIdentifier(Method method) {
     clazz = method.getDeclaringClass().getName();
     methodId = buildId(method.getName(), method.getParameterTypes());
+  }
+
+  public MethodIdentifier(String className, String methodId) {
+    this.clazz = className;
+    this.methodId = methodId;
   }
 
   @Override

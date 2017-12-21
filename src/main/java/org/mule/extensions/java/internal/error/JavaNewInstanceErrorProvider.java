@@ -13,6 +13,8 @@ import org.mule.runtime.extension.api.error.ErrorTypeDefinition;
 
 import com.google.common.collect.ImmutableSet;
 
+import java.util.Collections;
+import java.util.LinkedHashSet;
 import java.util.Set;
 
 /**
@@ -24,9 +26,12 @@ public class JavaNewInstanceErrorProvider implements ErrorTypeProvider {
 
   @Override
   public Set<ErrorTypeDefinition> getErrorTypes() {
-    return ImmutableSet.of(JavaModuleError.NO_SUCH_CONSTRUCTOR,
-                           JavaModuleError.CLASS_NOT_FOUND,
-                           JavaModuleError.ARGUMENTS_MISMATCH,
-                           JavaModuleError.NOT_INSTANTIABLE_TYPE);
+    Set<ErrorTypeDefinition> errors = new LinkedHashSet<>();
+    errors.add(JavaModuleError.NO_SUCH_CONSTRUCTOR);
+    errors.add(JavaModuleError.CLASS_NOT_FOUND);
+    errors.add(JavaModuleError.ARGUMENTS_MISMATCH);
+    errors.add(JavaModuleError.NOT_INSTANTIABLE_TYPE);
+
+    return Collections.unmodifiableSet(errors);
   }
 }

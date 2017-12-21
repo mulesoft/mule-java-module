@@ -12,8 +12,8 @@ import org.mule.extensions.java.api.error.JavaModuleError;
 import org.mule.runtime.api.metadata.TypedValue;
 
 import java.lang.reflect.Executable;
-import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * A {@link JavaModuleException} related with the {@link JavaModuleError#ARGUMENTS_MISMATCH} Error type
@@ -22,7 +22,7 @@ import java.util.List;
  */
 public class ArgumentMismatchModuleException extends JavaModuleException {
 
-  public ArgumentMismatchModuleException(String failure, Executable executable, LinkedHashMap<String, TypedValue<Object>> args) {
+  public ArgumentMismatchModuleException(String failure, Executable executable, Map<String, TypedValue<Object>> args) {
     super(buildMessage(failure, executable, toHumanReadableArgs(args)), ARGUMENTS_MISMATCH);
   }
 
@@ -32,7 +32,7 @@ public class ArgumentMismatchModuleException extends JavaModuleException {
   }
 
   public ArgumentMismatchModuleException(String failure, Executable executable,
-                                         LinkedHashMap<String, TypedValue<Object>> args, Throwable cause) {
+                                         Map<String, TypedValue<Object>> args, Throwable cause) {
     super(buildMessage(failure, executable, toHumanReadableArgs(args)) + ": " + cause.getMessage(),
           ARGUMENTS_MISMATCH, cause);
   }

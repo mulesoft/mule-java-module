@@ -11,8 +11,8 @@ import static org.mule.extensions.java.api.error.JavaModuleError.INVOCATION;
 import org.mule.extensions.java.api.error.JavaModuleError;
 import org.mule.runtime.api.metadata.TypedValue;
 
-import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * A {@link JavaModuleException} related with the {@link JavaModuleError#INVOCATION} Error type
@@ -21,7 +21,7 @@ import java.util.List;
  */
 public class InvocationModuleException extends JavaModuleException {
 
-  public InvocationModuleException(String failure, LinkedHashMap<String, TypedValue<Object>> args, Throwable cause) {
+  public InvocationModuleException(String failure, Map<String, TypedValue<Object>> args, Throwable cause) {
     super(buildMessage(failure, toHumanReadableArgs(args)) + ": " + cause.getMessage(), INVOCATION, cause);
   }
 

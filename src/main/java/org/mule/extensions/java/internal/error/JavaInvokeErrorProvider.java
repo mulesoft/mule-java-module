@@ -10,8 +10,8 @@ import org.mule.extensions.java.api.error.JavaModuleError;
 import org.mule.runtime.extension.api.annotation.error.ErrorTypeProvider;
 import org.mule.runtime.extension.api.error.ErrorTypeDefinition;
 
-import com.google.common.collect.ImmutableSet;
-
+import java.util.Collections;
+import java.util.LinkedHashSet;
 import java.util.Set;
 
 /**
@@ -23,10 +23,13 @@ public class JavaInvokeErrorProvider implements ErrorTypeProvider {
 
   @Override
   public Set<ErrorTypeDefinition> getErrorTypes() {
-    return ImmutableSet.of(JavaModuleError.INVOCATION,
-                           JavaModuleError.ARGUMENTS_MISMATCH,
-                           JavaModuleError.NO_SUCH_METHOD,
-                           JavaModuleError.WRONG_INSTANCE_CLASS,
-                           JavaModuleError.CLASS_NOT_FOUND);
+    Set<ErrorTypeDefinition> errors = new LinkedHashSet<>();
+    errors.add(JavaModuleError.INVOCATION);
+    errors.add(JavaModuleError.ARGUMENTS_MISMATCH);
+    errors.add(JavaModuleError.NO_SUCH_METHOD);
+    errors.add(JavaModuleError.WRONG_INSTANCE_CLASS);
+    errors.add(JavaModuleError.CLASS_NOT_FOUND);
+
+    return Collections.unmodifiableSet(errors);
   }
 }

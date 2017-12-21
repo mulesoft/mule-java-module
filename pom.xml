@@ -17,15 +17,13 @@
     </parent>
 
     <dependencies>
+        <!--Test dependency to use the POJOs in its API-->
         <dependency>
-            <groupId>com.google.guava</groupId>
-            <artifactId>guava</artifactId>
-            <version>23.5-jre</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.commons</groupId>
-            <artifactId>commons-lang3</artifactId>
-            <version>3.6</version>
+            <groupId>org.mule.connectors</groupId>
+            <artifactId>mule-jms-connector</artifactId>
+            <classifier>mule-plugin</classifier>
+            <version>1.0.0</version>
+            <scope>test</scope>
         </dependency>
     </dependencies>
 

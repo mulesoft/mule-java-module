@@ -12,8 +12,8 @@ import org.mule.extensions.java.api.error.JavaModuleError;
 import org.mule.extensions.java.internal.parameters.ExecutableIdentifier;
 import org.mule.runtime.api.metadata.TypedValue;
 
-import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * A {@link JavaModuleException} related with the {@link JavaModuleError#NOT_INSTANTIABLE_TYPE} Error type
@@ -23,7 +23,7 @@ import java.util.List;
 public class NonInstantiableTypeModuleException extends JavaModuleException {
 
   public NonInstantiableTypeModuleException(ExecutableIdentifier id,
-                                            LinkedHashMap<String, TypedValue<Object>> args,
+                                            Map<String, TypedValue<Object>> args,
                                             Throwable cause) {
     super(buildMessage(id.getClazz(), toHumanReadableArgs(args)) + ": " + cause.getMessage(), NOT_INSTANTIABLE_TYPE, cause);
   }

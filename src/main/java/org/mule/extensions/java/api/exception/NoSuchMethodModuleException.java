@@ -15,8 +15,11 @@ import org.mule.extensions.java.internal.parameters.ExecutableIdentifier;
 import org.mule.runtime.api.metadata.TypedValue;
 
 import java.lang.reflect.Method;
-import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * A {@link JavaModuleException} related with the {@link JavaModuleError#NO_SUCH_METHOD} Error type
@@ -25,9 +28,11 @@ import java.util.List;
  */
 public class NoSuchMethodModuleException extends JavaModuleException {
 
+  private static final Logger LOGGER = LoggerFactory.getLogger(NoSuchMethodModuleException.class);
+
   public NoSuchMethodModuleException(ExecutableIdentifier id, Class<?> targetClass,
                                      List<Method> methods,
-                                     LinkedHashMap<String, TypedValue<Object>> args) {
+                                     Map<String, TypedValue<Object>> args) {
     super(buildMessage(id.getElementId(), targetClass, methods, toHumanReadableArgs(args)), NO_SUCH_METHOD);
   }
 
@@ -36,10 +41,15 @@ public class NoSuchMethodModuleException extends JavaModuleException {
   }
 
   private static String buildMessage(String id, Class<?> targetClass, List<Method> methods, List<String> args) {
-    return format("No Method found with name [%s] in class [%s] with arguments %s. Available Methods are %s",
-                  id, targetClass.getName(),
-                  args,
-                  methods.stream().map(c -> create(c).getElementId()).collect(toList()));
+    String msg = format("No public Method found with name [%s] in class [%s] with arguments %s.",
+                        id, targetClass.getName(), args);
+
+    if (LOGGER.isDebugEnabled()) {
+      LOGGER
+          .debug(msg + " Available public Methods are: " + methods.stream().map(c -> create(c).getElementId()).collect(toList()));
+    }
+
+    return msg;
   }
 
 }

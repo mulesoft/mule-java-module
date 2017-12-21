@@ -4,19 +4,17 @@
  * license, a copy of which has been included with this distribution in the
  * LICENSE.txt file.
  */
-package org.mule.extensions.java.execution;
+package org.mule.extensions.internal.execution;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
 import static org.hamcrest.core.IsNot.not;
 import static org.hamcrest.core.IsNull.nullValue;
-import static org.mule.extensions.java.model.ExecutableElement.ENRICH_KEY;
-import static org.mule.extensions.java.model.ExecutableElement.ENRICH_VALUE;
 import static org.mule.runtime.api.metadata.DataType.XML_STRING;
 import static org.mule.tck.junit4.matcher.DataTypeMatcher.like;
-import org.mule.extensions.java.JavaModuleAbstractTestCase;
-import org.mule.extensions.java.model.ComplexReturnTypes;
-import org.mule.extensions.java.model.ExecutableElement;
+import org.mule.extensions.internal.model.ComplexReturnTypes;
+import org.mule.extensions.internal.model.ExecutableElement;
+import org.mule.extensions.internal.JavaModuleAbstractTestCase;
 import org.mule.runtime.api.metadata.TypedValue;
 import org.mule.tck.junit4.rule.SystemProperty;
 
@@ -26,6 +24,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
+import org.hamcrest.MatcherAssert;
+import org.hamcrest.core.Is;
 import org.junit.Rule;
 import org.junit.Test;
 
@@ -74,7 +74,7 @@ public class JavaInvokeOperationsTestCase extends JavaModuleAbstractTestCase {
 
     invoke("addToMap(Map)", new ExecutableElement(), Args.create("input", input));
 
-    assertThat(input.get(ENRICH_KEY), is(ExecutableElement.ENRICH_VALUE));
+    assertThat(input.get(ExecutableElement.ENRICH_KEY), is(ExecutableElement.ENRICH_VALUE));
   }
 
   @Test
@@ -103,7 +103,7 @@ public class JavaInvokeOperationsTestCase extends JavaModuleAbstractTestCase {
         .withVariable("instance", new ExecutableElement())
         .run().getMessage().getPayload().getValue();
 
-    assertThat(result.get(ENRICH_KEY), is(ENRICH_VALUE));
+    MatcherAssert.assertThat(result.get(ExecutableElement.ENRICH_KEY), Is.is(ExecutableElement.ENRICH_VALUE));
     assertThat(((List) result.get("aList")).get(0), is(RICK_ID));
   }
 

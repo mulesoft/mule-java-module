@@ -5,71 +5,71 @@
           http://www.mulesoft.org/schema/mule/java http://www.mulesoft.org/schema/mule/java/current/mule-java.xsd">
 
     <flow name="invokeExecutableElement">
-        <java:invoke class="org.mule.extensions.java.model.ExecutableElement" />
+        <java:invoke class="org.mule.extensions.internal.model.ExecutableElement" />
     </flow>
 
     <flow name="invokeExecutableElementsayHi">
-        <java:invoke class="org.mule.extensions.java.model.ExecutableElement" method="sayHi()"/>
+        <java:invoke class="org.mule.extensions.internal.model.ExecutableElement" method="sayHi()"/>
     </flow>
 
     <flow name="invokeExecutableElementsayHiStringint">
-        <java:invoke class="org.mule.extensions.java.model.ExecutableElement" method="sayHi(String,int)"/>
+        <java:invoke class="org.mule.extensions.internal.model.ExecutableElement" method="sayHi(String,int)"/>
     </flow>
 
     <flow name="invokeExecutableElementnextPhase">
-        <java:invoke class="org.mule.extensions.java.model.ExecutableElement" method="nextPhase()"/>
+        <java:invoke class="org.mule.extensions.internal.model.ExecutableElement" method="nextPhase()"/>
     </flow>
 
     <flow name="invokeChildOfExecutableElementsayHi">
-        <java:invoke class="org.mule.extensions.java.model.ChildOfExecutableElement" method="sayHi()"/>
+        <java:invoke class="org.mule.extensions.internal.model.ChildOfExecutableElement" method="sayHi()"/>
     </flow>
 
     <flow name="invokeComplexReturnTypes">
-        <java:invoke class="org.mule.extensions.java.model.ComplexReturnTypes"/>
+        <java:invoke class="org.mule.extensions.internal.model.ComplexReturnTypes"/>
     </flow>
 
     <flow name="invokeComplexReturnTypesgetFunction">
-        <java:invoke class="org.mule.extensions.java.model.ComplexReturnTypes" method="getFunction()"/>
+        <java:invoke class="org.mule.extensions.internal.model.ComplexReturnTypes" method="getFunction()"/>
     </flow>
 
     <flow name="invokeComplexReturnTypestripleStateBooleanboolean">
-        <java:invoke class="org.mule.extensions.java.model.ComplexReturnTypes" method="tripleStateBoolean(boolean)"/>
+        <java:invoke class="org.mule.extensions.internal.model.ComplexReturnTypes" method="tripleStateBoolean(boolean)"/>
     </flow>
 
     <flow name="invokeComplexReturnTypesgetTypedValueString">
-        <java:invoke class="org.mule.extensions.java.model.ComplexReturnTypes" method="getTypedValue(String)"/>
+        <java:invoke class="org.mule.extensions.internal.model.ComplexReturnTypes" method="getTypedValue(String)"/>
     </flow>
 
     <flow name="invokeCompositePojo">
-        <java:invoke class="org.mule.extensions.java.model.CompositePojo"/>
+        <java:invoke class="org.mule.extensions.internal.model.CompositePojo"/>
     </flow>
 
     <flow name="invokeCompositePojosetChilds">
-        <java:invoke class="org.mule.extensions.java.model.CompositePojo" method="setChilds(Map)"/>
+        <java:invoke class="org.mule.extensions.internal.model.CompositePojo" method="setChilds(Map)"/>
     </flow>
 
     <flow name="newCompositePojoCompositePojo">
-        <java:new class="org.mule.extensions.java.model.CompositePojo" constructor="CompositePojo()"/>
+        <java:new class="org.mule.extensions.internal.model.CompositePojo" constructor="CompositePojo()"/>
     </flow>
 
     <flow name="newExecutableElement">
-        <java:new class="org.mule.extensions.java.model.ExecutableElement"/>
+        <java:new class="org.mule.extensions.internal.model.ExecutableElement"/>
     </flow>
 
     <flow name="newCompositePojoCompositePojoCompositePojo">
-        <java:new class="org.mule.extensions.java.model.CompositePojo" constructor="CompositePojo(CompositePojo)"/>
+        <java:new class="org.mule.extensions.internal.model.CompositePojo" constructor="CompositePojo(CompositePojo)"/>
     </flow>
 
     <flow name="newCompositePojoCompositePojoString">
-        <java:new class="org.mule.extensions.java.model.CompositePojo" constructor="CompositePojo(String)"/>
+        <java:new class="org.mule.extensions.internal.model.CompositePojo" constructor="CompositePojo(String)"/>
     </flow>
 
     <flow name="invokeStaticExecutableElementcreatePhase">
-        <java:invoke-static class="org.mule.extensions.java.model.ExecutableElement" method="create(Phase)"/>
+        <java:invoke-static class="org.mule.extensions.internal.model.ExecutableElement" method="create(Phase)"/>
     </flow>
 
     <flow name="invokeStaticExecutableElementcreate">
-        <java:invoke-static class="org.mule.extensions.java.model.ExecutableElement" method="create()"/>
+        <java:invoke-static class="org.mule.extensions.internal.model.ExecutableElement" method="create()"/>
     </flow>
 
 </mule>

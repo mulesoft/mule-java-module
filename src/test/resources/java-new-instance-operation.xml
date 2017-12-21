@@ -25,7 +25,7 @@
     </flow>
 
     <flow name="newInstanceWithExplicitArgs">
-        <java:new class="org.mule.extensions.java.model.CompositePojo" constructor="CompositePojo(CompositePojo)">
+        <java:new class="org.mule.extensions.internal.model.CompositePojo" constructor="CompositePojo(CompositePojo)">
                 <java:args>
                     #[child: {
                         name: 'firstChild',

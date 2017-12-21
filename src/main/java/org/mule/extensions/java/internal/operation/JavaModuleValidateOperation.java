@@ -9,6 +9,8 @@ package org.mule.extensions.java.internal.operation;
 import static org.mule.runtime.api.meta.ExpressionSupport.NOT_SUPPORTED;
 import org.mule.extensions.java.api.exception.WrongTypeModuleException;
 import org.mule.extensions.java.internal.JavaModule;
+import org.mule.extensions.java.api.cache.JavaModuleLoadingCache;
+import org.mule.extensions.java.internal.JavaModuleUtils;
 import org.mule.extensions.java.internal.error.JavaValidateTypeErrorProvider;
 import org.mule.runtime.extension.api.annotation.Alias;
 import org.mule.runtime.extension.api.annotation.Expression;
@@ -16,6 +18,8 @@ import org.mule.runtime.extension.api.annotation.error.Throws;
 import org.mule.runtime.extension.api.annotation.param.Optional;
 import org.mule.runtime.extension.api.annotation.param.display.ClassValue;
 import org.mule.runtime.extension.api.annotation.param.stereotype.Validator;
+
+import javax.inject.Inject;
 
 /**
  * Defines the operations of {@link JavaModule} which executes the {@link Validator}s that the extension provides out of
@@ -25,6 +29,9 @@ import org.mule.runtime.extension.api.annotation.param.stereotype.Validator;
  */
 public class JavaModuleValidateOperation {
 
+  @Inject
+  private JavaModuleLoadingCache cache;
+
   @Validator
   @Throws(JavaValidateTypeErrorProvider.class)
   public void validateType(@ClassValue @Alias("class") @Optional @Expression(NOT_SUPPORTED) String clazz,
@@ -32,7 +39,7 @@ public class JavaModuleValidateOperation {
                            @Optional(defaultValue = "true") boolean acceptSubtypes)
       throws ClassNotFoundException, WrongTypeModuleException {
 
-    JavaModuleUtils.validateType(clazz, instance, acceptSubtypes);
+    JavaModuleUtils.validateType(clazz, instance, acceptSubtypes, cache);
   }
 
 }
