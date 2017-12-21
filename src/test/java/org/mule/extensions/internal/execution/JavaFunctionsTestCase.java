@@ -96,7 +96,7 @@ public class JavaFunctionsTestCase extends JavaModuleAbstractTestCase {
 
   @Test
   public void isInstanceOfWrongClass() throws Exception {
-    expectedException.expectMessage("Failed to load class [zarazarasa]: Class not found");
+    expectedException.expectMessage("Failed to load Class with name [zarazarasa]. Class not found");
 
     Boolean value = (Boolean) flowRunner("isInstanceOf")
         .withPayload(new ExecutableElement())

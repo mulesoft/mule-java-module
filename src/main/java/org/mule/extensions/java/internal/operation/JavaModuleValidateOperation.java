@@ -7,10 +7,11 @@
 package org.mule.extensions.java.internal.operation;
 
 import static org.mule.runtime.api.meta.ExpressionSupport.NOT_SUPPORTED;
+import org.mule.extensions.java.api.exception.ClassNotFoundModuleException;
 import org.mule.extensions.java.api.exception.WrongTypeModuleException;
 import org.mule.extensions.java.internal.JavaModule;
-import org.mule.extensions.java.api.cache.JavaModuleLoadingCache;
 import org.mule.extensions.java.internal.JavaModuleUtils;
+import org.mule.extensions.java.internal.cache.JavaModuleLoadingCache;
 import org.mule.extensions.java.internal.error.JavaValidateTypeErrorProvider;
 import org.mule.runtime.extension.api.annotation.Alias;
 import org.mule.runtime.extension.api.annotation.Expression;
@@ -39,7 +40,7 @@ public class JavaModuleValidateOperation {
    * @param instance the object whose type is expected to be an {@code instanceof} of the given {@code class}
    * @param acceptSubtypes whether or not to accept sub types of the given {@code class} or if the instance has to be
    *                       of the exact same {@code class}
-   * @throws ClassNotFoundException if the given {@code class} is not found in the current context
+   * @throws ClassNotFoundModuleException if the given {@code class} is not found in the current context
    * @throws WrongTypeModuleException if the validation fails because the {@code instance} is not of the expected {@code class} type
    */
   @Validator
@@ -47,7 +48,7 @@ public class JavaModuleValidateOperation {
   public void validateType(@ClassValue @Alias("class") @Optional @Expression(NOT_SUPPORTED) String clazz,
                            Object instance,
                            @Optional(defaultValue = "true") boolean acceptSubtypes)
-      throws ClassNotFoundException, WrongTypeModuleException {
+      throws ClassNotFoundModuleException, WrongTypeModuleException {
 
     JavaModuleUtils.validateType(clazz, instance, acceptSubtypes, cache);
   }

@@ -120,7 +120,7 @@ abstract class ExecutableElementTypeResolver implements OutputTypeResolver<Execu
         .filter(m -> isPublic(m.getModifiers()))
         .filter(m -> hasExpectedSignature(m, key))
         .findFirst()
-        .orElseThrow(() -> new MetadataResolvingException(format("No Method found in Class [%s] with signature [%s]",
+        .orElseThrow(() -> new MetadataResolvingException(format("No public Method found in Class [%s] with signature [%s]",
                                                                  key.getClazz(), key.getElementId()),
                                                           INVALID_METADATA_KEY));
   }

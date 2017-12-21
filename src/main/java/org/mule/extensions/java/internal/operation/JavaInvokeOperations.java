@@ -7,9 +7,8 @@
 package org.mule.extensions.java.internal.operation;
 
 import static java.lang.String.format;
-import static org.mule.extensions.java.internal.JavaModuleUtils.findMethod;
 import static org.mule.extensions.java.internal.JavaModuleUtils.invokeMethod;
-import org.mule.extensions.java.api.cache.JavaModuleLoadingCache;
+import org.mule.extensions.java.internal.cache.JavaModuleLoadingCache;
 import org.mule.extensions.java.api.exception.ArgumentMismatchModuleException;
 import org.mule.extensions.java.api.exception.ClassNotFoundModuleException;
 import org.mule.extensions.java.api.exception.InvocationModuleException;
@@ -73,12 +72,9 @@ public class JavaInvokeOperations {
       throws ClassNotFoundModuleException, ArgumentMismatchModuleException,
       InvocationModuleException, NoSuchMethodModuleException {
 
-    Class<?> targetClass = cache.loadClass(identifier.getClazz())
-        .orElseThrow(
-                     () -> new ClassNotFoundModuleException(format("Failed to load Class with name [%s] while invoking static Method [%s]",
-                                                                   identifier.getClazz(), identifier.getElementId())));
+    Class<?> targetClass = cache.loadClass(identifier.getClazz());
 
-    Method method = findMethod(identifier, targetClass, true, args, cache);
+    Method method = cache.getMethod(identifier, targetClass, args, true);
     return invokeMethod(method, args, null, () -> failureMsg(identifier, method));
   }
 
@@ -112,7 +108,7 @@ public class JavaInvokeOperations {
 
     JavaModuleUtils.validateType(identifier.getClazz(), instance, true, cache);
 
-    Method method = findMethod(identifier, instance.getClass(), false, args, cache);
+    Method method = cache.getMethod(identifier, instance.getClass(), args, false);
     return invokeMethod(method, args, instance, () -> failureMsg(identifier, method));
   }
 

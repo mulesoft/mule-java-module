@@ -9,26 +9,22 @@ package org.mule.extensions.java.internal.function;
 import static java.lang.String.format;
 import static java.util.Collections.emptyMap;
 import static java.util.stream.Collectors.toMap;
-import static org.mule.extensions.java.api.error.JavaModuleError.CLASS_NOT_FOUND;
-import static org.mule.extensions.java.internal.JavaModuleUtils.findMethod;
 import static org.mule.extensions.java.internal.JavaModuleUtils.invokeMethod;
 import static org.mule.extensions.java.internal.JavaModuleUtils.validateType;
-import static org.mule.runtime.api.i18n.I18nMessageFactory.createStaticMessage;
 import static org.mule.runtime.core.api.util.ClassUtils.isInstance;
-import org.mule.extensions.java.api.cache.JavaModuleLoadingCache;
 import org.mule.extensions.java.api.exception.ArgumentMismatchModuleException;
 import org.mule.extensions.java.api.exception.ClassNotFoundModuleException;
 import org.mule.extensions.java.api.exception.InvocationModuleException;
 import org.mule.extensions.java.api.exception.NoSuchMethodModuleException;
 import org.mule.extensions.java.api.exception.WrongTypeModuleException;
 import org.mule.extensions.java.internal.JavaModule;
+import org.mule.extensions.java.internal.cache.JavaModuleLoadingCache;
 import org.mule.extensions.java.internal.parameters.MethodIdentifier;
 import org.mule.runtime.api.el.ExpressionFunction;
 import org.mule.runtime.api.metadata.TypedValue;
 import org.mule.runtime.extension.api.annotation.Alias;
 import org.mule.runtime.extension.api.annotation.param.Optional;
 import org.mule.runtime.extension.api.annotation.param.display.Summary;
-import org.mule.runtime.extension.api.exception.ModuleException;
 
 import java.lang.reflect.Method;
 import java.util.Map;
@@ -68,6 +64,7 @@ public class JavaModuleFunctions {
   public Object invoke(@Alias("class") @Summary("Fully qualified name of the Class containing the referenced Method") String clazz,
                        @Alias("method") @Summary("Represents the Method signature containing the method name and it's argument types.") String methodName,
                        Object instance,
+                       //TODO MULE-14302 change Object to TypedValue
                        @Optional Map<String, Object> args)
       throws NoSuchMethodModuleException, ClassNotFoundModuleException, WrongTypeModuleException,
       ArgumentMismatchModuleException, InvocationModuleException {
@@ -79,16 +76,20 @@ public class JavaModuleFunctions {
     validateType(clazz, instance, true, cache);
 
     MethodIdentifier identifier = new MethodIdentifier(clazz, methodName);
-    Method method = findMethod(identifier, instance.getClass(), false, resolvedArgs, cache);
+    Method method = cache.getMethod(identifier, instance.getClass(), resolvedArgs, false);
     return invokeMethod(method, resolvedArgs, instance,
                         () -> format("Failed to invoke Method [%s] in Class [%s]", methodName, clazz));
   }
 
-  public boolean isInstanceOf(Object instance, @Alias("class") String clazz) throws ModuleException {
-    Class<?> targetClass = cache.loadClass(clazz)
-        .orElseThrow(() -> new ModuleException(createStaticMessage("Failed to load class [%s]: Class not found", clazz),
-                                               CLASS_NOT_FOUND));
-    return isInstance(targetClass, instance);
+  /**
+   * Operation that allows the user to check that a given {@code instance} is an {@code instanceof} the specified {@code class}.
+   *
+   * @param clazz the fully qualified name of the expected {@link Class} for the instance
+   * @param instance the object whose type is expected to be an {@code instanceof} of the given {@code class}
+   * @throws ClassNotFoundModuleException if the given {@code class} is not found in the current context
+   */
+  public boolean isInstanceOf(Object instance, @Alias("class") String clazz) throws ClassNotFoundModuleException {
+    return isInstance(cache.loadClass(clazz), instance);
   }
 
 }

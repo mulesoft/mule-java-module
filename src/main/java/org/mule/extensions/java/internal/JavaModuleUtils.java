@@ -6,20 +6,13 @@
  */
 package org.mule.extensions.java.internal;
 
-import static java.lang.String.format;
-import static java.lang.reflect.Modifier.isPublic;
-import static java.lang.reflect.Modifier.isStatic;
-import static java.util.Arrays.stream;
-import static java.util.stream.Collectors.toList;
 import static org.mule.runtime.core.api.util.ClassUtils.isInstance;
-import static org.mule.runtime.core.api.util.ClassUtils.withContextClassLoader;
-import org.mule.extensions.java.api.cache.JavaModuleLoadingCache;
 import org.mule.extensions.java.api.exception.ArgumentMismatchModuleException;
 import org.mule.extensions.java.api.exception.ClassNotFoundModuleException;
 import org.mule.extensions.java.api.exception.InvocationModuleException;
 import org.mule.extensions.java.api.exception.NoSuchMethodModuleException;
 import org.mule.extensions.java.api.exception.WrongTypeModuleException;
-import org.mule.extensions.java.internal.parameters.ExecutableIdentifier;
+import org.mule.extensions.java.internal.cache.JavaModuleLoadingCache;
 import org.mule.runtime.api.metadata.TypedValue;
 
 import java.lang.reflect.InvocationTargetException;
@@ -28,7 +21,6 @@ import java.lang.reflect.Parameter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.function.Function;
 import java.util.function.Supplier;
 
 /**
@@ -43,8 +35,7 @@ public final class JavaModuleUtils {
   public static void validateType(String clazz, Object instance, boolean acceptSubtypes, JavaModuleLoadingCache cache)
       throws ClassNotFoundModuleException, WrongTypeModuleException {
 
-    Class<?> declaredClass = cache.loadClass(clazz)
-        .orElseThrow(() -> new ClassNotFoundModuleException(format("Failed to load Class with name [%s] ", clazz)));
+    Class<?> declaredClass = cache.loadClass(clazz);
 
     boolean isValid = acceptSubtypes
         ? isInstance(declaredClass, instance)
@@ -85,25 +76,6 @@ public final class JavaModuleUtils {
     }
 
     return sortedArgs;
-  }
-
-  public static Method findMethod(ExecutableIdentifier id, Class<?> clazz, boolean expectStatic,
-                                  Map<String, TypedValue<Object>> args, JavaModuleLoadingCache cache)
-      throws NoSuchMethodModuleException {
-    Function<String, Method> loader = key -> getPublicMethods(clazz, expectStatic).stream()
-        .filter(id::matches)
-        .findFirst()
-        .orElse(null);
-
-    return cache.getExecutable(id, loader)
-        .orElseThrow(() -> new NoSuchMethodModuleException(id, clazz, getPublicMethods(clazz, expectStatic), args));
-  }
-
-  public static List<Method> getPublicMethods(Class<?> clazz, boolean expectStatic) {
-    return stream(clazz.getMethods())
-        .filter(m -> isPublic(m.getModifiers()))
-        .filter(m -> expectStatic == isStatic(m.getModifiers()))
-        .collect(toList());
   }
 
 }

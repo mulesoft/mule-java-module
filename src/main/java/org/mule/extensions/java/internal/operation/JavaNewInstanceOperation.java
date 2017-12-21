@@ -7,17 +7,14 @@
 package org.mule.extensions.java.internal.operation;
 
 import static java.lang.String.format;
-import static java.lang.reflect.Modifier.isPublic;
-import static java.util.Arrays.stream;
-import static org.mule.runtime.core.api.util.ClassUtils.withContextClassLoader;
 import org.mule.extensions.java.api.exception.ArgumentMismatchModuleException;
 import org.mule.extensions.java.api.exception.ClassNotFoundModuleException;
 import org.mule.extensions.java.api.exception.InvocationModuleException;
 import org.mule.extensions.java.api.exception.NoSuchConstructorModuleException;
 import org.mule.extensions.java.api.exception.NonInstantiableTypeModuleException;
 import org.mule.extensions.java.internal.JavaModule;
-import org.mule.extensions.java.api.cache.JavaModuleLoadingCache;
 import org.mule.extensions.java.internal.JavaModuleUtils;
+import org.mule.extensions.java.internal.cache.JavaModuleLoadingCache;
 import org.mule.extensions.java.internal.error.JavaNewInstanceErrorProvider;
 import org.mule.extensions.java.internal.metadata.ConstructorTypeResolver;
 import org.mule.extensions.java.internal.parameters.ConstructorIdentifier;
@@ -77,16 +74,8 @@ public class JavaNewInstanceOperation {
       throws ClassNotFoundModuleException, NoSuchConstructorModuleException, ArgumentMismatchModuleException,
       InvocationModuleException, NonInstantiableTypeModuleException {
 
-    final Class targetClass = cache.loadClass(identifier.getClazz())
-        .orElseThrow(() -> new ClassNotFoundModuleException(format("Failed to instantiate Class with name [%s]. Class not found.",
-                                                                   identifier.getClazz())));
-
-    Constructor constructor = cache.getExecutable(identifier, key -> stream(targetClass.getConstructors())
-        .filter(c -> isPublic(c.getModifiers()))
-        .filter(identifier::matches)
-        .findFirst()
-        .orElse(null))
-        .orElseThrow(() -> new NoSuchConstructorModuleException(identifier, targetClass, args));
+    final Class<?> targetClass = cache.loadClass(identifier.getClazz());
+    final Constructor constructor = cache.getConstructor(identifier, targetClass, args);
 
     try {
       List<Object> sortedArgs = JavaModuleUtils.getSortedArgs(args, constructor.getParameters());
