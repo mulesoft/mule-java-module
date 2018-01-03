@@ -16,13 +16,17 @@
         <version>1.1.0-SNAPSHOT</version>
     </parent>
 
+    <properties>
+        <muleJmsConnectorVersion>1.0.0</muleJmsConnectorVersion>
+    </properties>
+
     <dependencies>
         <!--Test dependency to use the POJOs in its API-->
         <dependency>
             <groupId>org.mule.connectors</groupId>
             <artifactId>mule-jms-connector</artifactId>
             <classifier>mule-plugin</classifier>
-            <version>1.0.0</version>
+            <version>${muleJmsConnectorVersion}</version>
             <scope>test</scope>
         </dependency>
     </dependencies>
