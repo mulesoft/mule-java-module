@@ -31,4 +31,12 @@
         </dependency>
     </dependencies>
 
+    <repositories>
+        <repository>
+            <id>mule</id>
+            <name>Mule Repository</name>
+            <url>https://repository.mulesoft.org/nexus/content/repositories/public/</url>
+        </repository>
+    </repositories>
+            
 </project>
