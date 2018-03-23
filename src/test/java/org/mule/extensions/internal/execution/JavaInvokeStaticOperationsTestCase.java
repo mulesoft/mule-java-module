@@ -9,6 +9,8 @@ package org.mule.extensions.internal.execution;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.instanceOf;
 import static org.hamcrest.core.Is.is;
+
+import org.mule.extensions.internal.model.AnotherExecutableElement;
 import org.mule.extensions.internal.model.ExecutableElement;
 import org.mule.extensions.internal.JavaModuleAbstractTestCase;
 import org.mule.runtime.api.metadata.TypedValue;
@@ -33,7 +35,7 @@ public class JavaInvokeStaticOperationsTestCase extends JavaModuleAbstractTestCa
   public void invokeStaticOverloadNoArgs() throws Exception {
     TypedValue<ExecutableElement> payload = invokeStatic("create()");
     assertThat(payload.getValue(), is(instanceOf(ExecutableElement.class)));
-    MatcherAssert.assertThat(payload.getValue().getPhase(), Is.is(ExecutableElement.Phase.NOT_STARTED));
+    assertThat(payload.getValue().getPhase(), is(ExecutableElement.Phase.NOT_STARTED));
   }
 
   @Test
@@ -41,7 +43,16 @@ public class JavaInvokeStaticOperationsTestCase extends JavaModuleAbstractTestCa
     TypedValue<ExecutableElement> payload = invokeStatic("create(Phase)",
                                                          Args.create("initPhase", ExecutableElement.Phase.STOPPED));
     assertThat(payload.getValue(), is(instanceOf(ExecutableElement.class)));
-    MatcherAssert.assertThat(payload.getValue().getPhase(), Is.is(ExecutableElement.Phase.STOPPED));
+    assertThat(payload.getValue().getPhase(), is(ExecutableElement.Phase.STOPPED));
+  }
+
+  @Test
+  public void invokeStaticWithTwoDifferentClassesWithSameMethodSignature() throws Exception {
+    TypedValue<String> payload = flowRunner("invokeStaticWithTwoDifferentClassesWithSameMethodSignature")
+        .run()
+        .getMessage()
+        .getPayload();
+    assertThat(payload.getValue(), is(AnotherExecutableElement.className()));
   }
 
   private <T> TypedValue<T> invokeStatic(String method) throws Exception {

@@ -36,8 +36,8 @@ public class KeysMetadataTestCase extends AbstractMetadataTestCase {
   @Test
   public void staticMethodKeys() throws Exception {
     Set<MetadataKey> keys = getKeys(flow(INVOKE_STATIC, EXECUTABLE_ELEMENT, CREATE + PHASE), STATIC_CATEGORY);
-    assertThat(keys.iterator().next().getChilds().size(), is(2));
-    assertThat(getIds(keys), containsInAnyOrder("create(Phase)", "create()"));
+    assertThat(keys.iterator().next().getChilds().size(), is(3));
+    assertThat(getIds(keys), containsInAnyOrder("create(Phase)", "create()", "className()"));
   }
 
   @Test

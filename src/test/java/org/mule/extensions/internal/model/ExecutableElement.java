@@ -86,6 +86,10 @@ public class ExecutableElement {
     return linkedList;
   }
 
+  public static String className() {
+    return ExecutableElement.class.getName();
+  }
+
   protected void protectedMethod() {}
 
   private Object privateMethod() {
