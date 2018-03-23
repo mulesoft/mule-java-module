@@ -49,4 +49,9 @@
         </java:invoke-static>
     </flow>
 
+    <flow name="invokeStaticWithTwoDifferentClassesWithSameMethodSignature">
+        <java:invoke-static class="org.mule.extensions.internal.model.ExecutableElement" method="className()"/>
+        <java:invoke-static class="org.mule.extensions.internal.model.AnotherExecutableElement" method="className()"/>
+    </flow>
+
 </mule>
