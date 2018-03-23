@@ -36,6 +36,8 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 public final class JavaModuleLoadingCache {
 
+  private final String METHOD_IDENTIFIER = "%s#%s";
+
   private final Map<String, Class<?>> typesCache = new ConcurrentHashMap<>();
   private final Map<String, Executable> executablesCache = new ConcurrentHashMap<>();
 
@@ -53,18 +55,27 @@ public final class JavaModuleLoadingCache {
 
   public Constructor getConstructor(ConstructorIdentifier id, Class<?> declaringClass,
                                     Map<String, TypedValue<Object>> args) {
-    return (Constructor) executablesCache.computeIfAbsent(id.getElementId(), key -> stream(declaringClass.getConstructors())
-        .filter(c -> isPublic(c.getModifiers()))
-        .filter(id::matches)
-        .findFirst()
-        .orElseThrow(() -> new NoSuchConstructorModuleException(id, declaringClass, args)));
+    return (Constructor) executablesCache.computeIfAbsent(
+                                                          String.format(METHOD_IDENTIFIER, declaringClass.getName(),
+                                                                        id.getElementId()),
+                                                          key -> stream(declaringClass.getConstructors())
+                                                              .filter(c -> isPublic(c.getModifiers()))
+                                                              .filter(id::matches)
+                                                              .findFirst()
+                                                              .orElseThrow(() -> new NoSuchConstructorModuleException(id,
+                                                                                                                      declaringClass,
+                                                                                                                      args)));
   }
 
   public Method getMethod(ExecutableIdentifier id, Class<?> clazz, Map<String, TypedValue<Object>> args, boolean expectStatic) {
-    return (Method) executablesCache.computeIfAbsent(id.getElementId(), key -> getPublicMethods(clazz, expectStatic).stream()
-        .filter(id::matches)
-        .findFirst()
-        .orElseThrow(() -> new NoSuchMethodModuleException(id, clazz, getPublicMethods(clazz, expectStatic), args)));
+    return (Method) executablesCache.computeIfAbsent(String.format(METHOD_IDENTIFIER, clazz.getName(), id.getElementId()),
+                                                     key -> getPublicMethods(clazz, expectStatic).stream()
+                                                         .filter(id::matches)
+                                                         .findFirst()
+                                                         .orElseThrow(() -> new NoSuchMethodModuleException(id, clazz,
+                                                                                                            getPublicMethods(clazz,
+                                                                                                                             expectStatic),
+                                                                                                            args)));
   }
 
   private List<Method> getPublicMethods(Class<?> clazz, boolean expectStatic) {
