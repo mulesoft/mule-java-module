@@ -23,6 +23,8 @@ import org.mule.extensions.java.internal.parameters.ExecutableIdentifier;
 import org.mule.extensions.java.internal.parameters.MethodIdentifier;
 import org.mule.extensions.java.internal.parameters.StaticMethodIdentifier;
 import org.mule.runtime.api.metadata.TypedValue;
+import org.mule.runtime.api.transformation.TransformationService;
+import org.mule.runtime.core.api.el.ExpressionManager;
 import org.mule.runtime.extension.api.annotation.error.Throws;
 import org.mule.runtime.extension.api.annotation.metadata.MetadataKeyId;
 import org.mule.runtime.extension.api.annotation.metadata.OutputResolver;
@@ -47,6 +49,12 @@ public class JavaInvokeOperations {
   @Inject
   private JavaModuleLoadingCache cache;
 
+  @Inject
+  private TransformationService transformationService;
+
+  @Inject
+  private ExpressionManager expressionManager;
+
   /**
    * Operation that allows the user to invoke static methods with the provided arguments.
    * The identifier of the {@link Method} to be invoked includes the {@code class} and {@code method} names,
@@ -68,14 +76,16 @@ public class JavaInvokeOperations {
   public Object invokeStatic(
                              @ParameterGroup(
                                  name = "Method") @MetadataKeyId(StaticMethodTypeResolver.class) StaticMethodIdentifier identifier,
-                             @Optional @NullSafe @Content @TypeResolver(StaticMethodTypeResolver.class) Map<String, TypedValue<Object>> args)
+                             @Optional @NullSafe @Content @TypeResolver(StaticMethodTypeResolver.class) Map<String, TypedValue<Object>> args,
+                             @Optional(defaultValue = "true") boolean autoTransformParameters)
       throws ClassNotFoundModuleException, ArgumentMismatchModuleException,
       InvocationModuleException, NoSuchMethodModuleException {
 
     Class<?> targetClass = cache.loadClass(identifier.getClazz());
 
     Method method = cache.getMethod(identifier, targetClass, args, true);
-    return invokeMethod(method, args, null, () -> failureMsg(identifier, method));
+    return invokeMethod(method, args, null, () -> failureMsg(identifier, method), transformationService, expressionManager,
+                        autoTransformParameters);
   }
 
   /**
@@ -102,14 +112,16 @@ public class JavaInvokeOperations {
                        @ParameterGroup(
                            name = "Method") @MetadataKeyId(InstanceMethodTypeResolver.class) MethodIdentifier identifier,
                        Object instance,
-                       @Optional @NullSafe @Content @TypeResolver(InstanceMethodTypeResolver.class) Map<String, TypedValue<Object>> args)
+                       @Optional @NullSafe @Content @TypeResolver(InstanceMethodTypeResolver.class) Map<String, TypedValue<Object>> args,
+                       @Optional(defaultValue = "false") boolean autoTransformParameters)
       throws ClassNotFoundModuleException, WrongTypeModuleException, ArgumentMismatchModuleException,
       InvocationModuleException, NoSuchMethodModuleException {
 
     JavaModuleUtils.validateType(identifier.getClazz(), instance, true, cache);
 
     Method method = cache.getMethod(identifier, instance.getClass(), args, false);
-    return invokeMethod(method, args, instance, () -> failureMsg(identifier, method));
+    return invokeMethod(method, args, instance, () -> failureMsg(identifier, method), transformationService, expressionManager,
+                        autoTransformParameters);
   }
 
   private String failureMsg(ExecutableIdentifier identifier, Method method) {

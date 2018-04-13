@@ -22,6 +22,8 @@ import org.mule.extensions.java.internal.cache.JavaModuleLoadingCache;
 import org.mule.extensions.java.internal.parameters.MethodIdentifier;
 import org.mule.runtime.api.el.ExpressionFunction;
 import org.mule.runtime.api.metadata.TypedValue;
+import org.mule.runtime.api.transformation.TransformationService;
+import org.mule.runtime.core.api.el.ExpressionManager;
 import org.mule.runtime.extension.api.annotation.Alias;
 import org.mule.runtime.extension.api.annotation.param.Optional;
 import org.mule.runtime.extension.api.annotation.param.display.Summary;
@@ -41,6 +43,12 @@ public class JavaModuleFunctions {
 
   @Inject
   private JavaModuleLoadingCache cache;
+
+  @Inject
+  private TransformationService transformationService;
+
+  @Inject
+  private ExpressionManager expressionManager;
 
   /**
    * Function that allows the user to invoke methods with the provided {@code args} on the given {@code instance}.
@@ -64,8 +72,8 @@ public class JavaModuleFunctions {
   public Object invoke(@Alias("class") @Summary("Fully qualified name of the Class containing the referenced Method") String clazz,
                        @Alias("method") @Summary("Represents the Method signature containing the method name and it's argument types.") String methodName,
                        Object instance,
-                       //TODO MULE-14302 change Object to TypedValue
-                       @Optional Map<String, Object> args)
+                       // TODO MULE-14302 change Object to TypedValue
+                       @Optional Map<String, Object> args, @Optional(defaultValue = "false") boolean autoTransformParameters)
       throws NoSuchMethodModuleException, ClassNotFoundModuleException, WrongTypeModuleException,
       ArgumentMismatchModuleException, InvocationModuleException {
 
@@ -78,7 +86,8 @@ public class JavaModuleFunctions {
     MethodIdentifier identifier = new MethodIdentifier(clazz, methodName);
     Method method = cache.getMethod(identifier, instance.getClass(), resolvedArgs, false);
     return invokeMethod(method, resolvedArgs, instance,
-                        () -> format("Failed to invoke Method [%s] in Class [%s]", methodName, clazz));
+                        () -> format("Failed to invoke Method [%s] in Class [%s]", methodName, clazz), transformationService,
+                        expressionManager, autoTransformParameters);
   }
 
   /**

@@ -29,6 +29,11 @@
             <version>${muleJmsConnectorVersion}</version>
             <scope>test</scope>
         </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-core</artifactId>
+            <version>5.0.5.RELEASE</version>
+        </dependency>
     </dependencies>
 
     <repositories>

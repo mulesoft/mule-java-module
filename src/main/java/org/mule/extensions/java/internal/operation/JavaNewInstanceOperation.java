@@ -20,6 +20,8 @@ import org.mule.extensions.java.internal.metadata.ConstructorTypeResolver;
 import org.mule.extensions.java.internal.parameters.ConstructorIdentifier;
 import org.mule.extensions.java.internal.parameters.ExecutableIdentifier;
 import org.mule.runtime.api.metadata.TypedValue;
+import org.mule.runtime.api.transformation.TransformationService;
+import org.mule.runtime.core.api.el.ExpressionManager;
 import org.mule.runtime.extension.api.annotation.Alias;
 import org.mule.runtime.extension.api.annotation.error.Throws;
 import org.mule.runtime.extension.api.annotation.metadata.MetadataKeyId;
@@ -47,6 +49,12 @@ public class JavaNewInstanceOperation {
   @Inject
   private JavaModuleLoadingCache cache;
 
+  @Inject
+  private TransformationService transformationService;
+
+  @Inject
+  private ExpressionManager expressionManager;
+
   /**
    * Operation that allows the user to create a new instance of the given {@code class}
    * The identifier of the {@link Constructor} to be used includes the {@code class} and {@code constructor} names,
@@ -70,7 +78,8 @@ public class JavaNewInstanceOperation {
   public Object newInstance(
                             @ParameterGroup(
                                 name = "Constructor") @MetadataKeyId(ConstructorTypeResolver.class) ConstructorIdentifier identifier,
-                            @Optional @NullSafe @Content @TypeResolver(ConstructorTypeResolver.class) Map<String, TypedValue<Object>> args)
+                            @Optional @NullSafe @Content @TypeResolver(ConstructorTypeResolver.class) Map<String, TypedValue<Object>> args,
+                            @Optional(defaultValue = "true") boolean autoTransformParameters)
       throws ClassNotFoundModuleException, NoSuchConstructorModuleException, ArgumentMismatchModuleException,
       InvocationModuleException, NonInstantiableTypeModuleException {
 
@@ -78,7 +87,9 @@ public class JavaNewInstanceOperation {
     final Constructor constructor = cache.getConstructor(identifier, targetClass, args);
 
     try {
-      List<Object> sortedArgs = JavaModuleUtils.getSortedArgs(args, constructor.getParameters());
+      List<Object> sortedArgs =
+          JavaModuleUtils.getSortedAndTransformedArgs(args, constructor, transformationService,
+                                                      expressionManager, autoTransformParameters);
       if (sortedArgs.size() == constructor.getParameters().length) {
         return constructor.newInstance(sortedArgs.toArray());
       }

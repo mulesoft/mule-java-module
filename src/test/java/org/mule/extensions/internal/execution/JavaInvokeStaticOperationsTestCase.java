@@ -16,8 +16,6 @@ import org.mule.extensions.internal.JavaModuleAbstractTestCase;
 import org.mule.runtime.api.metadata.TypedValue;
 import org.mule.tck.junit4.rule.SystemProperty;
 
-import org.hamcrest.MatcherAssert;
-import org.hamcrest.core.Is;
 import org.junit.Rule;
 import org.junit.Test;
 
