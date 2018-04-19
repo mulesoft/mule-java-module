@@ -76,16 +76,14 @@ public class JavaInvokeOperations {
   public Object invokeStatic(
                              @ParameterGroup(
                                  name = "Method") @MetadataKeyId(StaticMethodTypeResolver.class) StaticMethodIdentifier identifier,
-                             @Optional @NullSafe @Content @TypeResolver(StaticMethodTypeResolver.class) Map<String, TypedValue<Object>> args,
-                             @Optional(defaultValue = "true") boolean autoTransformParameters)
+                             @Optional @NullSafe @Content @TypeResolver(StaticMethodTypeResolver.class) Map<String, TypedValue<Object>> args)
       throws ClassNotFoundModuleException, ArgumentMismatchModuleException,
       InvocationModuleException, NoSuchMethodModuleException {
 
     Class<?> targetClass = cache.loadClass(identifier.getClazz());
 
     Method method = cache.getMethod(identifier, targetClass, args, true);
-    return invokeMethod(method, args, null, () -> failureMsg(identifier, method), transformationService, expressionManager,
-                        autoTransformParameters);
+    return invokeMethod(method, args, null, () -> failureMsg(identifier, method), transformationService, expressionManager);
   }
 
   /**
@@ -112,16 +110,14 @@ public class JavaInvokeOperations {
                        @ParameterGroup(
                            name = "Method") @MetadataKeyId(InstanceMethodTypeResolver.class) MethodIdentifier identifier,
                        Object instance,
-                       @Optional @NullSafe @Content @TypeResolver(InstanceMethodTypeResolver.class) Map<String, TypedValue<Object>> args,
-                       @Optional(defaultValue = "true") boolean autoTransformParameters)
+                       @Optional @NullSafe @Content @TypeResolver(InstanceMethodTypeResolver.class) Map<String, TypedValue<Object>> args)
       throws ClassNotFoundModuleException, WrongTypeModuleException, ArgumentMismatchModuleException,
       InvocationModuleException, NoSuchMethodModuleException {
 
     JavaModuleUtils.validateType(identifier.getClazz(), instance, true, cache);
 
     Method method = cache.getMethod(identifier, instance.getClass(), args, false);
-    return invokeMethod(method, args, instance, () -> failureMsg(identifier, method), transformationService, expressionManager,
-                        autoTransformParameters);
+    return invokeMethod(method, args, instance, () -> failureMsg(identifier, method), transformationService, expressionManager);
   }
 
   private String failureMsg(ExecutableIdentifier identifier, Method method) {

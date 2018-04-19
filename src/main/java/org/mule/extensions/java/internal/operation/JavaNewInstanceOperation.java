@@ -78,8 +78,7 @@ public class JavaNewInstanceOperation {
   public Object newInstance(
                             @ParameterGroup(
                                 name = "Constructor") @MetadataKeyId(ConstructorTypeResolver.class) ConstructorIdentifier identifier,
-                            @Optional @NullSafe @Content @TypeResolver(ConstructorTypeResolver.class) Map<String, TypedValue<Object>> args,
-                            @Optional(defaultValue = "true") boolean autoTransformParameters)
+                            @Optional @NullSafe @Content @TypeResolver(ConstructorTypeResolver.class) Map<String, TypedValue<Object>> args)
       throws ClassNotFoundModuleException, NoSuchConstructorModuleException, ArgumentMismatchModuleException,
       InvocationModuleException, NonInstantiableTypeModuleException {
 
@@ -89,7 +88,7 @@ public class JavaNewInstanceOperation {
     try {
       List<Object> sortedArgs =
           JavaModuleUtils.getSortedAndTransformedArgs(args, constructor, transformationService,
-                                                      expressionManager, autoTransformParameters);
+                                                      expressionManager);
       if (sortedArgs.size() == constructor.getParameters().length) {
         return constructor.newInstance(sortedArgs.toArray());
       }

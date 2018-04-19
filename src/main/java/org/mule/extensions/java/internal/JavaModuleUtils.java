@@ -55,14 +55,12 @@ public final class JavaModuleUtils {
 
   public static Object invokeMethod(Method method, Map<String, TypedValue<Object>> args,
                                     Object instance, Supplier<String> failureMessageProvider,
-                                    TransformationService transformationService, ExpressionManager expressionManager,
-                                    boolean autoTransformParameters)
+                                    TransformationService transformationService, ExpressionManager expressionManager)
       throws ArgumentMismatchModuleException, InvocationModuleException, NoSuchMethodModuleException {
 
     try {
       List<Object> sortedArgs =
-          JavaModuleUtils.getSortedAndTransformedArgs(args, method, transformationService, expressionManager,
-                                                      autoTransformParameters);
+          JavaModuleUtils.getSortedAndTransformedArgs(args, method, transformationService, expressionManager);
       if (sortedArgs.size() == method.getParameters().length) {
         return method.invoke(instance, sortedArgs.toArray());
       }
@@ -78,7 +76,7 @@ public final class JavaModuleUtils {
 
   public static List<Object> getSortedAndTransformedArgs(Map<String, TypedValue<Object>> args, Executable executable,
                                                          TransformationService transformationService,
-                                                         ExpressionManager expressionManager, boolean autoTransformParameters) {
+                                                         ExpressionManager expressionManager) {
 
     Parameter[] parameters = executable.getParameters();
     ParameterTransformer parameterTransformer = new ParameterTransformer(executable, transformationService, expressionManager);
@@ -90,7 +88,7 @@ public final class JavaModuleUtils {
         break;
       }
       Object transformedParameter = value.getValue();
-      if (autoTransformParameters && parameterTransformer.parameterNeedsTransformation(value.getValue(), i)) {
+      if (parameterTransformer.parameterNeedsTransformation(value.getValue(), i)) {
         transformedParameter = parameterTransformer.transformParameter(value.getValue(), i);
       }
       sortedArgs.add(transformedParameter);

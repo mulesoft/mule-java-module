@@ -5,7 +5,7 @@
           http://www.mulesoft.org/schema/mule/java http://www.mulesoft.org/schema/mule/java/current/mule-java.xsd">
 
     <flow name="invokeStaticWithNumberUsingStringTransformation">
-        <java:invoke-static class="org.mule.extensions.internal.model.AnotherExecutableElement" method="getNumber(String)" autoTransformParameters="true">
+        <java:invoke-static class="org.mule.extensions.internal.model.AnotherExecutableElement" method="getNumber(String)" >
             <java:args>
                 #[{
                 'number': 3
@@ -15,7 +15,7 @@
     </flow>
 
     <flow name="invokeStaticWithStringUsingInputStreamTransformation">
-        <java:invoke-static class="org.mule.extensions.internal.model.AnotherExecutableElement" method="sayInputStream(InputStream)" autoTransformParameters="true">
+        <java:invoke-static class="org.mule.extensions.internal.model.AnotherExecutableElement" method="sayInputStream(InputStream)" >
             <java:args>
                 #[{
                 'inputStream': "Hello this is getting transformed"
@@ -25,7 +25,7 @@
     </flow>
 
     <flow name="invokeStaticWithMapParameter">
-        <java:invoke-static class="org.mule.extensions.internal.model.AnotherExecutableElement" method="getMapEntry(Map,String)" autoTransformParameters="true">
+        <java:invoke-static class="org.mule.extensions.internal.model.AnotherExecutableElement" method="getMapEntry(Map,String)" >
             <java:args>
                 #[{
                 'map': {
@@ -40,7 +40,7 @@
     </flow>
 
     <flow name="invokeStaticWithMapWithListValues">
-        <java:invoke-static class="org.mule.extensions.internal.model.AnotherExecutableElement" method="sayItemFromMapEntry(Map,String,Integer)" autoTransformParameters="true">
+        <java:invoke-static class="org.mule.extensions.internal.model.AnotherExecutableElement" method="sayItemFromMapEntry(Map,String,Integer)" >
             <java:args>
                 #[{
                 'map': {
@@ -56,7 +56,7 @@
     </flow>
 
     <flow name="invokeStaticWithSpecificListImplementation">
-        <java:invoke-static class="org.mule.extensions.internal.model.AnotherExecutableElement" method="sayItemFromSpecificListImplementation(ArrayList,Integer)" autoTransformParameters="true">
+        <java:invoke-static class="org.mule.extensions.internal.model.AnotherExecutableElement" method="sayItemFromSpecificListImplementation(ArrayList,Integer)" >
             <java:args>
                 #[{
                 'list': [ "0", 1, "2", 3, 4, "5"],
@@ -67,7 +67,7 @@
     </flow>
 
     <flow name="invokeStaticWithNestedLists">
-        <java:invoke-static class="org.mule.extensions.internal.model.AnotherExecutableElement" method="getFirstItemFromNestedList(List)" autoTransformParameters="true">
+        <java:invoke-static class="org.mule.extensions.internal.model.AnotherExecutableElement" method="getFirstItemFromNestedList(List)" >
             <java:args>
                 #[{
                 'nestedLists': [[[[3, "This Is Another String"],["Inside Another List Of Strings"]]]]
@@ -77,7 +77,7 @@
     </flow>
 
     <flow name="invokeStaticWithCustomPojo">
-        <java:invoke-static class="org.mule.extensions.internal.model.AnotherExecutableElement" method="getCarDoors(Car)" autoTransformParameters="true">
+        <java:invoke-static class="org.mule.extensions.internal.model.AnotherExecutableElement" method="getCarDoors(Car)" >
             <java:args>
                 #[{
                 'car': {
@@ -92,7 +92,7 @@
     </flow>
 
     <flow name="invokeStaticWithWildcard">
-        <java:invoke-static class="org.mule.extensions.internal.model.AnotherExecutableElement" method="getClassFromFirstItem(List)" autoTransformParameters="true">
+        <java:invoke-static class="org.mule.extensions.internal.model.AnotherExecutableElement" method="getClassFromFirstItem(List)" >
             <java:args>
                 #[{
                 'items': ["Hello", "This", "Is", "An", "Array"]
@@ -102,7 +102,7 @@
     </flow>
 
     <flow name="invokeStaticWithListOfCustomPojoAndWithResultAfterwards">
-        <java:invoke-static class="org.mule.extensions.internal.model.AnotherExecutableElement" method="getCarFromList(List,int)" autoTransformParameters="true">
+        <java:invoke-static class="org.mule.extensions.internal.model.AnotherExecutableElement" method="getCarFromList(List,int)" >
             <java:args>
                 #[{
                 'cars' : [
@@ -128,7 +128,7 @@
                 }]
             </java:args>
         </java:invoke-static>
-        <java:invoke-static class="org.mule.extensions.internal.model.AnotherExecutableElement" method="getCarDoors(Car)" autoTransformParameters="true">
+        <java:invoke-static class="org.mule.extensions.internal.model.AnotherExecutableElement" method="getCarDoors(Car)" >
             <java:args>
                 #[{
                 'car': payload
@@ -138,7 +138,7 @@
     </flow>
 
     <flow name="invokeStaticWithListOfMapsAndStringsTransformed">
-        <java:invoke-static class="org.mule.extensions.internal.model.AnotherExecutableElement" method="getFromMapInsideListAndSumFour(List,int,String)" autoTransformParameters="true">
+        <java:invoke-static class="org.mule.extensions.internal.model.AnotherExecutableElement" method="getFromMapInsideListAndSumFour(List,int,String)" >
             <java:args>
                 #[{
                 'listOfMaps': [{

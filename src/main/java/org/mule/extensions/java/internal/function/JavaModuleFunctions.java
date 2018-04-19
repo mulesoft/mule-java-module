@@ -73,7 +73,7 @@ public class JavaModuleFunctions {
                        @Alias("method") @Summary("Represents the Method signature containing the method name and it's argument types.") String methodName,
                        Object instance,
                        // TODO MULE-14302 change Object to TypedValue
-                       @Optional Map<String, Object> args, @Optional(defaultValue = "false") boolean autoTransformParameters)
+                       @Optional Map<String, Object> args)
       throws NoSuchMethodModuleException, ClassNotFoundModuleException, WrongTypeModuleException,
       ArgumentMismatchModuleException, InvocationModuleException {
 
@@ -87,7 +87,7 @@ public class JavaModuleFunctions {
     Method method = cache.getMethod(identifier, instance.getClass(), resolvedArgs, false);
     return invokeMethod(method, resolvedArgs, instance,
                         () -> format("Failed to invoke Method [%s] in Class [%s]", methodName, clazz), transformationService,
-                        expressionManager, autoTransformParameters);
+                        expressionManager);
   }
 
   /**

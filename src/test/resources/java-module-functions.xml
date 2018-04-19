@@ -5,11 +5,11 @@
           http://www.mulesoft.org/schema/mule/java http://www.mulesoft.org/schema/mule/java/current/mule-java.xsd">
 
     <flow name="invoke">
-        <set-payload value="#[Java::invoke(vars.clazz, vars.method, payload, vars.args, false)]"/>
+        <set-payload value="#[Java::invoke(vars.clazz, vars.method, payload, vars.args)]"/>
     </flow>
 
     <flow name="invokeInlineMap">
-        <set-payload value="#[Java::invoke('org.mule.extensions.internal.model.CompositePojo', 'setChilds(Map)', payload, {childs: {'repeat': [payload, payload]}}, false)]"/>
+        <set-payload value="#[Java::invoke('org.mule.extensions.internal.model.CompositePojo', 'setChilds(Map)', payload, {childs: {'repeat': [payload, payload]}})]"/>
     </flow>
 
     <flow name="isInstanceOf">
