@@ -148,7 +148,7 @@ public class ParameterTransformer {
 
   private Collection getCollectionImplementation(Collection value, ResolvableType parameterResolvableType) {
     Class<? extends Collection> valueClass = value.getClass();
-    Class<? extends Collection> parameterClass = (Class<? extends Collection>) parameterResolvableType.getRawClass();
+    Class<? extends Collection> parameterClass = (Class<? extends Collection>) parameterResolvableType.resolve();
     if (parameterClass.isAssignableFrom(valueClass)) {
       Collection result = tryToCreateInstanse(valueClass);
       if (result != null) {
@@ -191,11 +191,11 @@ public class ParameterTransformer {
   }
 
   private boolean mapResolutionNeeded(Object value, ResolvableType parameterResolvableType) {
-    return value instanceof Map && Map.class.isAssignableFrom(parameterResolvableType.resolve());
+    return value instanceof Map && Map.class.isAssignableFrom(resolveType(parameterResolvableType));
   }
 
   private boolean collectionResolutionNeeded(Object value, ResolvableType parameterResolvableType) {
-    return value instanceof Collection && Collection.class.isAssignableFrom(parameterResolvableType.resolve());
+    return value instanceof Collection && Collection.class.isAssignableFrom(resolveType(parameterResolvableType));
   }
 
 
