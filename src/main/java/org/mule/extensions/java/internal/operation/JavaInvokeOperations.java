@@ -113,7 +113,7 @@ public class JavaInvokeOperations {
                            name = "Method") @MetadataKeyId(InstanceMethodTypeResolver.class) MethodIdentifier identifier,
                        Object instance,
                        @Optional @NullSafe @Content @TypeResolver(InstanceMethodTypeResolver.class) Map<String, TypedValue<Object>> args,
-                       @Optional(defaultValue = "false") boolean autoTransformParameters)
+                       @Optional(defaultValue = "true") boolean autoTransformParameters)
       throws ClassNotFoundModuleException, WrongTypeModuleException, ArgumentMismatchModuleException,
       InvocationModuleException, NoSuchMethodModuleException {
 
