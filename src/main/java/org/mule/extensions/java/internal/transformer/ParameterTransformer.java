@@ -12,6 +12,8 @@ import org.mule.runtime.api.metadata.DataType;
 import org.mule.runtime.api.metadata.TypedValue;
 import org.mule.runtime.api.transformation.TransformationService;
 import org.mule.runtime.core.api.el.ExpressionManager;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.core.ResolvableType;
 
 import java.lang.reflect.Constructor;
@@ -19,39 +21,56 @@ import java.lang.reflect.Executable;
 import java.lang.reflect.Method;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.Map;
 
 /**
+ * This class purpose is checking and transforming objects to a parameter type of a certain {@link Executable}
+ *
+ * When transforming an input into something that fits to an {@link Executable}'s parameter, this class will make a best effort in
+ * order to make this transformation possible. In case that the transformation requires to transform a {@link Collection} or
+ * {@link Map}, a new instance will be created for it.
+ * 
  * @since 1.1
  */
 
 public class ParameterTransformer {
 
-  private static Class<? extends Map> DEFAULT_MAP_IMPLEMENTATION = LinkedHashMap.class;
+  private static final Logger LOGGER = LoggerFactory.getLogger(ParameterTransformer.class);
+
+  private static String TRANSFORMATION_SERVICE_ERROR_MESSAGE =
+      "Transformation from type %s to %s could not be done using the Transformation Service";
+  private static String DATAWEAVE_TRANSFORMATION_ERROR_MESSAGE =
+      "Transformation from type %s to %s could not be done using a DataWeave Transformation";
+
+  private static Class<? extends Map> DEFAULT_MAP_IMPLEMENTATION = HashMap.class;
   private static Class<? extends Collection> DEFAULT_COLLECTION_IMPLEMENTATION = LinkedList.class;
 
   private Executable executable;
   private TransformationService transformationService;
   private ExpressionManager expressionManager;
 
-  private static final Map<Class<?>, Class<?>> PRIMITIVES_TO_WRAPPERS = initializePrimitiveToWrapperMap();
 
-  private static Map<Class<?>, Class<?>> initializePrimitiveToWrapperMap() {
-    Map<Class<?>, Class<?>> result = new HashMap<>();
-    result.put(boolean.class, Boolean.class);
-    result.put(byte.class, Byte.class);
-    result.put(char.class, Character.class);
-    result.put(double.class, Double.class);
-    result.put(float.class, Float.class);
-    result.put(int.class, Integer.class);
-    result.put(long.class, Long.class);
-    result.put(short.class, Short.class);
-    result.put(void.class, Void.class);
-    return result;
-  }
+  private static final Map<Class<?>, Class<?>> PRIMITIVES_TO_WRAPPERS = new HashMap<Class<?>, Class<?>>() {
 
+    {
+      put(boolean.class, Boolean.class);
+      put(byte.class, Byte.class);
+      put(char.class, Character.class);
+      put(double.class, Double.class);
+      put(float.class, Float.class);
+      put(int.class, Integer.class);
+      put(long.class, Long.class);
+      put(short.class, Short.class);
+      put(void.class, Void.class);
+    }
+  };
+
+  /**
+   * @param executable The executable whose parameters will be checked against {@link Object}s.
+   * @param transformationService An instance of a {@link TransformationService} use to tranform parameters.
+   * @param expressionManager An instance of a {@link ExpressionManager} used to execute DataWeave expressions.
+   */
   public ParameterTransformer(Executable executable, TransformationService transformationService,
                               ExpressionManager expressionManager) {
     this.executable = executable;
@@ -63,12 +82,21 @@ public class ParameterTransformer {
     return c.isPrimitive() ? (Class<T>) PRIMITIVES_TO_WRAPPERS.get(c) : c;
   }
 
+
+  /**
+   * Method that allows to check if a value fits a certain argument of the executable. Generic values will only be checked for
+   * {@link Map} and {@link Collection} values.
+   * 
+   * @param value The value which type will be checked.
+   * @param parameterIndex The index of the parameter in the executable arguments.
+   * @return whether the value needs to be transformed in order to fit the parameter from the executable
+   */
   public boolean parameterNeedsTransformation(Object value, int parameterIndex) {
     ResolvableType parameterResolvableType = getResolvableType(parameterIndex);
     return parameterNeedsTransformation(value, parameterResolvableType);
   }
 
-  public boolean parameterNeedsTransformation(Object value, ResolvableType parameterResolvableType) {
+  private boolean parameterNeedsTransformation(Object value, ResolvableType parameterResolvableType) {
     Class<?> wrappedParameterType = wrap(resolveType(parameterResolvableType));
     if (wrappedParameterType.isAssignableFrom(value.getClass())) {
       if (Map.class.isAssignableFrom(value.getClass())) {
@@ -90,12 +118,22 @@ public class ParameterTransformer {
     return true;
   }
 
+  /**
+   * Method that makes a best efford to map an object to the type of a parameter of the excecutable. {@link Map} and
+   * {@link Collection} will be replaced with new instances. Other object will remain the same instance if they do not need to be
+   * transformed. For example, if a list is transformed, a new list will be created and will contain the same instances from the
+   * former list that did not needed to be transformed and new instances for the ones being transformed.
+   *
+   * @param value The value that will be transformed.
+   * @param parameterIndex The index of the parameter in the executable arguments.
+   * @return The value transformed to fit the executable parameter.
+   */
   public Object transformParameter(Object value, int parameterIndex) {
     ResolvableType parameterResolvableType = getResolvableType(parameterIndex);
     return transformParameter(value, parameterResolvableType);
   }
 
-  public Object transformParameter(Object value, ResolvableType parameterResolvableType) {
+  private Object transformParameter(Object value, ResolvableType parameterResolvableType) {
     Class<?> wrappedParameterType = wrap(resolveType(parameterResolvableType));
 
     if (value == null) {
@@ -121,7 +159,9 @@ public class ParameterTransformer {
         return transformedValue;
       }
     } catch (Exception e) {
-      // The transformation could not be made using the transformation service
+      if (LOGGER.isDebugEnabled()) {
+        LOGGER.debug(String.format(TRANSFORMATION_SERVICE_ERROR_MESSAGE, value.getClass(), wrappedParameterType));
+      }
     }
     try {
       Object expressionValue = expressionManager.evaluate("#[payload]", DataType.fromType(wrappedParameterType),
@@ -132,7 +172,9 @@ public class ParameterTransformer {
         return expressionValue;
       }
     } catch (ExpressionExecutionException e) {
-      // The transformation could not be made using DataWeave
+      if (LOGGER.isDebugEnabled()) {
+        LOGGER.debug(DATAWEAVE_TRANSFORMATION_ERROR_MESSAGE, value.getClass(), wrappedParameterType);
+      }
     }
     return value;
   }
@@ -205,7 +247,9 @@ public class ParameterTransformer {
     } else if (executable instanceof Constructor) {
       return ResolvableType.forConstructorParameter((Constructor) executable, parameterIndex);
     }
-    throw new IllegalStateException();
+    throw new IllegalStateException("Failed when trying to retrieve Resolvable type from executable. " +
+        "A 'Method' or 'Contructor' was expected, executable was a " +
+        executable.getClass().getName());
   }
 
   private <T> T tryToCreateInstanse(Class<T> clazz) {

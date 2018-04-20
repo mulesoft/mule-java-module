@@ -72,8 +72,7 @@ public class JavaModuleFunctions {
   public Object invoke(@Alias("class") @Summary("Fully qualified name of the Class containing the referenced Method") String clazz,
                        @Alias("method") @Summary("Represents the Method signature containing the method name and it's argument types.") String methodName,
                        Object instance,
-                       // TODO MULE-14302 change Object to TypedValue
-                       @Optional Map<String, Object> args)
+                       @Optional Map<String, TypedValue<Object>> args)
       throws NoSuchMethodModuleException, ClassNotFoundModuleException, WrongTypeModuleException,
       ArgumentMismatchModuleException, InvocationModuleException {
 

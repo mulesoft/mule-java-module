@@ -37,8 +37,6 @@ public final class JavaModuleUtils {
 
   private JavaModuleUtils() {}
 
-
-
   public static void validateType(String clazz, Object instance, boolean acceptSubtypes, JavaModuleLoadingCache cache)
       throws ClassNotFoundModuleException, WrongTypeModuleException {
 
