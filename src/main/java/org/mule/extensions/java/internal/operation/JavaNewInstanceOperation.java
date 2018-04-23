@@ -20,6 +20,8 @@ import org.mule.extensions.java.internal.metadata.ConstructorTypeResolver;
 import org.mule.extensions.java.internal.parameters.ConstructorIdentifier;
 import org.mule.extensions.java.internal.parameters.ExecutableIdentifier;
 import org.mule.runtime.api.metadata.TypedValue;
+import org.mule.runtime.api.transformation.TransformationService;
+import org.mule.runtime.core.api.el.ExpressionManager;
 import org.mule.runtime.extension.api.annotation.Alias;
 import org.mule.runtime.extension.api.annotation.error.Throws;
 import org.mule.runtime.extension.api.annotation.metadata.MetadataKeyId;
@@ -46,6 +48,12 @@ public class JavaNewInstanceOperation {
 
   @Inject
   private JavaModuleLoadingCache cache;
+
+  @Inject
+  private TransformationService transformationService;
+
+  @Inject
+  private ExpressionManager expressionManager;
 
   /**
    * Operation that allows the user to create a new instance of the given {@code class}
@@ -78,7 +86,9 @@ public class JavaNewInstanceOperation {
     final Constructor constructor = cache.getConstructor(identifier, targetClass, args);
 
     try {
-      List<Object> sortedArgs = JavaModuleUtils.getSortedArgs(args, constructor.getParameters());
+      List<Object> sortedArgs =
+          JavaModuleUtils.getSortedAndTransformedArgs(args, constructor, transformationService,
+                                                      expressionManager);
       if (sortedArgs.size() == constructor.getParameters().length) {
         return constructor.newInstance(sortedArgs.toArray());
       }

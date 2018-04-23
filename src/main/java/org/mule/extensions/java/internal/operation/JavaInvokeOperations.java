@@ -23,6 +23,8 @@ import org.mule.extensions.java.internal.parameters.ExecutableIdentifier;
 import org.mule.extensions.java.internal.parameters.MethodIdentifier;
 import org.mule.extensions.java.internal.parameters.StaticMethodIdentifier;
 import org.mule.runtime.api.metadata.TypedValue;
+import org.mule.runtime.api.transformation.TransformationService;
+import org.mule.runtime.core.api.el.ExpressionManager;
 import org.mule.runtime.extension.api.annotation.error.Throws;
 import org.mule.runtime.extension.api.annotation.metadata.MetadataKeyId;
 import org.mule.runtime.extension.api.annotation.metadata.OutputResolver;
@@ -46,6 +48,12 @@ public class JavaInvokeOperations {
 
   @Inject
   private JavaModuleLoadingCache cache;
+
+  @Inject
+  private TransformationService transformationService;
+
+  @Inject
+  private ExpressionManager expressionManager;
 
   /**
    * Operation that allows the user to invoke static methods with the provided arguments.
@@ -75,7 +83,7 @@ public class JavaInvokeOperations {
     Class<?> targetClass = cache.loadClass(identifier.getClazz());
 
     Method method = cache.getMethod(identifier, targetClass, args, true);
-    return invokeMethod(method, args, null, () -> failureMsg(identifier, method));
+    return invokeMethod(method, args, null, () -> failureMsg(identifier, method), transformationService, expressionManager);
   }
 
   /**
@@ -109,7 +117,7 @@ public class JavaInvokeOperations {
     JavaModuleUtils.validateType(identifier.getClazz(), instance, true, cache);
 
     Method method = cache.getMethod(identifier, instance.getClass(), args, false);
-    return invokeMethod(method, args, instance, () -> failureMsg(identifier, method));
+    return invokeMethod(method, args, instance, () -> failureMsg(identifier, method), transformationService, expressionManager);
   }
 
   private String failureMsg(ExecutableIdentifier identifier, Method method) {

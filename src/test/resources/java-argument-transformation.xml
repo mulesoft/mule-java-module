@@ -1,0 +1,164 @@
+<mule xmlns="http://www.mulesoft.org/schema/mule/core"
+      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xmlns:java="http://www.mulesoft.org/schema/mule/java"
+      xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+          http://www.mulesoft.org/schema/mule/java http://www.mulesoft.org/schema/mule/java/current/mule-java.xsd">
+
+    <flow name="invokeStaticWithNumberUsingStringTransformation">
+        <java:invoke-static class="org.mule.extensions.internal.model.AnotherExecutableElement" method="getNumber(String)" >
+            <java:args>
+                #[{
+                'number': 3
+                }]
+            </java:args>
+        </java:invoke-static>
+    </flow>
+
+    <flow name="invokeStaticWithStringUsingInputStreamTransformation">
+        <java:invoke-static class="org.mule.extensions.internal.model.AnotherExecutableElement" method="sayInputStream(InputStream)" >
+            <java:args>
+                #[{
+                'inputStream': "Hello this is getting transformed"
+                }]
+            </java:args>
+        </java:invoke-static>
+    </flow>
+
+    <flow name="invokeStaticWithMapParameter">
+        <java:invoke-static class="org.mule.extensions.internal.model.AnotherExecutableElement" method="getMapEntry(Map,String)" >
+            <java:args>
+                #[{
+                'map': {
+                    '1' : 2,
+                    '3' : "4",
+                    '5' : 6
+                },
+                'key': 3
+                }]
+            </java:args>
+        </java:invoke-static>
+    </flow>
+
+    <flow name="invokeStaticWithMapWithListValues">
+        <java:invoke-static class="org.mule.extensions.internal.model.AnotherExecutableElement" method="sayItemFromMapEntry(Map,String,Integer)" >
+            <java:args>
+                #[{
+                'map': {
+                '1' : ["2" , 3 , "4", "5"],
+                '6' : ["7", 8, 9],
+                '10' : [11, "12"]
+                },
+                'key': 10,
+                'index': "0"
+                }]
+            </java:args>
+        </java:invoke-static>
+    </flow>
+
+    <flow name="invokeStaticWithSpecificListImplementation">
+        <java:invoke-static class="org.mule.extensions.internal.model.AnotherExecutableElement" method="sayItemFromSpecificListImplementation(ArrayList,Integer)" >
+            <java:args>
+                #[{
+                'list': [ "0", 1, "2", 3, 4, "5"],
+                'index': "4"
+                }]
+            </java:args>
+        </java:invoke-static>
+    </flow>
+
+    <flow name="invokeStaticWithNestedLists">
+        <java:invoke-static class="org.mule.extensions.internal.model.AnotherExecutableElement" method="getFirstItemFromNestedList(List)" >
+            <java:args>
+                #[{
+                'nestedLists': [[[[3, "This Is Another String"],["Inside Another List Of Strings"]]]]
+                }]
+            </java:args>
+        </java:invoke-static>
+    </flow>
+
+    <flow name="invokeStaticWithCustomPojo">
+        <java:invoke-static class="org.mule.extensions.internal.model.AnotherExecutableElement" method="getCarDoors(Car)" >
+            <java:args>
+                #[{
+                'car': {
+                    'doors' : "Doors that open like this | / --",
+                    'engine' : "A very powerful one",
+                    'windows' : "Good Windows",
+                    'wheels' : "Four Wheels"
+                }
+                }]
+            </java:args>
+        </java:invoke-static>
+    </flow>
+
+    <flow name="invokeStaticWithWildcard">
+        <java:invoke-static class="org.mule.extensions.internal.model.AnotherExecutableElement" method="getClassFromFirstItem(List)" >
+            <java:args>
+                #[{
+                'items': ["Hello", "This", "Is", "An", "Array"]
+                }]
+            </java:args>
+        </java:invoke-static>
+    </flow>
+
+    <flow name="invokeStaticWithListOfCustomPojoAndWithResultAfterwards">
+        <java:invoke-static class="org.mule.extensions.internal.model.AnotherExecutableElement" method="getCarFromList(List,int)" >
+            <java:args>
+                #[{
+                'cars' : [
+                {
+                    'doors' : "Common Doors",
+                    'engine' : "A very powerful one",
+                    'windows' : "Good Windows",
+                    'wheels' : "Four Wheels"
+                },
+                {
+                    'doors' : 4,
+                    'engine' : "A very powerful one",
+                    'windows' : "Good Windows",
+                    'wheels' : "Four Wheels"
+                },
+                {
+                    'doors' : "Big Doors",
+                    'engine' : "A very powerful one",
+                    'windows' : "Good Windows",
+                    'wheels' : "Four Wheels"
+                }],
+                'index' : "1"
+                }]
+            </java:args>
+        </java:invoke-static>
+        <java:invoke-static class="org.mule.extensions.internal.model.AnotherExecutableElement" method="getCarDoors(Car)" >
+            <java:args>
+                #[{
+                'car': payload
+                }]
+            </java:args>
+        </java:invoke-static>
+    </flow>
+
+    <flow name="invokeStaticWithListOfMapsAndStringsTransformed">
+        <java:invoke-static class="org.mule.extensions.internal.model.AnotherExecutableElement" method="getFromMapInsideListAndSumFour(List,int,String)" >
+            <java:args>
+                #[{
+                'listOfMaps': [{
+                    'hello' : "33",
+                    'cat' : "44",
+                    'dog' : "22"
+                },{
+                    'fish' : "11",
+                    'water' : "24",
+                    'mac' : "65"
+                }],
+                'index' : "1",
+                'key' : "water"
+                }]
+            </java:args>
+        </java:invoke-static>
+    </flow>
+
+
+
+
+
+</mule>
