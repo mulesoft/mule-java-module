@@ -97,6 +97,11 @@ public class ParameterTransformer {
   }
 
   private boolean parameterNeedsTransformation(Object value, ResolvableType parameterResolvableType) {
+
+    if (value == null) {
+      return false;
+    }
+
     Class<?> wrappedParameterType = wrap(resolveType(parameterResolvableType));
     if (wrappedParameterType.isAssignableFrom(value.getClass())) {
       if (Map.class.isAssignableFrom(value.getClass())) {
