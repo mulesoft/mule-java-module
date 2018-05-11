@@ -39,6 +39,21 @@
         </java:invoke-static>
     </flow>
 
+    <flow name="invokeStaticWithMapParameterByPositionIndexInsteadOfName">
+        <java:invoke-static class="org.mule.extensions.internal.model.AnotherExecutableElement" method="getMapEntry(Map,String)" >
+            <java:args>
+                #[{
+                'arg0': {
+                '1' : 2,
+                '3' : "4",
+                '5' : 6
+                },
+                'arg1': 3
+                }]
+            </java:args>
+        </java:invoke-static>
+    </flow>
+
     <flow name="invokeStaticWithMapWithListValues">
         <java:invoke-static class="org.mule.extensions.internal.model.AnotherExecutableElement" method="sayItemFromMapEntry(Map,String,Integer)" >
             <java:args>
