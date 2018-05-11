@@ -6,8 +6,8 @@
  */
 package org.mule.extensions.java.internal;
 
+import static java.util.Collections.emptyList;
 import static org.mule.runtime.core.api.util.ClassUtils.isInstance;
-
 import org.mule.extensions.java.api.exception.ArgumentMismatchModuleException;
 import org.mule.extensions.java.api.exception.ClassNotFoundModuleException;
 import org.mule.extensions.java.api.exception.InvocationModuleException;
@@ -34,6 +34,9 @@ import java.util.function.Supplier;
  * @since 1.0
  */
 public final class JavaModuleUtils {
+
+  public static final String ARG_0 = "arg0";
+  public static final String ARG_PREFIX = "arg";
 
   private JavaModuleUtils() {}
 
@@ -75,13 +78,17 @@ public final class JavaModuleUtils {
   public static List<Object> getSortedAndTransformedArgs(Map<String, TypedValue<Object>> args, Executable executable,
                                                          TransformationService transformationService,
                                                          ExpressionManager expressionManager) {
-
     Parameter[] parameters = executable.getParameters();
+    if (parameters.length == 0) {
+      return emptyList();
+    }
+
+    boolean useCanonicalArgName = args.containsKey(ARG_0);
     ParameterTransformer parameterTransformer = new ParameterTransformer(executable, transformationService, expressionManager);
     List<Object> sortedArgs = new ArrayList<>(parameters.length);
     for (int i = 0; i < parameters.length; i++) {
       Parameter parameter = parameters[i];
-      TypedValue<Object> value = args.get(parameter.getName());
+      TypedValue<Object> value = useCanonicalArgName ? args.get(ARG_PREFIX + i) : args.get(parameter.getName());
       if (value == null) {
         break;
       }

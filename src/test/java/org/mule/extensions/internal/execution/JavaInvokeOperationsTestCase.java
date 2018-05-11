@@ -117,6 +117,15 @@ public class JavaInvokeOperationsTestCase extends JavaModuleAbstractTestCase {
   }
 
   @Test
+  public void invokeOverloadedMethodWithInlineArgsByPositionIndexInsteadOfName() throws Exception {
+    String result = (String) flowRunner("invokeOverloadedMethodWithInlineArgsByPositionIndexInsteadOfName")
+        .withVariable("instance", new ExecutableElement())
+        .run().getMessage().getPayload().getValue();
+
+    assertThat(result, is("Hi " + RICK + "::" + RICK_ID));
+  }
+
+  @Test
   public void invokeResolveOverloadById() throws Exception {
     List<String> list = new LinkedList<>();
     List<String> result = (List<String>) invoke("addToList(List)", new ExecutableElement(),

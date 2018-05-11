@@ -37,6 +37,17 @@
         </java:invoke>
     </flow>
 
+    <flow name="invokeOverloadedMethodWithInlineArgsByPositionIndexInsteadOfName">
+        <java:invoke class="${className}" method="sayHi(String,int)" instance="#[vars.instance]">
+            <java:args>
+                #[{
+                arg1: 137,
+                arg0: 'Rick'
+                }]
+            </java:args>
+        </java:invoke>
+    </flow>
+
     <flow name="invokeStaticNoArgs">
         <java:invoke-static class="${className}" method="#[vars.method]"/>
     </flow>
