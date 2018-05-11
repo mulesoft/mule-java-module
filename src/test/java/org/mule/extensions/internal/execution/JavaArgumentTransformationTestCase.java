@@ -6,13 +6,17 @@
  */
 package org.mule.extensions.internal.execution;
 
+import static java.lang.String.format;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
+import static org.mule.functional.api.exception.ExpectedError.none;
 
 import org.mule.extensions.internal.model.ExecutableElement;
 import org.mule.extensions.internal.JavaModuleAbstractTestCase;
+import org.mule.extensions.java.api.exception.ArgumentMismatchModuleException;
+import org.mule.functional.api.exception.ExpectedError;
 import org.mule.runtime.api.metadata.TypedValue;
 import org.mule.tck.junit4.rule.SystemProperty;
 
@@ -23,6 +27,9 @@ public class JavaArgumentTransformationTestCase extends JavaModuleAbstractTestCa
 
   @Rule
   public SystemProperty className = new SystemProperty("className", ExecutableElement.class.getName());
+
+  @Rule
+  public ExpectedError expectedError = none();
 
   @Override
   protected String getConfigFile() {
@@ -135,6 +142,18 @@ public class JavaArgumentTransformationTestCase extends JavaModuleAbstractTestCa
         .getMessage()
         .getPayload();
     assertThat(payload.getValue(), is("11"));
+  }
+
+  @Test
+  public void invokeStaticWitNullParameterForPrimitiveValue() throws Exception {
+    expectedError.expectError("JAVA", "ARGUMENTS_MISMATCH", ArgumentMismatchModuleException.class,
+                              "Failed to invoke Method [getSameNumber(int)] in Class " +
+                                  "[org.mule.extensions.internal.model.AnotherExecutableElement] with arguments [Object number]."
+                                  + " Expected arguments are [int number]: null");
+    TypedValue<String> payload = flowRunner("invokeStaticWitNullParameterForPrimitiveValue")
+        .run()
+        .getMessage()
+        .getPayload();
   }
 
   private <T> TypedValue<T> invokeStatic(String method) throws Exception {

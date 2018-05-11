@@ -15,6 +15,10 @@ import java.util.Map;
 
 public class AnotherExecutableElement {
 
+  public static int getSameNumber(int number) {
+    return number;
+  }
+
   public static String getSameWord(String word) {
     return word;
   }

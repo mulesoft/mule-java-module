@@ -157,12 +157,20 @@
         </java:invoke-static>
     </flow>
 
-    <!--We need to use mel expressions here to create null values since DataWeave is not allowing it.-->
+    <!--We need to use mel expressions here to create null values since a bug in DataWeave is not allowing it.-->
 
     <flow name="invokeStaticWithNullParameter">
         <java:invoke-static class="org.mule.extensions.internal.model.AnotherExecutableElement" method="getSameWord(String)" >
             <java:args>
                 #[mel:{ 'word' : org.mule.runtime.api.metadata.TypedValue.of(null) } ]
+            </java:args>
+        </java:invoke-static>
+    </flow>
+
+    <flow name="invokeStaticWitNullParameterForPrimitiveValue">
+        <java:invoke-static class="org.mule.extensions.internal.model.AnotherExecutableElement" method="getSameNumber(int)" >
+            <java:args>
+                #[mel:{ 'number' : org.mule.runtime.api.metadata.TypedValue.of(null) } ]
             </java:args>
         </java:invoke-static>
     </flow>
