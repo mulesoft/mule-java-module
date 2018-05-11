@@ -15,6 +15,10 @@ import java.util.Map;
 
 public class AnotherExecutableElement {
 
+  public static String getSameWord(String word) {
+    return word;
+  }
+
   public static String className() {
     return AnotherExecutableElement.class.getName();
   }

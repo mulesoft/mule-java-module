@@ -8,6 +8,7 @@ package org.mule.extensions.internal.execution;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 import org.mule.extensions.internal.model.ExecutableElement;
@@ -118,7 +119,23 @@ public class JavaArgumentTransformationTestCase extends JavaModuleAbstractTestCa
     assertThat(payload.getValue(), is(28));
   }
 
+  @Test
+  public void invokeStaticWithNullParameter() throws Exception {
+    TypedValue<String> payload = flowRunner("invokeStaticWithNullParameter")
+        .run()
+        .getMessage()
+        .getPayload();
+    assertNull(payload.getValue());
+  }
 
+  @Test
+  public void invokeStaticWithMapWithListValuesAndOneIsNull() throws Exception {
+    TypedValue<String> payload = flowRunner("invokeStaticWithMapWithListValuesAndOneIsNull")
+        .run()
+        .getMessage()
+        .getPayload();
+    assertThat(payload.getValue(), is("11"));
+  }
 
   private <T> TypedValue<T> invokeStatic(String method) throws Exception {
     return flowRunner("invokeStaticNoArgs")
