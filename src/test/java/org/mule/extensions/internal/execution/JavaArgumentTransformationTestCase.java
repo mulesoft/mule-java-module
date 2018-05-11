@@ -6,15 +6,13 @@
  */
 package org.mule.extensions.internal.execution;
 
-import static java.lang.String.format;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mule.functional.api.exception.ExpectedError.none;
-
-import org.mule.extensions.internal.model.ExecutableElement;
 import org.mule.extensions.internal.JavaModuleAbstractTestCase;
+import org.mule.extensions.internal.model.ExecutableElement;
 import org.mule.extensions.java.api.exception.ArgumentMismatchModuleException;
 import org.mule.functional.api.exception.ExpectedError;
 import org.mule.runtime.api.metadata.TypedValue;
@@ -57,6 +55,15 @@ public class JavaArgumentTransformationTestCase extends JavaModuleAbstractTestCa
   @Test
   public void invokeStaticWithMapParameter() throws Exception {
     TypedValue<String> payload = flowRunner("invokeStaticWithMapParameter")
+        .run()
+        .getMessage()
+        .getPayload();
+    assertThat(payload.getValue(), is(4));
+  }
+
+  @Test
+  public void invokeStaticWithMapParameterByPositionIndexInsteadOfName() throws Exception {
+    TypedValue<String> payload = flowRunner("invokeStaticWithMapParameterByPositionIndexInsteadOfName")
         .run()
         .getMessage()
         .getPayload();
