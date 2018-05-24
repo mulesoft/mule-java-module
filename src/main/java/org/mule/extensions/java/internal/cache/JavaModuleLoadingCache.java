@@ -6,18 +6,10 @@
  */
 package org.mule.extensions.java.internal.cache;
 
-import static java.lang.String.format;
 import static java.lang.reflect.Modifier.isPublic;
 import static java.lang.reflect.Modifier.isStatic;
 import static java.util.Arrays.stream;
 import static java.util.stream.Collectors.toList;
-import org.mule.extensions.java.api.exception.ClassNotFoundModuleException;
-import org.mule.extensions.java.api.exception.NoSuchConstructorModuleException;
-import org.mule.extensions.java.api.exception.NoSuchMethodModuleException;
-import org.mule.extensions.java.internal.parameters.ConstructorIdentifier;
-import org.mule.extensions.java.internal.parameters.ExecutableIdentifier;
-import org.mule.runtime.api.metadata.TypedValue;
-import org.mule.runtime.core.api.util.ClassUtils;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Executable;
@@ -26,11 +18,18 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+import org.mule.extensions.java.api.exception.ClassNotFoundModuleException;
+import org.mule.extensions.java.api.exception.NoSuchConstructorModuleException;
+import org.mule.extensions.java.api.exception.NoSuchMethodModuleException;
+import org.mule.extensions.java.internal.parameters.ConstructorIdentifier;
+import org.mule.extensions.java.internal.parameters.ExecutableIdentifier;
+import org.mule.runtime.api.metadata.TypedValue;
+import org.mule.runtime.core.api.util.ClassUtils;
+
 /**
- * A thread safe loading cache implementation for {@link Class} and {@link Executable} elements,
- * using its {@link Class#getName()} and {@link ExecutableIdentifier} as keys respectively.
- * This cache is intended to be used every time a given {@link Class} {@link Constructor} or {@link Method}
- * has to be loaded using reflection.
+ * A thread safe loading cache implementation for {@link Class} and {@link Executable} elements, using its {@link Class#getName()}
+ * and {@link ExecutableIdentifier} as keys respectively. This cache is intended to be used every time a given {@link Class}
+ * {@link Constructor} or {@link Method} has to be loaded using reflection.
  *
  * @since 1.0
  */
@@ -46,9 +45,7 @@ public final class JavaModuleLoadingCache {
       try {
         return ClassUtils.loadClass(className, Thread.currentThread().getContextClassLoader());
       } catch (ClassNotFoundException e) {
-        throw new ClassNotFoundModuleException(format("Failed to load Class with name [%s]. Class not found.",
-                                                      className),
-                                               e);
+        throw new ClassNotFoundModuleException(e.getMessage(), e);
       }
     });
   }
