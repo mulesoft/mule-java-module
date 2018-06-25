@@ -8,16 +8,19 @@ package org.mule.extensions.internal.execution;
 
 import static java.lang.String.format;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.anyOf;
+import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.core.Is.is;
 import static org.hamcrest.core.IsNot.not;
 import static org.hamcrest.core.IsNull.nullValue;
-import org.mule.extensions.internal.JavaModuleAbstractTestCase;
-import org.mule.extensions.internal.model.CompositePojo;
-import org.mule.extensions.internal.model.ExecutableElement;
 
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
+
+import org.mule.extensions.internal.JavaModuleAbstractTestCase;
+import org.mule.extensions.internal.model.CompositePojo;
+import org.mule.extensions.internal.model.ExecutableElement;
 
 public class JavaFunctionsTestCase extends JavaModuleAbstractTestCase {
 
@@ -96,7 +99,9 @@ public class JavaFunctionsTestCase extends JavaModuleAbstractTestCase {
 
   @Test
   public void isInstanceOfWrongClass() throws Exception {
-    expectedException.expectMessage("Failed to load Class with name [zarazarasa]. Class not found");
+    // Different runtime version provide different messages
+    expectedException.expectMessage(anyOf(containsString("Cannot load class 'zarazarasa'"),
+                                          containsString("Couldn't find class: zarazarasa")));
 
     Boolean value = (Boolean) flowRunner("isInstanceOf")
         .withPayload(new ExecutableElement())
