@@ -6,7 +6,6 @@
  */
 package org.mule.extensions.java.internal.cache;
 
-import static java.lang.String.format;
 import static java.lang.reflect.Modifier.isPublic;
 import static java.lang.reflect.Modifier.isStatic;
 import static java.util.Arrays.stream;
@@ -27,10 +26,9 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * A thread safe loading cache implementation for {@link Class} and {@link Executable} elements,
- * using its {@link Class#getName()} and {@link ExecutableIdentifier} as keys respectively.
- * This cache is intended to be used every time a given {@link Class} {@link Constructor} or {@link Method}
- * has to be loaded using reflection.
+ * A thread safe loading cache implementation for {@link Class} and {@link Executable} elements, using its {@link Class#getName()}
+ * and {@link ExecutableIdentifier} as keys respectively. This cache is intended to be used every time a given {@link Class}
+ * {@link Constructor} or {@link Method} has to be loaded using reflection.
  *
  * @since 1.0
  */
@@ -46,9 +44,7 @@ public final class JavaModuleLoadingCache {
       try {
         return ClassUtils.loadClass(className, Thread.currentThread().getContextClassLoader());
       } catch (ClassNotFoundException e) {
-        throw new ClassNotFoundModuleException(format("Failed to load Class with name [%s]. Class not found.",
-                                                      className),
-                                               e);
+        throw new ClassNotFoundModuleException(e.getMessage(), e);
       }
     });
   }
