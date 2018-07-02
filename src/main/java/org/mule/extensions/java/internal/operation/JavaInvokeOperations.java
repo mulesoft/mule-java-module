@@ -64,7 +64,14 @@ public class JavaInvokeOperations {
    * which belongs to {@link Class} {@code org.bar.Foo}, then the identifier of the method will be {@code "echo(String)"}
    *
    * @param identifier the unique identifier for the method to be invoked.
-   * @param args       the arguments used to invoke the given {@link Method}
+   * @param args       the arguments used to invoke the given {@link Method}. This parameter must be a map with the names
+   *                   of the method arguments as keys, and each of the argument values as values.
+   *                   For example, given a method {@code echo} with signature {@code public static String echo(String msg, String volume)} a
+   *                   possible value for args is:
+   *                   #[{
+   *                      msg : 'This is a message to echo',
+   *                      volume : 'Loud'
+   *                   }]
    * @return the result of the {@link Method} invocation with the given {@code args}
    * @throws ClassNotFoundModuleException    if the given {@code class} is not found in the current context
    * @throws NoSuchMethodModuleException     if the given {@code class} does not declare a method with the given signature
@@ -96,7 +103,14 @@ public class JavaInvokeOperations {
    *
    * @param identifier the unique identifier for the method to be invoked
    * @param instance   the instance on which the {@code method} will be invoked
-   * @param args       the arguments used to invoke the given {@link Method}
+   * @param args       the arguments used to invoke the given {@link Method}. This parameter must be a map with the names
+   *                   of the method arguments as keys, and each of the argument values as values.
+   *                   For example, given a method {@code echo} with signature {@code public String echo(String msg, String volume)} a
+   *                   possible value for args is:
+   *                   #[{
+   *                          msg : 'This is a message to echo',
+   *                          volume : 'Loud'
+   *                    }]
    * @return the result of the {@link Method} invocation with the given {@code args}
    * @throws ClassNotFoundModuleException    if the given {@code class} is not found in the current context
    * @throws NoSuchMethodModuleException     if the given {@code class} does not declare a method with the given signature
