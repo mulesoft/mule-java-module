@@ -182,10 +182,22 @@
         </java:invoke-static>
     </flow>
 
-    <flow name="invokeStaticWitNullParameterForPrimitiveValue">
+    <flow name="invokeStaticWithNullParameterForPrimitiveValue">
         <java:invoke-static class="org.mule.extensions.internal.model.AnotherExecutableElement" method="getSameNumber(int)" >
             <java:args>
                 #[mel:{ 'number' : org.mule.runtime.api.metadata.TypedValue.of(null) } ]
+            </java:args>
+        </java:invoke-static>
+    </flow>
+
+    <flow name="invokeStaticWithManyNullParametersForPrimitiveValue">
+        <java:invoke-static class="org.mule.extensions.internal.model.AnotherExecutableElement"
+                            method="getSameNumberOrZero(int,boolean)" >
+            <java:args>
+                #[mel:{
+                    'number' : org.mule.runtime.api.metadata.TypedValue.of(null),
+                    'zero' : org.mule.runtime.api.metadata.TypedValue.of(null)
+                }]
             </java:args>
         </java:invoke-static>
     </flow>

@@ -36,8 +36,8 @@ public class KeysMetadataTestCase extends AbstractMetadataTestCase {
   @Test
   public void staticMethodKeys() throws Exception {
     Set<MetadataKey> keys = getKeys(flow(INVOKE_STATIC, EXECUTABLE_ELEMENT, CREATE + PHASE), STATIC_CATEGORY);
-    assertThat(keys.iterator().next().getChilds().size(), is(3));
-    assertThat(getIds(keys), containsInAnyOrder("create(Phase)", "create()", "className()"));
+    assertThat(getIds(keys), containsInAnyOrder("create(Phase)", "create()", "className()",
+                                                "throwException(String)", "getNull()"));
   }
 
   @Test
@@ -45,7 +45,7 @@ public class KeysMetadataTestCase extends AbstractMetadataTestCase {
     Set<MetadataKey> keys = getKeys(flow(NEW, COMPOSITE_POJO, COMPOSITE_POJO), CONSTRUCTOR_CATEGORY);
     assertThat(keys.iterator().next().getChilds().size(), is(4));
     assertThat(getIds(keys), containsInAnyOrder("CompositePojo()", "CompositePojo(CompositePojo)",
-                                                "CompositePojo(String)", "CompositePojo(Map)"));
+                                                "CompositePojo(String)", "CompositePojo(String,Map)"));
 
     keys = getKeys(flow(NEW, EXECUTABLE_ELEMENT), CONSTRUCTOR_CATEGORY);
     assertThat(keys.iterator().next().getChilds().size(), is(2));

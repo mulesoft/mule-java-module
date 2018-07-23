@@ -6,7 +6,10 @@
  */
 package org.mule.extensions.java.internal;
 
+import static java.lang.String.format;
+import static java.util.Arrays.stream;
 import static java.util.Collections.emptyList;
+import static java.util.stream.Collectors.toList;
 import static org.mule.runtime.core.api.util.ClassUtils.isInstance;
 import org.mule.extensions.java.api.exception.ArgumentMismatchModuleException;
 import org.mule.extensions.java.api.exception.ClassNotFoundModuleException;
@@ -14,7 +17,9 @@ import org.mule.extensions.java.api.exception.InvocationModuleException;
 import org.mule.extensions.java.api.exception.NoSuchMethodModuleException;
 import org.mule.extensions.java.api.exception.WrongTypeModuleException;
 import org.mule.extensions.java.internal.cache.JavaModuleLoadingCache;
+import org.mule.extensions.java.internal.parameters.ExecutableIdentifier;
 import org.mule.extensions.java.internal.transformer.ParameterTransformer;
+import org.mule.extensions.java.internal.transformer.ParametersTransformationResult;
 import org.mule.runtime.api.metadata.TypedValue;
 import org.mule.runtime.api.transformation.TransformationService;
 import org.mule.runtime.core.api.el.ExpressionManager;
@@ -24,9 +29,12 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.function.Supplier;
+import java.util.Optional;
+
+import org.slf4j.Logger;
 
 /**
  * Utility class to common functions across operations
@@ -55,50 +63,129 @@ public final class JavaModuleUtils {
   }
 
   public static Object invokeMethod(Method method, Map<String, TypedValue<Object>> args,
-                                    Object instance, Supplier<String> failureMessageProvider,
-                                    TransformationService transformationService, ExpressionManager expressionManager)
+                                    Object instance, ExecutableIdentifier identifier,
+                                    TransformationService transformationService, ExpressionManager expressionManager,
+                                    Logger logger)
       throws ArgumentMismatchModuleException, InvocationModuleException, NoSuchMethodModuleException {
 
-    try {
-      List<Object> sortedArgs =
-          JavaModuleUtils.getSortedAndTransformedArgs(args, method, transformationService, expressionManager);
-      if (sortedArgs.size() == method.getParameters().length) {
-        return method.invoke(instance, sortedArgs.toArray());
-      }
+    ParametersTransformationResult transformationResult =
+        JavaModuleUtils.getSortedAndTransformedArgs(args, method, transformationService, expressionManager, logger);
 
-      throw new ArgumentMismatchModuleException(failureMessageProvider.get(), method, args);
-    } catch (IllegalArgumentException e) {
-      throw new ArgumentMismatchModuleException(failureMessageProvider.get(), method, args, e);
+    if (method.getParameters().length > args.size()) {
+      throw new ArgumentMismatchModuleException(format("Failed to invoke %s '%s' in Class '%s'. Too few arguments were provided for the invocation",
+                                                       identifier.getExecutableTypeName(), identifier.getElementId(),
+                                                       identifier.getClazz()),
+                                                method, args, transformationResult);
 
-    } catch (IllegalAccessException | InvocationTargetException e) {
-      throw new InvocationModuleException(failureMessageProvider.get(), args, e);
+    } else if (method.getParameters().length < args.size()) {
+      logger.warn(format("Too many arguments were provided for the invocation of %s '%s' in Class '%s'."
+          + " Expected arguments are %s but got %s.",
+                         identifier.getExecutableTypeName(), identifier.getElementId(), identifier.getClazz(),
+                         toHumanReadableArgs(method.getParameters()), toHumanReadableArgs(args)));
     }
+
+
+    if (transformationResult.isSuccess()) {
+      try {
+        return method.invoke(instance, transformationResult.getTransformed().toArray());
+      } catch (IllegalArgumentException e) {
+        throw new ArgumentMismatchModuleException(format("Failed to invoke %s '%s' in Class '%s'",
+                                                         identifier.getExecutableTypeName(), identifier.getElementId(),
+                                                         identifier.getClazz()),
+                                                  method, args, transformationResult, e);
+
+      } catch (IllegalAccessException | InvocationTargetException e) {
+        throw new InvocationModuleException(format("%s '%s' in Class '%s' ",
+                                                   identifier.getExecutableTypeName(), identifier.getElementId(),
+                                                   identifier.getClazz()),
+                                            args, e);
+      }
+    }
+
+    throw new ArgumentMismatchModuleException(format("Failed to invoke %s '%s' in Class '%s'. The given arguments could not be transformed to match those expected by the %s",
+                                                     identifier.getExecutableTypeName(), identifier.getElementId(),
+                                                     identifier.getClazz(), identifier.getExecutableTypeName()),
+                                              method, args, transformationResult);
+
   }
 
-  public static List<Object> getSortedAndTransformedArgs(Map<String, TypedValue<Object>> args, Executable executable,
-                                                         TransformationService transformationService,
-                                                         ExpressionManager expressionManager) {
+  public static ParametersTransformationResult getSortedAndTransformedArgs(Map<String, TypedValue<Object>> args,
+                                                                           Executable executable,
+                                                                           TransformationService transformationService,
+                                                                           ExpressionManager expressionManager, Logger logger) {
     Parameter[] parameters = executable.getParameters();
     if (parameters.length == 0) {
-      return emptyList();
+      return new ParametersTransformationResult(emptyList(), emptyList(), emptyList());
     }
 
     boolean useCanonicalArgName = args.containsKey(ARG_0);
     ParameterTransformer parameterTransformer = new ParameterTransformer(executable, transformationService, expressionManager);
     List<Object> sortedArgs = new ArrayList<>(parameters.length);
+    List<String> missingArgs = new LinkedList<>();
+    List<String> failedToTransformArgs = new LinkedList<>();
+
     for (int i = 0; i < parameters.length; i++) {
       Parameter parameter = parameters[i];
-      TypedValue<Object> value = useCanonicalArgName ? args.get(ARG_PREFIX + i) : args.get(parameter.getName());
-      if (value == null) {
-        break;
+      try {
+        TypedValue<Object> value = useCanonicalArgName ? args.get(ARG_PREFIX + i) : args.get(parameter.getName());
+        if (value == null) {
+          missingArgs.add(parameter.getName());
+          continue;
+        }
+        Object originalValue = value.getValue();
+        if (parameterTransformer.parameterNeedsTransformation(value.getValue(), i)) {
+          Object transformedValue = parameterTransformer.transformParameter(value.getValue(), i);
+          if (transformedValue == null && originalValue != null) {
+            failedToTransformArgs.add(parameter.getName());
+          } else {
+            sortedArgs.add(transformedValue);
+          }
+        } else {
+          sortedArgs.add(originalValue);
+        }
+      } catch (Exception e) {
+        if (logger.isDebugEnabled()) {
+          logger.debug("An unexpected error occurred while transforming the parameter '" + parameter.getName() + "'", e);
+        }
+        failedToTransformArgs.add(parameter.getName());
       }
-      Object transformedParameter = value.getValue();
-      if (parameterTransformer.parameterNeedsTransformation(value.getValue(), i)) {
-        transformedParameter = parameterTransformer.transformParameter(value.getValue(), i);
-      }
-      sortedArgs.add(transformedParameter);
     }
 
-    return sortedArgs;
+    return new ParametersTransformationResult(sortedArgs, failedToTransformArgs, missingArgs);
   }
+
+  public static List<String> toHumanReadableArgs(Map<String, TypedValue<Object>> args) {
+    return args.entrySet().stream()
+        .map(e -> e.getValue().getDataType().getType().getSimpleName() + " " + e.getKey())
+        .collect(toList());
+  }
+
+  public static List<String> toHumanReadableArgs(List<Object> args) {
+    return args.stream().map(t -> t != null ? t.getClass().getSimpleName() : "null").collect(toList());
+  }
+
+  public static List<String> toHumanReadableArgs(Parameter[] args) {
+    return stream(args)
+        .map(p -> p.getType().getSimpleName() + " " + p.getName())
+        .collect(toList());
+  }
+
+  public static Optional<String> getCauseMessage(Throwable cause) {
+    if (cause != null) {
+      if (cause.getMessage() != null && !cause.getMessage().trim().isEmpty()) {
+        return Optional.of(cause.getMessage());
+      }
+      return getCauseMessage(cause.getCause());
+    }
+    return Optional.empty();
+  }
+
+  public static String getArgumentsMessage(List<String> args) {
+    if (args.isEmpty()) {
+      return "without any argument";
+    }
+
+    return "with arguments " + args;
+  }
+
 }

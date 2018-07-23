@@ -6,7 +6,7 @@
  */
 package org.mule.extensions.java.api.exception;
 
-import static java.lang.String.format;
+import static java.lang.reflect.Modifier.isPublic;
 import static java.util.Arrays.stream;
 import static java.util.stream.Collectors.toList;
 import static org.mule.extensions.java.api.error.JavaModuleError.NO_SUCH_CONSTRUCTOR;
@@ -15,11 +15,8 @@ import org.mule.extensions.java.api.error.JavaModuleError;
 import org.mule.extensions.java.internal.parameters.ExecutableIdentifier;
 import org.mule.runtime.api.metadata.TypedValue;
 
-import java.lang.reflect.Modifier;
+import java.util.List;
 import java.util.Map;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * A {@link JavaModuleException} related with the {@link JavaModuleError#NO_SUCH_CONSTRUCTOR} Error type
@@ -28,26 +25,30 @@ import org.slf4j.LoggerFactory;
  */
 public class NoSuchConstructorModuleException extends JavaModuleException {
 
-  private static final Logger LOGGER = LoggerFactory.getLogger(NoSuchConstructorModuleException.class);
-
   public NoSuchConstructorModuleException(ExecutableIdentifier id, Class<?> targetClass,
                                           Map<String, TypedValue<Object>> args) {
     super(buildMessage(id, targetClass, args), NO_SUCH_CONSTRUCTOR);
   }
 
-  private static String buildMessage(ExecutableIdentifier id,
-                                     Class<?> targetClass,
-                                     Map<String, TypedValue<Object>> args) {
-    String msg = format("No public Constructor found with name [%s] and arguments %s in class [%s].",
-                        id.getElementId(), toHumanReadableArgs(args), targetClass.getName());
+  private static String buildMessage(ExecutableIdentifier id, Class<?> targetClass, Map<String, TypedValue<Object>> args) {
+    List<String> availableConstructors = stream(targetClass.getConstructors())
+        .filter(c -> isPublic(c.getModifiers()))
+        .map(c -> create(c).getElementId())
+        .collect(toList());
 
-    if (LOGGER.isDebugEnabled()) {
-      LOGGER.debug(msg + " Available public Constructors are: " + stream(targetClass.getConstructors())
-          .filter(c -> Modifier.isPublic(c.getModifiers()))
-          .map(c -> create(c).getElementId()).collect(toList()));
+    StringBuilder sb = new StringBuilder()
+        .append("No public Constructor").append(id.getExecutableTypeName())
+        .append(" found with signature '").append(id.getElementId())
+        .append("' in Class '").append(id.getClazz()).append("'.");
+
+    if (availableConstructors.isEmpty()) {
+      sb.append(" No public Constructors are available.");
+    } else {
+      sb.append(" \nPublic Constructors are ")
+          .append(availableConstructors);
     }
 
-    return msg;
+    return sb.toString();
   }
 
 }

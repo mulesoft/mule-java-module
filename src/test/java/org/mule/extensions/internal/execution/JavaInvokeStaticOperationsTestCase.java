@@ -9,10 +9,11 @@ package org.mule.extensions.internal.execution;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.instanceOf;
 import static org.hamcrest.core.Is.is;
-
+import static org.mule.functional.api.exception.ExpectedError.none;
+import org.mule.extensions.internal.JavaModuleAbstractTestCase;
 import org.mule.extensions.internal.model.AnotherExecutableElement;
 import org.mule.extensions.internal.model.ExecutableElement;
-import org.mule.extensions.internal.JavaModuleAbstractTestCase;
+import org.mule.functional.api.exception.ExpectedError;
 import org.mule.runtime.api.metadata.TypedValue;
 import org.mule.tck.junit4.rule.SystemProperty;
 
@@ -23,6 +24,9 @@ public class JavaInvokeStaticOperationsTestCase extends JavaModuleAbstractTestCa
 
   @Rule
   public SystemProperty className = new SystemProperty("className", ExecutableElement.class.getName());
+
+  @Rule
+  public ExpectedError expectedError = none();
 
   @Override
   protected String getConfigFile() {
@@ -51,6 +55,19 @@ public class JavaInvokeStaticOperationsTestCase extends JavaModuleAbstractTestCa
         .getMessage()
         .getPayload();
     assertThat(payload.getValue(), is(AnotherExecutableElement.className()));
+  }
+
+  @Test
+  public void invokeStaticThrowsExceptionWithCustomMessage() throws Exception {
+    final String messageOfCause = "My internal exception message";
+    final String errorMessage = "Invocation of static Method 'throwException(String)' "
+        + "in Class 'org.mule.extensions.internal.model.ExecutableElement' "
+        + "with arguments [String message] resulted in an error: " + messageOfCause;
+
+    expectedError.expectError("JAVA", "INVOCATION", RuntimeException.class, errorMessage);
+    flowRunner("invokeStaticThrowsExceptionWithCustomMessage")
+        .withPayload(messageOfCause)
+        .run();
   }
 
   private <T> TypedValue<T> invokeStatic(String method) throws Exception {

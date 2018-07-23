@@ -6,20 +6,19 @@
  */
 package org.mule.extensions.java.api.exception;
 
-import static java.lang.String.format;
-import static java.util.stream.Collectors.toList;
+import static java.lang.reflect.Modifier.isPublic;
+import static java.util.Arrays.stream;
 import static org.mule.extensions.java.api.error.JavaModuleError.NO_SUCH_METHOD;
-import static org.mule.extensions.java.internal.parameters.ExecutableIdentifierFactory.create;
+import static org.mule.extensions.java.internal.JavaModuleUtils.toHumanReadableArgs;
 import org.mule.extensions.java.api.error.JavaModuleError;
 import org.mule.extensions.java.internal.parameters.ExecutableIdentifier;
+import org.mule.extensions.java.internal.parameters.ExecutableIdentifierFactory;
+import org.mule.extensions.java.internal.parameters.StaticMethodIdentifier;
 import org.mule.runtime.api.metadata.TypedValue;
 
-import java.lang.reflect.Method;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * A {@link JavaModuleException} related with the {@link JavaModuleError#NO_SUCH_METHOD} Error type
@@ -28,28 +27,42 @@ import org.slf4j.LoggerFactory;
  */
 public class NoSuchMethodModuleException extends JavaModuleException {
 
-  private static final Logger LOGGER = LoggerFactory.getLogger(NoSuchMethodModuleException.class);
-
   public NoSuchMethodModuleException(ExecutableIdentifier id, Class<?> targetClass,
-                                     List<Method> methods,
                                      Map<String, TypedValue<Object>> args) {
-    super(buildMessage(id.getElementId(), targetClass, methods, toHumanReadableArgs(args)), NO_SUCH_METHOD);
+    super(buildMessage(id, targetClass, toHumanReadableArgs(args)), NO_SUCH_METHOD);
   }
 
-  public NoSuchMethodModuleException(String id, Class<?> targetClass, List<Method> methods, List<Object> args) {
-    super(buildMessage(id, targetClass, methods, toHumanReadableArgs(args)), NO_SUCH_METHOD);
-  }
+  private static String buildMessage(ExecutableIdentifier id, Class<?> targetClass, List<String> args) {
+    List<String> staticMethods = new LinkedList<>();
+    List<String> instanceMethods = new LinkedList<>();
 
-  private static String buildMessage(String id, Class<?> targetClass, List<Method> methods, List<String> args) {
-    String msg = format("No public Method found with name [%s] in class [%s] with arguments %s.",
-                        id, targetClass.getName(), args);
+    stream(targetClass.getMethods())
+        .filter(m -> isPublic(m.getModifiers()))
+        .map(ExecutableIdentifierFactory::create)
+        .forEach(m -> {
+          if (m instanceof StaticMethodIdentifier) {
+            staticMethods.add(m.getElementId());
+          } else {
+            instanceMethods.add(m.getElementId());
+          }
+        });
 
-    if (LOGGER.isDebugEnabled()) {
-      LOGGER
-          .debug(msg + " Available public Methods are: " + methods.stream().map(c -> create(c).getElementId()).collect(toList()));
+    StringBuilder sb = new StringBuilder()
+        .append("No public ").append(id.getExecutableTypeName())
+        .append(" found with signature '").append(id.getElementId())
+        .append("' in Class '").append(id.getClazz()).append("'.");
+
+    if (!staticMethods.isEmpty()) {
+      sb.append(" \nPublic static Methods are ")
+          .append(staticMethods);
     }
 
-    return msg;
+    if (!instanceMethods.isEmpty()) {
+      sb.append(" \nPublic instance Methods are ")
+          .append(instanceMethods);
+    }
+
+    return sb.toString();
   }
 
 }

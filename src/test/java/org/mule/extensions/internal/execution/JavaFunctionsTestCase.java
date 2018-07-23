@@ -6,21 +6,20 @@
  */
 package org.mule.extensions.internal.execution;
 
-import static java.lang.String.format;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.anyOf;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.core.Is.is;
 import static org.hamcrest.core.IsNot.not;
 import static org.hamcrest.core.IsNull.nullValue;
+import static org.junit.Assert.fail;
+import org.mule.extensions.internal.JavaModuleAbstractTestCase;
+import org.mule.extensions.internal.model.CompositePojo;
+import org.mule.extensions.internal.model.ExecutableElement;
 
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
-
-import org.mule.extensions.internal.JavaModuleAbstractTestCase;
-import org.mule.extensions.internal.model.CompositePojo;
-import org.mule.extensions.internal.model.ExecutableElement;
 
 public class JavaFunctionsTestCase extends JavaModuleAbstractTestCase {
 
@@ -78,14 +77,20 @@ public class JavaFunctionsTestCase extends JavaModuleAbstractTestCase {
   public void invokeNoSuchMethodModuleException() throws Exception {
     String className = ExecutableElement.class.getName();
     String methodName = "missingMethod";
-    expectedException.expectMessage(format("No public Method found with name [%s] in class [%s]", methodName, className));
+    try {
+      flowRunner("invoke")
+          .withPayload(new ExecutableElement())
+          .withVariable("clazz", className)
+          .withVariable("method", methodName)
+          .run();
 
-    Object value = flowRunner("invoke")
-        .withPayload(new ExecutableElement())
-        .withVariable("clazz", className)
-        .withVariable("method", methodName)
-        .run().getMessage().getPayload().getValue();
-    assertThat(value, is(nullValue()));
+      fail("NO_SUCH_METHOD exception was expected");
+    } catch (Exception e) {
+      assertThat(e.getMessage(), containsString("No public Method found with signature 'missingMethod'"));
+      assertThat(e.getMessage(), containsString("in Class '" + className));
+      assertThat(e.getMessage(), containsString("Public static Methods are ["));
+      assertThat(e.getMessage(), containsString("Public instance Methods are ["));
+    }
   }
 
   @Test

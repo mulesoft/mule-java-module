@@ -12,9 +12,7 @@ import org.mule.runtime.api.metadata.DataType;
 import org.mule.runtime.api.metadata.TypedValue;
 import org.mule.runtime.api.transformation.TransformationService;
 import org.mule.runtime.core.api.el.ExpressionManager;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.core.ResolvableType;
+import org.mule.runtime.core.api.expression.ExpressionRuntimeException;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Executable;
@@ -23,6 +21,10 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.core.ResolvableType;
 
 /**
  * This class purpose is checking and transforming objects to a parameter type of a certain {@link Executable}
@@ -176,10 +178,11 @@ public class ParameterTransformer {
       if (wrappedParameterType.isAssignableFrom(expressionValue.getClass())) {
         return expressionValue;
       }
-    } catch (ExpressionExecutionException e) {
+    } catch (ExpressionExecutionException | ExpressionRuntimeException e) {
       if (LOGGER.isDebugEnabled()) {
         LOGGER.debug(DATAWEAVE_TRANSFORMATION_ERROR_MESSAGE, value.getClass(), wrappedParameterType);
       }
+      return null;
     }
     return value;
   }

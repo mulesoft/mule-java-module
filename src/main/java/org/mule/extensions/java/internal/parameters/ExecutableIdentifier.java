@@ -63,6 +63,11 @@ public abstract class ExecutableIdentifier {
    */
   public abstract boolean matches(Executable element);
 
+  /**
+   * @return the name of the executable element type
+   */
+  public abstract String getExecutableTypeName();
+
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -94,7 +99,15 @@ public abstract class ExecutableIdentifier {
   }
 
   private String sanitize(String id) {
-    return id.trim().replaceAll(" ", "");
+    id = id.trim().replaceAll(" ", "");
+    if (!id.endsWith(")")) {
+      if (id.contains("(")) {
+        id = id + ")";
+      } else {
+        id = id + "()";
+      }
+    }
+    return id;
   }
 
 }

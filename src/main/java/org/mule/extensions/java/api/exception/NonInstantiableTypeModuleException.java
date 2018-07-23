@@ -6,14 +6,17 @@
  */
 package org.mule.extensions.java.api.exception;
 
-import static java.lang.String.format;
 import static org.mule.extensions.java.api.error.JavaModuleError.NOT_INSTANTIABLE_TYPE;
+import static org.mule.extensions.java.internal.JavaModuleUtils.getArgumentsMessage;
+import static org.mule.extensions.java.internal.JavaModuleUtils.getCauseMessage;
+import static org.mule.extensions.java.internal.JavaModuleUtils.toHumanReadableArgs;
 import org.mule.extensions.java.api.error.JavaModuleError;
 import org.mule.extensions.java.internal.parameters.ExecutableIdentifier;
 import org.mule.runtime.api.metadata.TypedValue;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 /**
  * A {@link JavaModuleException} related with the {@link JavaModuleError#NOT_INSTANTIABLE_TYPE} Error type
@@ -25,11 +28,18 @@ public class NonInstantiableTypeModuleException extends JavaModuleException {
   public NonInstantiableTypeModuleException(ExecutableIdentifier id,
                                             Map<String, TypedValue<Object>> args,
                                             Throwable cause) {
-    super(buildMessage(id.getClazz(), toHumanReadableArgs(args)) + ": " + cause.getMessage(), NOT_INSTANTIABLE_TYPE, cause);
+    super(buildMessage(id, toHumanReadableArgs(args), getCauseMessage(cause)), NOT_INSTANTIABLE_TYPE, cause);
   }
 
-  private static String buildMessage(String className, List<String> args) {
-    return format("Failed to instantiate class [%s] with parameters %s", className, args);
+  private static String buildMessage(ExecutableIdentifier identifier, List<String> args, Optional<String> cause) {
+    StringBuilder sb = new StringBuilder()
+        .append("Failed to instantiate Class '").append(identifier.getClazz())
+        .append("' using the Constructor '").append(identifier.getElementId())
+        .append("' ").append(getArgumentsMessage(args));
+
+    cause.ifPresent(causeMessage -> sb.append(": ").append(causeMessage));
+
+    return sb.toString();
   }
 
 }

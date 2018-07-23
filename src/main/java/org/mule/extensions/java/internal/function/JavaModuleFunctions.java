@@ -6,7 +6,6 @@
  */
 package org.mule.extensions.java.internal.function;
 
-import static java.lang.String.format;
 import static java.util.Collections.emptyMap;
 import static java.util.stream.Collectors.toMap;
 import static org.mule.extensions.java.internal.JavaModuleUtils.invokeMethod;
@@ -33,6 +32,9 @@ import java.util.Map;
 
 import javax.inject.Inject;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 /**
  * The {@link ExpressionFunction}s exposed by the {@link JavaModule} that extends the EL
  * with further Java related functions.
@@ -40,6 +42,8 @@ import javax.inject.Inject;
  * @since 1.0
  */
 public class JavaModuleFunctions {
+
+  private static final Logger LOGGER = LoggerFactory.getLogger(JavaModuleFunctions.class);
 
   @Inject
   private JavaModuleLoadingCache cache;
@@ -84,9 +88,8 @@ public class JavaModuleFunctions {
 
     MethodIdentifier identifier = new MethodIdentifier(clazz, methodName);
     Method method = cache.getMethod(identifier, instance.getClass(), resolvedArgs, false);
-    return invokeMethod(method, resolvedArgs, instance,
-                        () -> format("Failed to invoke Method [%s] in Class [%s]", methodName, clazz), transformationService,
-                        expressionManager);
+    return invokeMethod(method, resolvedArgs, instance, identifier,
+                        transformationService, expressionManager, LOGGER);
   }
 
   /**

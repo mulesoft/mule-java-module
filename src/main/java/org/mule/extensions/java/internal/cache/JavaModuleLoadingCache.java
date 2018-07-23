@@ -10,14 +10,6 @@ import static java.lang.reflect.Modifier.isPublic;
 import static java.lang.reflect.Modifier.isStatic;
 import static java.util.Arrays.stream;
 import static java.util.stream.Collectors.toList;
-
-import java.lang.reflect.Constructor;
-import java.lang.reflect.Executable;
-import java.lang.reflect.Method;
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
-
 import org.mule.extensions.java.api.exception.ClassNotFoundModuleException;
 import org.mule.extensions.java.api.exception.NoSuchConstructorModuleException;
 import org.mule.extensions.java.api.exception.NoSuchMethodModuleException;
@@ -25,6 +17,13 @@ import org.mule.extensions.java.internal.parameters.ConstructorIdentifier;
 import org.mule.extensions.java.internal.parameters.ExecutableIdentifier;
 import org.mule.runtime.api.metadata.TypedValue;
 import org.mule.runtime.core.api.util.ClassUtils;
+
+import java.lang.reflect.Constructor;
+import java.lang.reflect.Executable;
+import java.lang.reflect.Method;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * A thread safe loading cache implementation for {@link Class} and {@link Executable} elements, using its {@link Class#getName()}
@@ -69,10 +68,7 @@ public final class JavaModuleLoadingCache {
                                                      key -> getPublicMethods(clazz, expectStatic).stream()
                                                          .filter(id::matches)
                                                          .findFirst()
-                                                         .orElseThrow(() -> new NoSuchMethodModuleException(id, clazz,
-                                                                                                            getPublicMethods(clazz,
-                                                                                                                             expectStatic),
-                                                                                                            args)));
+                                                         .orElseThrow(() -> new NoSuchMethodModuleException(id, clazz, args)));
   }
 
   private List<Method> getPublicMethods(Class<?> clazz, boolean expectStatic) {

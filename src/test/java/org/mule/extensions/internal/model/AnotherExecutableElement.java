@@ -19,6 +19,10 @@ public class AnotherExecutableElement {
     return number;
   }
 
+  public static int getSameNumberOrZero(int number, boolean zero) {
+    return zero ? 0 : number;
+  }
+
   public static String getSameWord(String word) {
     return word;
   }
