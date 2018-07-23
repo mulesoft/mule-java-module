@@ -99,15 +99,7 @@ public abstract class ExecutableIdentifier {
   }
 
   private String sanitize(String id) {
-    id = id.trim().replaceAll(" ", "");
-    if (!id.endsWith(")")) {
-      if (id.contains("(")) {
-        id = id + ")";
-      } else {
-        id = id + "()";
-      }
-    }
-    return id;
+    return id.trim().replaceAll(" ", "");
   }
 
 }
