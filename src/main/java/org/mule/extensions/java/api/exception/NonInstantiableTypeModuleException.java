@@ -37,7 +37,7 @@ public class NonInstantiableTypeModuleException extends JavaModuleException {
         .append("' using the Constructor '").append(identifier.getElementId())
         .append("' ").append(getArgumentsMessage(args));
 
-    cause.ifPresent(causeMessage -> sb.append(": ").append(causeMessage));
+    cause.ifPresent(causeMessage -> sb.append(".\nCause: ").append(causeMessage));
 
     return sb.toString();
   }

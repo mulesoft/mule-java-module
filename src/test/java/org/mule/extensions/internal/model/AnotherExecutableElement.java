@@ -76,7 +76,7 @@ public class AnotherExecutableElement {
     return listOfMaps.get(index).get(key) + 4;
   }
 
-  public static Class<?> getClassFromFirstItem(List<? extends String> items) {
+  public static Class<?> getClassFromFirstItem(List<? extends ExecutableElement> items) {
     return items.get(0).getClass();
   }
 

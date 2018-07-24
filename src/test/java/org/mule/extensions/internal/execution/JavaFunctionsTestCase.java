@@ -87,7 +87,7 @@ public class JavaFunctionsTestCase extends JavaModuleAbstractTestCase {
       fail("NO_SUCH_METHOD exception was expected");
     } catch (Exception e) {
       assertThat(e.getMessage(), containsString("No public Method found with signature 'missingMethod'"));
-      assertThat(e.getMessage(), containsString("in Class '" + className));
+      assertThat(e.getMessage(), containsString("for Class '" + className));
       assertThat(e.getMessage(), containsString("Public static Methods are ["));
       assertThat(e.getMessage(), containsString("Public instance Methods are ["));
     }

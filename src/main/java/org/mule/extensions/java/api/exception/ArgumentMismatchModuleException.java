@@ -52,10 +52,15 @@ public class ArgumentMismatchModuleException extends JavaModuleException {
         .append(failure).append(". ");
 
     Parameter[] parameters = executable.getParameters();
-    sb.append("Expected arguments are ")
-        .append(toHumanReadableArgs(parameters))
-        .append(" but invocation was attempted ")
-        .append(getArgumentsMessage(toHumanReadableArgs(args)));
+    if (parameters.length > 0) {
+      sb.append("\nExpected arguments are ")
+          .append(toHumanReadableArgs(executable))
+          .append(" and invocation was attempted ")
+          .append(getArgumentsMessage(toHumanReadableArgs(args)));
+    } else {
+      sb.append("\nNo arguments were expected and invocation was attempted ")
+          .append(getArgumentsMessage(toHumanReadableArgs(args)));
+    }
 
     if (!args.isEmpty()) {
       logMissing(transformationResult, sb);
@@ -78,7 +83,7 @@ public class ArgumentMismatchModuleException extends JavaModuleException {
         .collect(toList());
 
     if (!nullPrimitives.isEmpty()) {
-      sb.append(". \n");
+      sb.append(".\n");
       if (nullPrimitives.size() == 1) {
         sb.append("Parameter '").append(nullPrimitives.get(0)).append("'")
             .append(" cannot be assigned with null, but a null value was provided");
@@ -91,26 +96,24 @@ public class ArgumentMismatchModuleException extends JavaModuleException {
   }
 
   private static void logNotTransformed(ParametersTransformationResult transformationResult, StringBuilder sb) {
-    if (!transformationResult.getNotTransformed().isEmpty()) {
-      sb.append(". \nNo suitable transformation was found to match the expected type for the parameter");
-      if (transformationResult.getNotTransformed().size() > 1) {
+    if (!transformationResult.getFailedToTransform().isEmpty()) {
+      sb.append(".\nNo suitable transformation was found to match the expected type for the parameter");
+      if (transformationResult.getFailedToTransform().size() > 1) {
         sb.append("s");
       }
       sb.append(" ")
-          .append(transformationResult.getNotTransformed());
+          .append(transformationResult.getFailedToTransform());
     }
   }
 
   private static void logMissing(ParametersTransformationResult transformationResult, StringBuilder sb) {
     if (!transformationResult.getMissing().isEmpty()) {
-      sb.append(". \nMissing parameter");
+      sb.append(".\nMissing parameter");
       if (transformationResult.getMissing().size() > 1) {
-        sb.append("s are ");
-      } else {
-        sb.append(" is ");
+        sb.append("s are");
       }
 
-      sb.append(transformationResult.getMissing());
+      sb.append(" ").append(transformationResult.getMissing());
     }
   }
 

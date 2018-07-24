@@ -13,6 +13,7 @@ import static org.mule.extensions.java.internal.JavaModuleUtils.toHumanReadableA
 import org.mule.extensions.java.api.error.JavaModuleError;
 import org.mule.extensions.java.internal.parameters.ExecutableIdentifier;
 import org.mule.extensions.java.internal.parameters.ExecutableIdentifierFactory;
+import org.mule.extensions.java.internal.parameters.MethodIdentifier;
 import org.mule.extensions.java.internal.parameters.StaticMethodIdentifier;
 import org.mule.runtime.api.metadata.TypedValue;
 
@@ -50,16 +51,21 @@ public class NoSuchMethodModuleException extends JavaModuleException {
     StringBuilder sb = new StringBuilder()
         .append("No public ").append(id.getExecutableTypeName())
         .append(" found with signature '").append(id.getElementId())
-        .append("' in Class '").append(id.getClazz()).append("'.");
+        .append("' for Class '").append(id.getClazz())
+        .append("'.");
 
     if (!staticMethods.isEmpty()) {
-      sb.append(" \nPublic static Methods are ")
+      sb.append("\nPublic static Methods are ")
           .append(staticMethods);
+    } else if (id instanceof StaticMethodIdentifier) {
+      sb.append("\nThere are no public static Methods declared in Class ").append(id.getClazz()).append(".");
     }
 
     if (!instanceMethods.isEmpty()) {
-      sb.append(" \nPublic instance Methods are ")
+      sb.append("\nPublic instance Methods are ")
           .append(instanceMethods);
+    } else if (id instanceof MethodIdentifier) {
+      sb.append("\nThere are no public Methods declared in Class ").append(id.getClazz()).append(".");
     }
 
     return sb.toString();

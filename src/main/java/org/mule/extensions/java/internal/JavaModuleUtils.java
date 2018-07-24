@@ -7,7 +7,6 @@
 package org.mule.extensions.java.internal;
 
 import static java.lang.String.format;
-import static java.util.Arrays.stream;
 import static java.util.Collections.emptyList;
 import static java.util.stream.Collectors.toList;
 import static org.mule.runtime.core.api.util.ClassUtils.isInstance;
@@ -24,6 +23,7 @@ import org.mule.runtime.api.metadata.TypedValue;
 import org.mule.runtime.api.transformation.TransformationService;
 import org.mule.runtime.core.api.el.ExpressionManager;
 
+import java.lang.reflect.Constructor;
 import java.lang.reflect.Executable;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -33,8 +33,10 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.function.Function;
 
 import org.slf4j.Logger;
+import org.springframework.core.ResolvableType;
 
 /**
  * Utility class to common functions across operations
@@ -72,41 +74,55 @@ public final class JavaModuleUtils {
         JavaModuleUtils.getSortedAndTransformedArgs(args, method, transformationService, expressionManager, logger);
 
     if (method.getParameters().length > args.size()) {
-      throw new ArgumentMismatchModuleException(format("Failed to invoke %s '%s' in Class '%s'. Too few arguments were provided for the invocation",
+      throw new ArgumentMismatchModuleException(format("Failed to invoke %s '%s' from Class '%s'. Too few arguments were provided for the invocation",
                                                        identifier.getExecutableTypeName(), identifier.getElementId(),
                                                        identifier.getClazz()),
                                                 method, args, transformationResult);
 
     } else if (method.getParameters().length < args.size()) {
-      logger.warn(format("Too many arguments were provided for the invocation of %s '%s' in Class '%s'."
-          + " Expected arguments are %s but got %s.",
-                         identifier.getExecutableTypeName(), identifier.getElementId(), identifier.getClazz(),
-                         toHumanReadableArgs(method.getParameters()), toHumanReadableArgs(args)));
+      logTooManyArgsWarning(method, args, identifier, logger);
     }
-
 
     if (transformationResult.isSuccess()) {
-      try {
-        return method.invoke(instance, transformationResult.getTransformed().toArray());
-      } catch (IllegalArgumentException e) {
-        throw new ArgumentMismatchModuleException(format("Failed to invoke %s '%s' in Class '%s'",
-                                                         identifier.getExecutableTypeName(), identifier.getElementId(),
-                                                         identifier.getClazz()),
-                                                  method, args, transformationResult, e);
-
-      } catch (IllegalAccessException | InvocationTargetException e) {
-        throw new InvocationModuleException(format("%s '%s' in Class '%s' ",
-                                                   identifier.getExecutableTypeName(), identifier.getElementId(),
-                                                   identifier.getClazz()),
-                                            args, e);
-      }
+      return doInvoke(method, args, instance, identifier, transformationResult);
     }
 
-    throw new ArgumentMismatchModuleException(format("Failed to invoke %s '%s' in Class '%s'. The given arguments could not be transformed to match those expected by the %s",
+    throw new ArgumentMismatchModuleException(format("Failed to invoke %s '%s' from Class '%s'. The given arguments could not be transformed to match those expected by the %s",
                                                      identifier.getExecutableTypeName(), identifier.getElementId(),
                                                      identifier.getClazz(), identifier.getExecutableTypeName()),
                                               method, args, transformationResult);
 
+  }
+
+  private static Object doInvoke(Method method, Map<String, TypedValue<Object>> args, Object instance,
+                                 ExecutableIdentifier identifier, ParametersTransformationResult transformationResult) {
+    try {
+      return method.invoke(instance, transformationResult.getTransformed().toArray());
+    } catch (IllegalArgumentException e) {
+      throw new ArgumentMismatchModuleException(format("Failed to invoke %s '%s' from Class '%s'",
+                                                       identifier.getExecutableTypeName(), identifier.getElementId(),
+                                                       identifier.getClazz()),
+                                                method, args, transformationResult, e);
+
+    } catch (IllegalAccessException | InvocationTargetException e) {
+      throw new InvocationModuleException(format("%s '%s' from Class '%s' ",
+                                                 identifier.getExecutableTypeName(), identifier.getElementId(),
+                                                 identifier.getClazz()),
+                                          method, args, e);
+    }
+  }
+
+  public static void logTooManyArgsWarning(Executable method, Map<String, TypedValue<Object>> args,
+                                           ExecutableIdentifier identifier,
+                                           Logger logger) {
+    String expectedArgs = method.getParameters().length == 0
+        ? "No arguments were expected"
+        : "Expected arguments are " + toHumanReadableArgs(method);
+
+    logger.warn(format("Too many arguments were provided for the invocation of %s '%s' from Class '%s'."
+        + " %s but got %s.",
+                       identifier.getExecutableTypeName(), identifier.getElementId(), identifier.getClazz(),
+                       expectedArgs, toHumanReadableArgs(args)));
   }
 
   public static ParametersTransformationResult getSortedAndTransformedArgs(Map<String, TypedValue<Object>> args,
@@ -133,12 +149,12 @@ public final class JavaModuleUtils {
           continue;
         }
         Object originalValue = value.getValue();
-        if (parameterTransformer.parameterNeedsTransformation(value.getValue(), i)) {
-          Object transformedValue = parameterTransformer.transformParameter(value.getValue(), i);
-          if (transformedValue == null && originalValue != null) {
-            failedToTransformArgs.add(parameter.getName());
+        if (originalValue != null && parameterTransformer.parameterNeedsTransformation(value.getValue(), i)) {
+          Optional<Object> transformedValue = parameterTransformer.transformParameter(value.getValue(), i);
+          if (transformedValue.isPresent()) {
+            sortedArgs.add(transformedValue.get());
           } else {
-            sortedArgs.add(transformedValue);
+            failedToTransformArgs.add(parameter.getName());
           }
         } else {
           sortedArgs.add(originalValue);
@@ -156,24 +172,31 @@ public final class JavaModuleUtils {
 
   public static List<String> toHumanReadableArgs(Map<String, TypedValue<Object>> args) {
     return args.entrySet().stream()
-        .map(e -> e.getValue().getDataType().getType().getSimpleName() + " " + e.getKey())
+        .map(e -> ResolvableType.forType(e.getValue().getDataType().getType()).toString() + " " + e.getKey())
         .collect(toList());
   }
 
   public static List<String> toHumanReadableArgs(List<Object> args) {
-    return args.stream().map(t -> t != null ? t.getClass().getSimpleName() : "null").collect(toList());
+    return args.stream().map(t -> t != null ? ResolvableType.forType(t.getClass()).toString() : "null").collect(toList());
   }
 
-  public static List<String> toHumanReadableArgs(Parameter[] args) {
-    return stream(args)
-        .map(p -> p.getType().getSimpleName() + " " + p.getName())
-        .collect(toList());
+  public static List<String> toHumanReadableArgs(Executable executable) {
+    Function<Integer, ResolvableType> typeResolver = executable instanceof Method
+        ? i -> ResolvableType.forMethodParameter((Method) executable, i)
+        : i -> ResolvableType.forConstructorParameter((Constructor<?>) executable, i);
+
+    Parameter[] args = executable.getParameters();
+    List<String> typeNames = new ArrayList<>(args.length);
+    for (int i = 0; i < args.length; i++) {
+      typeNames.add(typeResolver.apply(i).toString() + " " + args[i].getName());
+    }
+    return typeNames;
   }
 
   public static Optional<String> getCauseMessage(Throwable cause) {
     if (cause != null) {
       if (cause.getMessage() != null && !cause.getMessage().trim().isEmpty()) {
-        return Optional.of(cause.getMessage());
+        return Optional.of(cause.getClass().getName() + " - " + cause.getMessage());
       }
       return getCauseMessage(cause.getCause());
     }

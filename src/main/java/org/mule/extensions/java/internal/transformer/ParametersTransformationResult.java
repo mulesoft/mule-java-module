@@ -20,14 +20,14 @@ public class ParametersTransformationResult {
 
   private boolean success;
   private List<Object> transformed;
-  private List<String> notTransformed;
+  private List<String> failedToTransform;
   private List<String> missing;
 
-  public ParametersTransformationResult(List<Object> transformed, List<String> notTransformed, List<String> missing) {
-    this.success = missing.isEmpty() && notTransformed.isEmpty();
+  public ParametersTransformationResult(List<Object> transformed, List<String> failedToTransform, List<String> missing) {
+    this.success = missing.isEmpty() && failedToTransform.isEmpty();
     this.transformed = transformed;
     this.missing = missing;
-    this.notTransformed = notTransformed;
+    this.failedToTransform = failedToTransform;
   }
 
   public boolean isSuccess() {
@@ -38,8 +38,8 @@ public class ParametersTransformationResult {
     return unmodifiableList(transformed);
   }
 
-  public List<String> getNotTransformed() {
-    return unmodifiableList(notTransformed);
+  public List<String> getFailedToTransform() {
+    return unmodifiableList(failedToTransform);
   }
 
   public List<String> getMissing() {

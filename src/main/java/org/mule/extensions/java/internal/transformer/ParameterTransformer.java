@@ -6,6 +6,7 @@
  */
 package org.mule.extensions.java.internal.transformer;
 
+import static java.util.Optional.empty;
 import org.mule.runtime.api.el.BindingContext;
 import org.mule.runtime.api.el.ExpressionExecutionException;
 import org.mule.runtime.api.metadata.DataType;
@@ -21,6 +22,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map;
+import java.util.Optional;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -135,63 +137,96 @@ public class ParameterTransformer {
    * @param parameterIndex The index of the parameter in the executable arguments.
    * @return The value transformed to fit the executable parameter.
    */
-  public Object transformParameter(Object value, int parameterIndex) {
+  public Optional<Object> transformParameter(Object value, int parameterIndex) {
     ResolvableType parameterResolvableType = getResolvableType(parameterIndex);
     return transformParameter(value, parameterResolvableType);
   }
 
-  private Object transformParameter(Object value, ResolvableType parameterResolvableType) {
-    Class<?> wrappedParameterType = wrap(resolveType(parameterResolvableType));
+  /**
+   *
+   * @param value the actual value assigned to the parameter
+   * @param expectedType the expected type of the assigned parameter
+   * @return
+   */
+  private Optional<Object> transformParameter(Object value, ResolvableType expectedType) {
+    Class<?> wrappedParameterType = wrap(resolveType(expectedType));
 
     if (value == null) {
-      return null;
+      return empty();
     }
 
-    if (mapResolutionNeeded(value, parameterResolvableType)) {
-      return transformMap((Map) value, parameterResolvableType);
+    if (mapResolutionNeeded(value, expectedType)) {
+      return Optional.of(transformMap((Map) value, expectedType));
     }
 
-    if (collectionResolutionNeeded(value, parameterResolvableType)) {
-      return transformCollection((Collection) value, parameterResolvableType);
+    if (collectionResolutionNeeded(value, expectedType)) {
+      return Optional.of(transformCollection((Collection) value, expectedType));
     }
 
     if (wrappedParameterType.isAssignableFrom(value.getClass())) {
-      return value;
+      return Optional.of(value);
     }
+
+    Optional<Object> transformedValue = doServiceTransform(value, wrappedParameterType);
+    if (transformedValue.isPresent()) {
+      return transformedValue;
+    }
+
+    transformedValue = doExpressionTransform(value, wrappedParameterType);
+    if (transformedValue.isPresent()) {
+      return transformedValue;
+    }
+
+    // Parameters with generic types in some cases might work at runtime,
+    // so we always do the best effort to perform the execution with the given value
+    return hasGenerics(expectedType) ? Optional.of(value) : empty();
+  }
+
+  private boolean hasGenerics(ResolvableType parameterResolvableType) {
+    return parameterResolvableType.hasGenerics() || parameterResolvableType.hasUnresolvableGenerics();
+  }
+
+  private Optional<Object> doServiceTransform(Object value, Class<?> wrappedParameterType) {
     try {
       Object transformedValue = transformationService.transform(value,
                                                                 DataType.fromType(value.getClass()),
                                                                 DataType.fromType(wrappedParameterType));
       if (wrappedParameterType.isAssignableFrom(transformedValue.getClass())) {
-        return transformedValue;
+        return Optional.ofNullable(transformedValue);
       }
     } catch (Exception e) {
       if (LOGGER.isDebugEnabled()) {
         LOGGER.debug(String.format(TRANSFORMATION_SERVICE_ERROR_MESSAGE, value.getClass(), wrappedParameterType));
       }
     }
+
+    return empty();
+  }
+
+  private Optional<Object> doExpressionTransform(Object value, Class<?> wrappedParameterType) {
     try {
-      Object expressionValue = expressionManager.evaluate("#[payload]", DataType.fromType(wrappedParameterType),
-                                                          BindingContext.builder().addBinding("payload", TypedValue.of(value))
-                                                              .build())
+      BindingContext context = BindingContext.builder().addBinding("payload", TypedValue.of(value)).build();
+      Object expressionValue = expressionManager.evaluate("#[payload]",
+                                                          DataType.fromType(wrappedParameterType),
+                                                          context)
           .getValue();
       if (wrappedParameterType.isAssignableFrom(expressionValue.getClass())) {
-        return expressionValue;
+        return Optional.ofNullable(expressionValue);
       }
     } catch (ExpressionExecutionException | ExpressionRuntimeException e) {
       if (LOGGER.isDebugEnabled()) {
         LOGGER.debug(DATAWEAVE_TRANSFORMATION_ERROR_MESSAGE, value.getClass(), wrappedParameterType);
       }
-      return null;
     }
-    return value;
+    return empty();
   }
 
-  private Object transformCollection(Collection value, ResolvableType parameterResolvableType) {
-    Collection collection = getCollectionImplementation(value, parameterResolvableType);
+  private Object transformCollection(Collection values, ResolvableType parameterResolvableType) {
+    Collection collection = getCollectionImplementation(values, parameterResolvableType);
 
-    for (Object item : value) {
-      collection.add(transformParameter(item, parameterResolvableType.getGeneric(0)));
+    for (Object originalItem : values) {
+      Optional<Object> transformedItem = transformParameter(originalItem, parameterResolvableType.getGeneric(0));
+      collection.add(transformedItem.orElse(originalItem));
     }
     return collection;
   }
@@ -217,8 +252,10 @@ public class ParameterTransformer {
     Map map = getMapImplementation(value, parameterResolvableType);
 
     for (Map.Entry<Object, Object> entry : value.entrySet()) {
-      map.put(transformParameter(entry.getKey(), parameterResolvableType.getGeneric(0)),
-              transformParameter(entry.getValue(), parameterResolvableType.getGeneric(1)));
+      Optional<Object> transformedKey = transformParameter(entry.getKey(), parameterResolvableType.getGeneric(0));
+      Optional<Object> transformedValue = transformParameter(entry.getValue(), parameterResolvableType.getGeneric(1));
+
+      map.put(transformedKey.orElse(entry.getKey()), transformedValue.orElse(entry.getValue()));
     }
     return map;
   }
@@ -228,13 +265,13 @@ public class ParameterTransformer {
     Class<? extends Map> parameterClass = (Class<? extends Map>) parameterResolvableType.resolve();
     if (parameterClass.isAssignableFrom(valueClass)) {
       Map result = tryToCreateInstanse(valueClass);
-      if (value != null) {
-        return value;
+      if (result != null) {
+        return result;
       }
     }
     Map result = tryToCreateInstanse(parameterClass);
-    if (value != null) {
-      return value;
+    if (result != null) {
+      return result;
     }
 
     return tryToCreateInstanse(DEFAULT_MAP_IMPLEMENTATION);

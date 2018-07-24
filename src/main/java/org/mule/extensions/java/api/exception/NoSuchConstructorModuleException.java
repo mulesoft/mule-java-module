@@ -39,12 +39,12 @@ public class NoSuchConstructorModuleException extends JavaModuleException {
     StringBuilder sb = new StringBuilder()
         .append("No public Constructor").append(id.getExecutableTypeName())
         .append(" found with signature '").append(id.getElementId())
-        .append("' in Class '").append(id.getClazz()).append("'.");
+        .append("' for Class '").append(id.getClazz()).append("'.");
 
     if (availableConstructors.isEmpty()) {
-      sb.append(" No public Constructors are available.");
+      sb.append("\nNo public Constructors are available.");
     } else {
-      sb.append(" \nPublic Constructors are ")
+      sb.append("\nPublic Constructors are ")
           .append(availableConstructors);
     }
 

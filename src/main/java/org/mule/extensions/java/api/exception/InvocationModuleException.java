@@ -13,6 +13,7 @@ import static org.mule.extensions.java.internal.JavaModuleUtils.toHumanReadableA
 import org.mule.extensions.java.api.error.JavaModuleError;
 import org.mule.runtime.api.metadata.TypedValue;
 
+import java.lang.reflect.Executable;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -24,18 +25,24 @@ import java.util.Optional;
  */
 public class InvocationModuleException extends JavaModuleException {
 
-  public InvocationModuleException(String componentDescription, Map<String, TypedValue<Object>> args, Throwable cause) {
-    super(buildMessage(componentDescription, toHumanReadableArgs(args), getCauseMessage(cause)), INVOCATION, cause);
+  public InvocationModuleException(String componentDescription, Executable executable,
+                                   Map<String, TypedValue<Object>> args, Throwable cause) {
+    super(buildMessage(componentDescription, executable, toHumanReadableArgs(args), getCauseMessage(cause)), INVOCATION, cause);
   }
 
-  private static String buildMessage(String componentDescription, List<String> args, Optional<String> cause) {
+  private static String buildMessage(String componentDescription, Executable executable,
+                                     List<String> args, Optional<String> cause) {
     StringBuilder sb = new StringBuilder()
         .append("Invocation of ")
         .append(componentDescription)
         .append(getArgumentsMessage(args))
         .append(" resulted in an error");
 
-    cause.ifPresent(causeMessage -> sb.append(": ").append(causeMessage));
+    if (executable.getParameters().length > 0) {
+      sb.append(".\nExpected arguments are ").append(toHumanReadableArgs(executable));
+    }
+
+    cause.ifPresent(causeMessage -> sb.append(".\nCause: ").append(causeMessage));
 
     return sb.toString();
   }

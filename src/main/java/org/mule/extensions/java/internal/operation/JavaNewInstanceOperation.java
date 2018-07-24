@@ -8,7 +8,7 @@ package org.mule.extensions.java.internal.operation;
 
 import static java.lang.String.format;
 import static org.mule.extensions.java.internal.JavaModuleUtils.getSortedAndTransformedArgs;
-import static org.mule.extensions.java.internal.JavaModuleUtils.toHumanReadableArgs;
+import static org.mule.extensions.java.internal.JavaModuleUtils.logTooManyArgsWarning;
 import org.mule.extensions.java.api.exception.ArgumentMismatchModuleException;
 import org.mule.extensions.java.api.exception.ClassNotFoundModuleException;
 import org.mule.extensions.java.api.exception.InvocationModuleException;
@@ -100,31 +100,35 @@ public class JavaNewInstanceOperation {
                                                 constructor, args, transformationResult);
 
     } else if (constructor.getParameters().length < args.size()) {
-      LOGGER.warn(format("Too many arguments were provided for the invocation of Constructor '%s' in Class '%s'."
-          + " Expected arguments are %s but got %s.",
-                         identifier.getElementId(), identifier.getClazz(),
-                         toHumanReadableArgs(constructor.getParameters()), toHumanReadableArgs(args)));
+      logTooManyArgsWarning(constructor, args, identifier, LOGGER);
     }
 
     if (transformationResult.isSuccess()) {
-      try {
-        return constructor.newInstance(transformationResult.getTransformed().toArray());
-      } catch (IllegalArgumentException e) {
-        throw new ArgumentMismatchModuleException(getBaseFailure(identifier), constructor, args, transformationResult, e);
-      } catch (InstantiationException e) {
-        throw new NonInstantiableTypeModuleException(identifier, args, e);
-      } catch (IllegalAccessException | InvocationTargetException e) {
-        throw new InvocationModuleException(format("%s '%s' in Class '%s' ",
-                                                   identifier.getExecutableTypeName(), identifier.getElementId(),
-                                                   identifier.getClazz()),
-                                            args, e);
-      }
+      return invokeNew(identifier, args, constructor, transformationResult);
     }
 
     throw new ArgumentMismatchModuleException(getBaseFailure(identifier) +
         ". The given arguments could not be transformed to match those expected by the Constructor",
                                               constructor, args, transformationResult);
 
+  }
+
+  private Object invokeNew(ConstructorIdentifier identifier,
+                           Map<String, TypedValue<Object>> args,
+                           Constructor constructor,
+                           ParametersTransformationResult transformationResult) {
+    try {
+      return constructor.newInstance(transformationResult.getTransformed().toArray());
+    } catch (IllegalArgumentException e) {
+      throw new ArgumentMismatchModuleException(getBaseFailure(identifier), constructor, args, transformationResult, e);
+    } catch (InstantiationException e) {
+      throw new NonInstantiableTypeModuleException(identifier, args, e);
+    } catch (IllegalAccessException | InvocationTargetException e) {
+      throw new InvocationModuleException(format("%s '%s' in Class '%s' ",
+                                                 identifier.getExecutableTypeName(), identifier.getElementId(),
+                                                 identifier.getClazz()),
+                                          constructor, args, e);
+    }
   }
 
   private String getBaseFailure(ExecutableIdentifier identifier) {
