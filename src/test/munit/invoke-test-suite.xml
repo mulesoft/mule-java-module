@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core"
+	xmlns:java="http://www.mulesoft.org/schema/mule/java" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:munit="http://www.mulesoft.org/schema/mule/munit" xmlns:munit-tools="http://www.mulesoft.org/schema/mule/munit-tools"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xsi:schemaLocation="
+		http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+		http://www.mulesoft.org/schema/mule/munit http://www.mulesoft.org/schema/mule/munit/current/mule-munit.xsd
+		http://www.mulesoft.org/schema/mule/munit-tools  http://www.mulesoft.org/schema/mule/munit-tools/current/mule-munit-tools.xsd
+http://www.mulesoft.org/schema/mule/java http://www.mulesoft.org/schema/mule/java/current/mule-java.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+	<munit:config name="invoke-test-suite.xml" />
+	<munit:before-test name="setup-test-instance" description="Before tests actions"  >
+		<java:new doc:name="New ExecutableElement"  class="org.mule.extensions.internal.model.ExecutableElement" constructor="ExecutableElement()" target="instance"/>
+	</munit:before-test>
+	<munit:test name="invoke-no-args" description="MUnit Test"  >
+		<munit:execution >
+			<java:invoke doc:name="sayHi()"  instance="#[vars.instance]" class="org.mule.extensions.internal.model.ExecutableElement" method="sayHi()">
+			</java:invoke>
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:assert-that doc:name="Assert equals Hi"  expression="#[payload]" is="#[MunitTools::equalTo('Hi')]"/>
+		</munit:validation>
+	</munit:test>
+	<munit:test name="invoke-no-args-complex-type" description="MUnit Test"  >
+		<munit:execution >
+			<java:invoke doc:name="createEmptyPojo()"  instance="#[vars.instance]" class="org.mule.extensions.internal.model.ExecutableElement" method="createEmptyPojo()"/>
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:assert-that doc:name="instanceOf ComplexReturnTypes"  expression="#[Java::isInstanceOf(payload, 'org.mule.extensions.internal.model.ComplexReturnTypes')]" is="#[MunitTools::equalTo(true)]"/>
+		</munit:validation>
+	</munit:test>
+	<munit:test name="invoke-affects-state" description="MUnit Test"  >
+		<munit:execution >
+			<munit-tools:assert-that doc:name="Assert NOT_STARTED"  expression="#[vars.instance.phase]" is="#[MunitTools::equalTo('NOT_STARTED')]"/>
+			<java:invoke doc:name="nextPhase()"  instance="#[vars.instance]" class="org.mule.extensions.internal.model.ExecutableElement" method="nextPhase()"/>
+			<java:invoke doc:name="getPhaseId()"  instance="#[vars.instance]" class="org.mule.extensions.internal.model.ExecutableElement" method="getPhaseId()" />
+			<munit-tools:assert-that doc:name="Assert STARTED"  expression="#[payload]" is="#[MunitTools::equalTo(1)]" />
+			<java:invoke doc:name="nextPhase()"  instance="#[vars.instance]" class="org.mule.extensions.internal.model.ExecutableElement" method="nextPhase()" />
+			<java:invoke doc:name="getPhase()"  instance="#[vars.instance]" class="org.mule.extensions.internal.model.ExecutableElement" method="getPhase()" />
+		</munit:execution>
+		<munit:validation>
+			<munit-tools:assert-that doc:name="Assert STOPPED"  expression="#[vars.instance.phase]" is="#[MunitTools::equalTo('STOPPED')]" />
+		</munit:validation>
+	</munit:test>
+	<munit:test name="invoke-affects-parameters" description="MUnit Test"  >
+		<munit:behavior>
+			<set-variable value="#[{}]" doc:name="Set initialMap"  variableName="initialMap" />
+		</munit:behavior>
+		<munit:execution>
+			<java:invoke doc:name="addToMap(Map)"  instance="#[vars.instance]" class="org.mule.extensions.internal.model.ExecutableElement" method="addToMap(Map)" >
+				<java:args ><![CDATA[#[{arg0: vars.initialMap}]]]></java:args>
+			</java:invoke>
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:assert-that doc:name="Assert enriched value"  expression="#[vars.initialMap]" is="#[MunitTools::hasValue(MunitTools::equalTo('ENRICHED'))]"/>
+		</munit:validation>
+	</munit:test>
+	<munit:test name="invoke-resolve-overload-by-type" description="MUnit Test"  >
+		<munit:execution>
+			<java:invoke doc:name="sayHi(String)"  instance="#[vars.instance]" class="org.mule.extensions.internal.model.ExecutableElement" method="sayHi(String)" target="hiString">
+				<java:args ><![CDATA[#[{arg0: 'Rick'}]]]></java:args>
+			</java:invoke>
+			<java:invoke doc:name="sayHi(int)"  instance="#[vars.instance]" class="org.mule.extensions.internal.model.ExecutableElement" method="sayHi(int)" target="hiNumber" >
+				<java:args ><![CDATA[#[{arg0: 147}]]]></java:args>
+			</java:invoke>
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:assert-that doc:name="Assert Hi String"  expression="#[vars.hiString]" is="#[MunitTools::equalTo('Hi Rick')]" />
+			<munit-tools:assert-that doc:name="Assert Hi Number"  expression="#[vars.hiNumber]" is="#[MunitTools::equalTo('Hi 147')]" />
+		</munit:validation>
+	</munit:test>
+	<munit:test name="invoke-with-arg-names" description="MUnit Test"  >
+		<munit:execution >
+			<java:invoke doc:name="sayHi(String,int)"  instance="#[vars.instance]" class="org.mule.extensions.internal.model.ExecutableElement" method="sayHi(String,int)" target="hiString" >
+				<java:args ><![CDATA[#[{arg1: 137, arg0: 'Rick'}]]]></java:args>
+			</java:invoke>
+		</munit:execution>
+		<munit:validation>
+			<munit-tools:assert-that doc:name="Assert Hi String"  expression="#[vars.hiString]" is='#[ MunitTools::equalTo("Hi Rick::137")]' />
+		</munit:validation>
+	</munit:test>
+	<munit:test name="resolve-overload-by-method-id" description="MUnit Test"  >
+		<munit:behavior >
+			<java:new doc:name="New ArrayList"  class="java.util.ArrayList" constructor="ArrayList()" target="arrayList"/>
+			<java:new doc:name="New LinkedList"  class="java.util.LinkedList" constructor="LinkedList()" target="linkedList" />
+		</munit:behavior>
+		<munit:execution >
+			<java:invoke doc:name="addToList(List)"  instance="#[vars.instance]" class="org.mule.extensions.internal.model.ExecutableElement" method="addToList(List)" target="listResult" >
+				<java:args ><![CDATA[#[{list: vars.linkedList}]]]></java:args>
+			</java:invoke>
+			<java:invoke doc:name="addToList(LinkedList)"  instance="#[vars.instance]" class="org.mule.extensions.internal.model.ExecutableElement" method="addToList(LinkedList)" target="linkedListResult" >
+				<java:args ><![CDATA[#[{arg0: vars.linkedList}]]]></java:args>
+			</java:invoke>
+			<java:invoke doc:name="addToList(ArrayList)"  instance="#[vars.instance]" class="org.mule.extensions.internal.model.ExecutableElement" method="addToList(ArrayList)" target="arrayListResult" >
+				<java:args ><![CDATA[#[{list: vars.arrayList}]]]></java:args>
+			</java:invoke>
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:assert doc:name="Assert expression"  >
+				<munit-tools:that ><![CDATA[#[import * from dw::test::Asserts 
+ ---
+vars.linkedListResult must equalTo(['List', 'LinkedList'])]]]></munit-tools:that>
+			</munit-tools:assert>
+			<munit-tools:assert-that doc:name="Assert ArrayList"  expression="#[vars.arrayListResult[0]]" is="#[MunitTools::equalTo('ArrayList')]"/>
+		</munit:validation>
+	</munit:test>
+	<munit:test name="invoke-validate-correct-type" description="MUnit Test"  expectedErrorType="JAVA:WRONG_INSTANCE_CLASS">
+		<munit:execution >
+			<java:invoke doc:name="Invoke With Wrong Type"  instance="#[vars.instance]" class="org.mule.extensions.internal.model.CompositePojo" method="sayHi()"/>
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:fail doc:name="Fail"  message="Instance type is not of the expected class and no error was thrown"/>
+		</munit:validation>
+	</munit:test>
+	<munit:test name="invoke-function-inline-map" description="MUnit Test"  >
+		<munit:execution >
+			<java:new doc:name="New CompositePojo"  class="org.mule.extensions.internal.model.CompositePojo" constructor="CompositePojo()" />
+			<set-variable value="#[Java::invoke('org.mule.extensions.internal.model.CompositePojo', 'setChilds(Map)', payload, {childs: {'repeat': [payload, payload]}})]" doc:name="invoke setChilds(Map)"  variableName="none"/>
+			
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:assert-that doc:name="Assert that"  expression="#[payload.childs.repeat]" is="#[MunitTools::hasSize(MunitTools::equalTo(2))]"/>
+		</munit:validation>
+	</munit:test>
+
+</mule>

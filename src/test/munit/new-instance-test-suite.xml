@@ -1,0 +1,148 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:java="http://www.mulesoft.org/schema/mule/java"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:munit="http://www.mulesoft.org/schema/mule/munit"
+	xmlns:munit-tools="http://www.mulesoft.org/schema/mule/munit-tools" xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xsi:schemaLocation="
+		http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+		http://www.mulesoft.org/schema/mule/munit http://www.mulesoft.org/schema/mule/munit/current/mule-munit.xsd
+		http://www.mulesoft.org/schema/mule/munit-tools  http://www.mulesoft.org/schema/mule/munit-tools/current/mule-munit-tools.xsd
+http://www.mulesoft.org/schema/mule/java http://www.mulesoft.org/schema/mule/java/current/mule-java.xsd">
+	<munit:config name="new-instance-test-suite.xml" />
+	<munit:test name="new-instance-no-args" description="MUnit Test"  >
+		<munit:execution >
+			<java:new  doc:name="ExecutableElement()" class="org.mule.extensions.internal.model.ExecutableElement" constructor="ExecutableElement()"/>
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:assert-that doc:name="Assert instanceOf ExecutableElement"  expression="#[Java::isInstanceOf(payload, 'org.mule.extensions.internal.model.ExecutableElement')]" is="#[MunitTools::equalTo(true)]"/>
+		</munit:validation>
+	</munit:test>
+	<munit:test name="new-instance-with-args" description="MUnit Test"  >
+		<munit:execution >
+			<java:new doc:name="ExecutableElement(Phase)"  class="org.mule.extensions.internal.model.ExecutableElement" constructor="ExecutableElement(Phase)">
+				<java:args ><![CDATA[#[{
+	initPhase: 'STOPPED'
+}]]]></java:args>
+			</java:new>
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:assert-that doc:name="Assert instanceOf ExecutableElement"  expression="#[Java::isInstanceOf(payload, 'org.mule.extensions.internal.model.ExecutableElement')]" is="#[MunitTools::equalTo(true)]" />
+		</munit:validation>
+	</munit:test>
+	<munit:test name="new-instance-with-constructor-with-multiple-args-by-name" description="MUnit Test"  >
+		<munit:behavior >
+			<set-variable value="#[output application/json --- { doors: 'doors', windows: 'windows', engine: 'engine', wheels: 'wheels' }]" doc:name="Set Expected"  variableName="expected"/>
+		</munit:behavior>
+		<munit:execution >
+			<java:new doc:name="Car(String,String,String,String)"  class="org.mule.extensions.internal.model.Car" constructor="Car(String,String,String,String)">
+				<java:args ><![CDATA[#[{
+doors: 'doors',
+wheels: 'wheels',
+engine: 'engine',
+windows: 'windows'
+}]]]></java:args>
+			</java:new>
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:assert-that doc:name="Assert instanceOf Car"  expression="#[Java::isInstanceOf(payload, 'org.mule.extensions.internal.model.Car')]" is="#[MunitTools::equalTo(true)]" />
+			<set-payload value="#[output application/json --- payload]" doc:name="payload as JSON"  />
+			<munit-tools:assert doc:name="Assert expected structure"  >
+				<munit-tools:that ><![CDATA[#[import * from dw::test::Asserts 
+ ---
+payload must equalTo(vars.expected)
+]]]></munit-tools:that>
+			</munit-tools:assert>
+		</munit:validation>
+	</munit:test>
+	<munit:test name="new-instance-with-constructor-with-multiple-args-by-position" description="MUnit Test"  >
+		<munit:execution >
+			<java:new doc:name="Car(String,String,String,String)"  class="org.mule.extensions.internal.model.Car" constructor="Car(String,String,String,String)" >
+				<java:args ><![CDATA[#[{
+arg0: 'doors',
+arg1: 'wheels',
+arg3: 'engine',
+arg2: 'windows'
+}]]]></java:args>
+			</java:new>
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:assert-that doc:name="Assert instanceOf Car"  expression="#[Java::isInstanceOf(payload, 'org.mule.extensions.internal.model.Car')]" is="#[MunitTools::equalTo(true)]" />
+			<munit-tools:assert doc:name="Assert expected structure"  >
+				<munit-tools:that ><![CDATA[#[import * from dw::test::Asserts 
+ ---
+payload must equalTo({ doors: 'doors', windows: 'windows', engine: 'engine', wheels: 'wheels' })
+]]]></munit-tools:that>
+			</munit-tools:assert>
+		</munit:validation>
+	</munit:test>
+	<munit:test name="new-instance-nested-values" description="MUnit Test"  >
+		<munit:execution >
+			<java:new doc:name="Create Rick"  class="org.mule.extensions.internal.model.CompositePojo" constructor="CompositePojo(String)" target="rick">
+				<java:args ><![CDATA[#[{arg0: 'Rick'}]]]></java:args>
+			</java:new>
+			<java:new doc:name="Create parent"  class="org.mule.extensions.internal.model.CompositePojo" constructor="CompositePojo(String,Map)">
+				<java:args ><![CDATA[#[{
+	name: 'parentOfRick',
+	childs: {
+		rick: [vars.rick]
+	}
+}]]]></java:args>
+			</java:new>
+			<java:new doc:name="Create grandParent"  class="org.mule.extensions.internal.model.CompositePojo" constructor="CompositePojo(CompositePojo)">
+				<java:args ><![CDATA[#[{child:payload}]]]></java:args>
+			</java:new>
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:assert-that doc:name="Assert that"  expression="#[payload.childs.parentOfRick[0].childs.rick[0]]" is="#[MunitTools::equalTo(vars.rick)]"/>
+		</munit:validation>
+	</munit:test>
+	<munit:test name="new-instance-dynamic-values" description="MUnit Test"  >
+		<munit:behavior >
+			<set-variable value="org.mule.extensions.internal.model.ExecutableElement" doc:name="Set Class"  variableName="class"/>
+			<set-variable value="ExecutableElement(Phase)" doc:name="Set constructor"  variableName="constructor"/>
+			<set-variable value="#[{ initPhase: 'STOPPED' }]" doc:name="Set args"  variableName="args"/>
+		</munit:behavior>
+		<munit:execution >
+			<java:new doc:name="New"  class="#[vars.class]" constructor="#[vars.constructor]">
+				<java:args ><![CDATA[#[vars.args]]]></java:args>
+			</java:new>
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:assert-that doc:name="Assert instanceOf ExecutableElement"  expression="#[Java::isInstanceOf(payload, 'org.mule.extensions.internal.model.ExecutableElement')]" is="#[MunitTools::equalTo(true)]" />
+		</munit:validation>
+	</munit:test>
+	<munit:test name="fail-new-instance-no-such-constructor" description="MUnit Test"  expectedErrorType="JAVA:NO_SUCH_CONSTRUCTOR">
+		<munit:execution >
+			<java:new doc:name="New"  class="org.mule.extensions.internal.model.ExecutableElement" constructor="ExecutableElement(String,Boolean)"/>
+		</munit:execution>
+	</munit:test>
+	<munit:test name="fail-class-not-found" description="MUnit Test"  expectedErrorType="JAVA:CLASS_NOT_FOUND">
+		<munit:execution >
+			<java:new doc:name="New"  class="org.foo.Bar" constructor="Bar()"/>
+		</munit:execution>
+	</munit:test>
+	
+	<munit:test name="new-fails-with-arguments-mismatch" description="MUnit Test" expectedErrorType="JAVA:ARGUMENTS_MISMATCH">
+		<munit:execution >
+			<java:new doc:name="New with missing argument" class="org.mule.extensions.internal.model.ExecutableElement" constructor="ExecutableElement(Phase)">
+				<java:args ><![CDATA[#[{}]]]></java:args>
+			</java:new>
+		</munit:execution>
+	</munit:test>
+	<munit:test name="new-fails-with-argument-mismatch-cannot-convert-types" description="MUnit Test"  expectedErrorType="JAVA:ARGUMENTS_MISMATCH">
+		<munit:execution >
+			<java:new doc:name="Invoke with wrong argument type" class="org.mule.extensions.internal.model.ExecutableElement" constructor="ExecutableElement(Phase)" >
+				<java:args ><![CDATA[#[{arg0: ['listMessage']}]]]></java:args>
+			</java:new>
+		</munit:execution>
+	</munit:test>
+	<munit:test name="new-fails-with-argument-mismatch-too-many-args" description="MUnit Test"  >
+		<munit:execution >
+			<java:new doc:name="Invoke with too many args"  class="org.mule.extensions.internal.model.ExecutableElement" constructor="ExecutableElement(Phase)" >
+				<java:args ><![CDATA[#[{arg0: 'STOPPED', arg1: 'something Else'}]]]></java:args>
+			</java:new>
+		</munit:execution>
+	</munit:test>
+	
+
+</mule>
