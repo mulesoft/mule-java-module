@@ -19,6 +19,10 @@ public class AnotherExecutableElement {
     return number;
   }
 
+  public static int getSameNumberOrZero(int number, boolean zero) {
+    return zero ? 0 : number;
+  }
+
   public static String getSameWord(String word) {
     return word;
   }
@@ -72,7 +76,7 @@ public class AnotherExecutableElement {
     return listOfMaps.get(index).get(key) + 4;
   }
 
-  public static Class<?> getClassFromFirstItem(List<? extends String> items) {
+  public static Class<?> getClassFromFirstItem(List<? extends ExecutableElement> items) {
     return items.get(0).getClass();
   }
 

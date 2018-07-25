@@ -6,13 +6,17 @@
  */
 package org.mule.extensions.java.api.exception;
 
-import static java.lang.String.format;
 import static org.mule.extensions.java.api.error.JavaModuleError.INVOCATION;
+import static org.mule.extensions.java.internal.JavaModuleUtils.getArgumentsMessage;
+import static org.mule.extensions.java.internal.JavaModuleUtils.getCauseMessage;
+import static org.mule.extensions.java.internal.JavaModuleUtils.toHumanReadableArgs;
 import org.mule.extensions.java.api.error.JavaModuleError;
 import org.mule.runtime.api.metadata.TypedValue;
 
+import java.lang.reflect.Executable;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 /**
  * A {@link JavaModuleException} related with the {@link JavaModuleError#INVOCATION} Error type
@@ -21,16 +25,26 @@ import java.util.Map;
  */
 public class InvocationModuleException extends JavaModuleException {
 
-  public InvocationModuleException(String failure, Map<String, TypedValue<Object>> args, Throwable cause) {
-    super(buildMessage(failure, toHumanReadableArgs(args)) + ": " + cause.getMessage(), INVOCATION, cause);
+  public InvocationModuleException(String componentDescription, Executable executable,
+                                   Map<String, TypedValue<Object>> args, Throwable cause) {
+    super(buildMessage(componentDescription, executable, toHumanReadableArgs(args), getCauseMessage(cause)), INVOCATION, cause);
   }
 
-  public InvocationModuleException(String failure, List<Object> args, Throwable cause) {
-    super(buildMessage(failure, toHumanReadableArgs(args)) + ": " + cause.getMessage(), INVOCATION, cause);
-  }
+  private static String buildMessage(String componentDescription, Executable executable,
+                                     List<String> args, Optional<String> cause) {
+    StringBuilder sb = new StringBuilder()
+        .append("Invocation of ")
+        .append(componentDescription)
+        .append(getArgumentsMessage(args))
+        .append(" resulted in an error");
 
-  private static String buildMessage(String failure, List<String> args) {
-    return format("%s with arguments %s", failure, args);
+    if (executable.getParameters().length > 0) {
+      sb.append(".\nExpected arguments are ").append(toHumanReadableArgs(executable));
+    }
+
+    cause.ifPresent(causeMessage -> sb.append(".\nCause: ").append(causeMessage));
+
+    return sb.toString();
   }
 
 }

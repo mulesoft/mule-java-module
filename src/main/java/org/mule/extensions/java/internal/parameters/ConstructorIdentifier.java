@@ -6,9 +6,7 @@
  */
 package org.mule.extensions.java.internal.parameters;
 
-import static org.mule.runtime.api.meta.ExpressionSupport.SUPPORTED;
 import org.mule.runtime.extension.api.annotation.Alias;
-import org.mule.runtime.extension.api.annotation.Expression;
 import org.mule.runtime.extension.api.annotation.metadata.MetadataKeyPart;
 import org.mule.runtime.extension.api.annotation.param.Parameter;
 import org.mule.runtime.extension.api.annotation.param.display.ClassValue;
@@ -23,6 +21,8 @@ import java.lang.reflect.Executable;
  * @since 1.0
  */
 public class ConstructorIdentifier extends ExecutableIdentifier {
+
+  public static final String NAME = "Constructor";
 
   /**
    * Represents the fully qualified name of the Class containing the referenced Method.
@@ -71,6 +71,11 @@ public class ConstructorIdentifier extends ExecutableIdentifier {
   @Override
   public boolean matches(Executable element) {
     return element instanceof Constructor && new ConstructorIdentifier((Constructor) element).equals(this);
+  }
+
+  @Override
+  public String getExecutableTypeName() {
+    return NAME;
   }
 
 }

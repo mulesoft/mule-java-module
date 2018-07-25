@@ -10,11 +10,16 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
 import static org.hamcrest.core.IsNot.not;
 import static org.hamcrest.core.IsNull.nullValue;
+import static org.mule.functional.api.exception.ExpectedError.none;
 import static org.mule.runtime.api.metadata.DataType.XML_STRING;
 import static org.mule.tck.junit4.matcher.DataTypeMatcher.like;
+import org.mule.extensions.internal.JavaModuleAbstractTestCase;
+import org.mule.extensions.internal.model.Car;
 import org.mule.extensions.internal.model.ComplexReturnTypes;
 import org.mule.extensions.internal.model.ExecutableElement;
-import org.mule.extensions.internal.JavaModuleAbstractTestCase;
+import org.mule.extensions.java.api.exception.ArgumentMismatchModuleException;
+import org.mule.extensions.java.api.exception.NoSuchMethodModuleException;
+import org.mule.functional.api.exception.ExpectedError;
 import org.mule.runtime.api.metadata.TypedValue;
 import org.mule.tck.junit4.rule.SystemProperty;
 
@@ -34,6 +39,9 @@ public class JavaInvokeOperationsTestCase extends JavaModuleAbstractTestCase {
   @Rule
   public SystemProperty className = new SystemProperty("className", ExecutableElement.class.getName());
 
+  @Rule
+  public ExpectedError expectedError = none();
+
   @Override
   protected String getConfigFile() {
     return "java-invoke-operation.xml";
@@ -50,6 +58,16 @@ public class JavaInvokeOperationsTestCase extends JavaModuleAbstractTestCase {
     TypedValue<ComplexReturnTypes> payload = invoke("createEmptyPojo()", new ExecutableElement());
     assertThat(payload.getValue(), is(not(nullValue())));
     assertThat(payload.getValue().getTypedValue("<node/>").getDataType(), is(like(XML_STRING)));
+  }
+
+  @Test
+  public void invokeTypoMethod() throws Exception {
+    expectedError.expectError("JAVA", "NO_SUCH_METHOD",
+                              NoSuchMethodModuleException.class,
+                              "No public Method found with signature 'createEmptyPojo' "
+                                  + "for Class 'org.mule.extensions.internal.model.ExecutableElement'.\n"
+                                  + "Public static Methods are [");
+    invoke("createEmptyPojo", new ExecutableElement());
   }
 
   @Test
@@ -145,6 +163,40 @@ public class JavaInvokeOperationsTestCase extends JavaModuleAbstractTestCase {
 
     assertThat(result.size(), is(1));
     assertThat(result.get(0), is("ArrayList"));
+  }
+
+  @Test
+  public void invokeInstanceWithMissingOneArgument() throws Exception {
+    String errorMessage = "Failed to invoke Method 'sayHi(String,int)' "
+        + "from Class 'org.mule.extensions.internal.model.ExecutableElement'. Too few arguments were provided for the invocation. \n"
+        + "Expected arguments are [java.lang.String name, int id] and invocation was attempted with arguments [java.lang.String arg0].\n"
+        + "Missing parameter [id].";
+
+    expectedError.expectError("JAVA", "ARGUMENTS_MISMATCH", ArgumentMismatchModuleException.class, errorMessage);
+    invoke("sayHi(String,int)", new ExecutableElement(), Args.create("arg0", "zaraza"));
+  }
+
+  @Test
+  public void invokeInstanceWithWrongArgumentType() throws Exception {
+    String errorMessage =
+        "Failed to invoke Method 'sayHi(int)' from Class 'org.mule.extensions.internal.model.ExecutableElement'. "
+            + "The given arguments could not be transformed to match those expected by the Method. \n"
+            + "Expected arguments are [int id] and invocation was attempted with arguments [java.lang.Boolean arg0].\n"
+            + "No suitable transformation was found to match the expected type for the parameter [id].";
+
+    expectedError.expectError("JAVA", "ARGUMENTS_MISMATCH", ArgumentMismatchModuleException.class, errorMessage);
+    invoke("sayHi(int)", new ExecutableElement(), Args.create("arg0", true));
+  }
+
+  @Test
+  public void invokeInstanceWithMissingArgument() throws Exception {
+    String errorMessage =
+        "Failed to invoke Method 'sayHi(int)' from Class 'org.mule.extensions.internal.model.ExecutableElement'. "
+            + "Too few arguments were provided for the invocation. \n"
+            + "Expected arguments are [int id] and invocation was attempted without any argument.";
+
+    expectedError.expectError("JAVA", "ARGUMENTS_MISMATCH", ArgumentMismatchModuleException.class, errorMessage);
+    invoke("sayHi(int)", new ExecutableElement());
   }
 
   private <T> TypedValue<T> invoke(String method, Object instance) throws Exception {

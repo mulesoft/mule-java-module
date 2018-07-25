@@ -106,16 +106,6 @@
         </java:invoke-static>
     </flow>
 
-    <flow name="invokeStaticWithWildcard">
-        <java:invoke-static class="org.mule.extensions.internal.model.AnotherExecutableElement" method="getClassFromFirstItem(List)" >
-            <java:args>
-                #[{
-                'items': ["Hello", "This", "Is", "An", "Array"]
-                }]
-            </java:args>
-        </java:invoke-static>
-    </flow>
-
     <flow name="invokeStaticWithListOfCustomPojoAndWithResultAfterwards">
         <java:invoke-static class="org.mule.extensions.internal.model.AnotherExecutableElement" method="getCarFromList(List,int)" >
             <java:args>
@@ -172,6 +162,27 @@
         </java:invoke-static>
     </flow>
 
+    <flow name="invokeGetClassFromFirstItemWithParameterizedItem">
+        <java:invoke-static class="org.mule.extensions.internal.model.AnotherExecutableElement" method="getClassFromFirstItem(List)" >
+            <java:args>
+                #[{
+                    arg0: [vars.item]
+                }]
+            </java:args>
+        </java:invoke-static>
+    </flow>
+
+    <flow name="invokeGetCarFromListWithParameterizedItem">
+        <java:invoke-static class="org.mule.extensions.internal.model.AnotherExecutableElement" method="getCarFromList(List, int)" >
+            <java:args>
+                #[{
+                    arg0: [vars.item],
+                    arg1: "0"
+                }]
+            </java:args>
+        </java:invoke-static>
+    </flow>
+
     <!--We need to use mel expressions here to create null values since a bug in DataWeave is not allowing it.-->
 
     <flow name="invokeStaticWithNullParameter">
@@ -182,10 +193,22 @@
         </java:invoke-static>
     </flow>
 
-    <flow name="invokeStaticWitNullParameterForPrimitiveValue">
+    <flow name="invokeStaticWithNullParameterForPrimitiveValue">
         <java:invoke-static class="org.mule.extensions.internal.model.AnotherExecutableElement" method="getSameNumber(int)" >
             <java:args>
                 #[mel:{ 'number' : org.mule.runtime.api.metadata.TypedValue.of(null) } ]
+            </java:args>
+        </java:invoke-static>
+    </flow>
+
+    <flow name="invokeStaticWithManyNullParametersForPrimitiveValue">
+        <java:invoke-static class="org.mule.extensions.internal.model.AnotherExecutableElement"
+                            method="getSameNumberOrZero(int,boolean)" >
+            <java:args>
+                #[mel:{
+                    'number' : org.mule.runtime.api.metadata.TypedValue.of(null),
+                    'zero' : org.mule.runtime.api.metadata.TypedValue.of(null)
+                }]
             </java:args>
         </java:invoke-static>
     </flow>

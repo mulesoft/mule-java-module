@@ -9,11 +9,11 @@ package org.mule.extensions.internal.execution;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
 import static org.mule.functional.api.exception.ExpectedError.none;
 import org.mule.extensions.internal.JavaModuleAbstractTestCase;
 import org.mule.extensions.internal.model.ExecutableElement;
 import org.mule.extensions.java.api.exception.ArgumentMismatchModuleException;
+import org.mule.extensions.java.api.exception.InvocationModuleException;
 import org.mule.functional.api.exception.ExpectedError;
 import org.mule.runtime.api.metadata.TypedValue;
 import org.mule.tck.junit4.rule.SystemProperty;
@@ -41,6 +41,20 @@ public class JavaArgumentTransformationTestCase extends JavaModuleAbstractTestCa
         .getMessage()
         .getPayload();
     assertThat(payload.getValue(), is("3"));
+  }
+
+  @Test
+  public void invokeGetCarFromListFailsWithIllegalArgument() throws Exception {
+    expectedError.expectError("JAVA", "INVOCATION",
+                              InvocationModuleException.class,
+                              "Invocation of static Method 'getCarFromList(List, int)' "
+                                  + "from Class 'org.mule.extensions.internal.model.AnotherExecutableElement' "
+                                  + "with arguments [java.util.ArrayList<?> arg0, java.lang.String arg1] resulted in an error.\n"
+                                  + "Expected arguments are [java.util.List<org.mule.extensions.internal.model.Car> cars, int index].\n"
+                                  + "Cause: java.lang.ClassCastException - java.lang.String cannot be cast to org.mule.extensions.internal.model.Car");
+    flowRunner("invokeGetCarFromListWithParameterizedItem")
+        .withVariable("item", "MyString")
+        .run();
   }
 
   @Test
@@ -107,15 +121,6 @@ public class JavaArgumentTransformationTestCase extends JavaModuleAbstractTestCa
   }
 
   @Test
-  public void invokeStaticWithWildcard() throws Exception {
-    TypedValue<Class<?>> payload = flowRunner("invokeStaticWithWildcard")
-        .run()
-        .getMessage()
-        .getPayload();
-    assertTrue(payload.getValue().equals(String.class));
-  }
-
-  @Test
   public void invokeStaticWithListOfCustomPojoAndWithResultAfterwards() throws Exception {
     TypedValue<String> payload = flowRunner("invokeStaticWithListOfCustomPojoAndWithResultAfterwards")
         .run()
@@ -152,33 +157,24 @@ public class JavaArgumentTransformationTestCase extends JavaModuleAbstractTestCa
   }
 
   @Test
-  public void invokeStaticWitNullParameterForPrimitiveValue() throws Exception {
+  public void invokeStaticWithNullParameterForPrimitiveValue() throws Exception {
     expectedError.expectError("JAVA", "ARGUMENTS_MISMATCH", ArgumentMismatchModuleException.class,
-                              "Failed to invoke Method [getSameNumber(int)] in Class " +
-                                  "[org.mule.extensions.internal.model.AnotherExecutableElement] with arguments [Object number]."
-                                  + " Expected arguments are [int number]: null");
-    TypedValue<String> payload = flowRunner("invokeStaticWitNullParameterForPrimitiveValue")
-        .run()
-        .getMessage()
-        .getPayload();
+                              "Failed to invoke static Method 'getSameNumber(int)' "
+                                  + "from Class 'org.mule.extensions.internal.model.AnotherExecutableElement'. \n"
+                                  + "Expected arguments are [int number] and invocation was attempted with arguments [java.lang.Object number].\n"
+                                  + "Parameter 'number' cannot be assigned with null, but a null value was provided.");
+    flowRunner("invokeStaticWithNullParameterForPrimitiveValue").run();
   }
 
-  private <T> TypedValue<T> invokeStatic(String method) throws Exception {
-    return flowRunner("invokeStaticNoArgs")
-        .withVariable("method", method)
-        .run()
-        .getMessage()
-        .getPayload();
-  }
-
-  private <T> TypedValue<T> invokeStatic(String method, Args args)
-      throws Exception {
-    return flowRunner("invokeStaticWithArgs")
-        .withVariable("method", method)
-        .withVariable("args", args.get())
-        .run()
-        .getMessage()
-        .getPayload();
+  @Test
+  public void invokeStaticWithManyNullParametersForPrimitiveValue() throws Exception {
+    expectedError.expectError("JAVA", "ARGUMENTS_MISMATCH", ArgumentMismatchModuleException.class,
+                              "Failed to invoke static Method 'getSameNumberOrZero(int,boolean)' "
+                                  + "from Class 'org.mule.extensions.internal.model.AnotherExecutableElement'. \n"
+                                  + "Expected arguments are [int number, boolean zero] and invocation was attempted with "
+                                  + "arguments [java.lang.Object zero, java.lang.Object number].\n"
+                                  + "Parameters [number, zero] cannot be assigned with null, but null values were provided.");
+    flowRunner("invokeStaticWithManyNullParametersForPrimitiveValue").run();
   }
 
 }

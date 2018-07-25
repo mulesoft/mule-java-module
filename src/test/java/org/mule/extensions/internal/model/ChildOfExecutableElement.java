@@ -8,6 +8,10 @@ package org.mule.extensions.internal.model;
 
 public class ChildOfExecutableElement extends ExecutableElement {
 
+  public static ChildOfExecutableElement create() {
+    return new ChildOfExecutableElement();
+  }
+
   @Override
   public String sayHi() {
     return "ChildHi";

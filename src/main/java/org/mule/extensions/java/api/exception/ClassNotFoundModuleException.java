@@ -16,10 +16,6 @@ import org.mule.extensions.java.api.error.JavaModuleError;
  */
 public class ClassNotFoundModuleException extends JavaModuleException {
 
-  public ClassNotFoundModuleException(String message) {
-    super(message, CLASS_NOT_FOUND);
-  }
-
   public ClassNotFoundModuleException(String message, Throwable cause) {
     super(message, CLASS_NOT_FOUND, cause);
   }
