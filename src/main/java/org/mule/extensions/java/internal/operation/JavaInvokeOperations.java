@@ -6,20 +6,18 @@
  */
 package org.mule.extensions.java.internal.operation;
 
-import static java.lang.String.format;
 import static org.mule.extensions.java.internal.JavaModuleUtils.invokeMethod;
-import org.mule.extensions.java.internal.cache.JavaModuleLoadingCache;
+import static org.mule.extensions.java.internal.JavaModuleUtils.validateType;
 import org.mule.extensions.java.api.exception.ArgumentMismatchModuleException;
 import org.mule.extensions.java.api.exception.ClassNotFoundModuleException;
 import org.mule.extensions.java.api.exception.InvocationModuleException;
 import org.mule.extensions.java.api.exception.NoSuchMethodModuleException;
 import org.mule.extensions.java.api.exception.WrongTypeModuleException;
 import org.mule.extensions.java.internal.JavaModule;
-import org.mule.extensions.java.internal.JavaModuleUtils;
+import org.mule.extensions.java.internal.cache.JavaModuleLoadingCache;
 import org.mule.extensions.java.internal.error.JavaInvokeErrorProvider;
 import org.mule.extensions.java.internal.metadata.InstanceMethodTypeResolver;
 import org.mule.extensions.java.internal.metadata.StaticMethodTypeResolver;
-import org.mule.extensions.java.internal.parameters.ExecutableIdentifier;
 import org.mule.extensions.java.internal.parameters.MethodIdentifier;
 import org.mule.extensions.java.internal.parameters.StaticMethodIdentifier;
 import org.mule.runtime.api.metadata.TypedValue;
@@ -39,12 +37,17 @@ import java.util.Map;
 
 import javax.inject.Inject;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 /**
  * Defines the operations of {@link JavaModule} related to invocation of class or instance methods using reflection.
  *
  * @since 1.0
  */
 public class JavaInvokeOperations {
+
+  private static final Logger LOGGER = LoggerFactory.getLogger(JavaInvokeOperations.class);
 
   @Inject
   private JavaModuleLoadingCache cache;
@@ -98,7 +101,8 @@ public class JavaInvokeOperations {
     Class<?> targetClass = cache.loadClass(identifier.getClazz());
 
     Method method = cache.getMethod(identifier, targetClass, args, true);
-    return invokeMethod(method, args, null, () -> failureMsg(identifier, method), transformationService, expressionManager);
+    return invokeMethod(method, args, null, identifier,
+                        transformationService, expressionManager, LOGGER);
   }
 
   /**
@@ -144,15 +148,11 @@ public class JavaInvokeOperations {
       throws ClassNotFoundModuleException, WrongTypeModuleException, ArgumentMismatchModuleException,
       InvocationModuleException, NoSuchMethodModuleException {
 
-    JavaModuleUtils.validateType(identifier.getClazz(), instance, true, cache);
+    validateType(identifier.getClazz(), instance, true, cache);
 
     Method method = cache.getMethod(identifier, instance.getClass(), args, false);
-    return invokeMethod(method, args, instance, () -> failureMsg(identifier, method), transformationService, expressionManager);
-  }
-
-  private String failureMsg(ExecutableIdentifier identifier, Method method) {
-    return format("Failed to invoke Method [%s] in Class [%s]",
-                  identifier.getElementId(), method.getDeclaringClass().getName());
+    return invokeMethod(method, args, instance, identifier,
+                        transformationService, expressionManager, LOGGER);
   }
 
 }

@@ -28,7 +28,8 @@ public class CompositePojo {
     childs.put(child.getName(), singletonList(child));
   }
 
-  public CompositePojo(Map<String, List<CompositePojo>> childs) {
+  public CompositePojo(String name, Map<String, List<CompositePojo>> childs) {
+    this.name = name;
     this.childs.putAll(childs);
   }
 

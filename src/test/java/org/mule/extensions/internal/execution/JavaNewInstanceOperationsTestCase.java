@@ -57,11 +57,12 @@ public class JavaNewInstanceOperationsTestCase extends JavaModuleAbstractTestCas
     assertThat(rick.getName(), is(RICK));
 
     CompositePojo parentOfRick = newInstance(CompositePojo.class.getName(),
-                                             "CompositePojo(Map)",
-                                             Args.create("childs", singletonMap("rick", singletonList(rick))));
+                                             "CompositePojo(String, Map)",
+                                             Args.create("childs", singletonMap("rick", singletonList(rick)))
+                                                 .add("name", "parentOfRick"));
     assertThat(parentOfRick, is(instanceOf(CompositePojo.class)));
+    assertThat(parentOfRick.getName(), is("parentOfRick"));
     assertThat(parentOfRick.getChilds().get("rick").get(0).getName(), is(RICK));
-    parentOfRick.setName("parentOfRick");
 
     CompositePojo grandParentOfRick = newInstance(CompositePojo.class.getName(),
                                                   "CompositePojo(CompositePojo)",

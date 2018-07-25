@@ -25,6 +25,8 @@ import java.lang.reflect.Method;
  */
 public class MethodIdentifier extends ExecutableIdentifier {
 
+  public static final String NAME = "Method";
+
   /**
    * Represents the fully qualified name of the Class containing the referenced Method.
    */
@@ -75,6 +77,11 @@ public class MethodIdentifier extends ExecutableIdentifier {
     return element instanceof Method
         && !isStatic(element.getModifiers())
         && this.equals(new MethodIdentifier((Method) element));
+  }
+
+  @Override
+  public String getExecutableTypeName() {
+    return NAME;
   }
 
 }

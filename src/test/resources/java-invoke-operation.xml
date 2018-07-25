@@ -65,4 +65,11 @@
         <java:invoke-static class="org.mule.extensions.internal.model.AnotherExecutableElement" method="className()"/>
     </flow>
 
+    <flow name="invokeStaticThrowsExceptionWithCustomMessage">
+        <java:invoke-static class="org.mule.extensions.internal.model.ExecutableElement"
+                            method="throwException(String)">
+            <java:args ><![CDATA[#[{message: payload}]]]></java:args>
+        </java:invoke-static>
+    </flow>
+
 </mule>

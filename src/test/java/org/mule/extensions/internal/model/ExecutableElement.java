@@ -26,6 +26,14 @@ public class ExecutableElement {
     return new ExecutableElement(initPhase);
   }
 
+  public static Object getNull() {
+    return null;
+  }
+
+  public static Object throwException(String message) {
+    throw new RuntimeException(message);
+  }
+
   public ExecutableElement() {
     this.phase = Phase.NOT_STARTED;
   }

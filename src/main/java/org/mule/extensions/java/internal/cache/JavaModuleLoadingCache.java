@@ -68,10 +68,7 @@ public final class JavaModuleLoadingCache {
                                                      key -> getPublicMethods(clazz, expectStatic).stream()
                                                          .filter(id::matches)
                                                          .findFirst()
-                                                         .orElseThrow(() -> new NoSuchMethodModuleException(id, clazz,
-                                                                                                            getPublicMethods(clazz,
-                                                                                                                             expectStatic),
-                                                                                                            args)));
+                                                         .orElseThrow(() -> new NoSuchMethodModuleException(id, clazz, args)));
   }
 
   private List<Method> getPublicMethods(Class<?> clazz, boolean expectStatic) {
