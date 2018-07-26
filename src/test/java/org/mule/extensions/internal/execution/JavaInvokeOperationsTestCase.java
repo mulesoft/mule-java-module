@@ -14,7 +14,6 @@ import static org.mule.functional.api.exception.ExpectedError.none;
 import static org.mule.runtime.api.metadata.DataType.XML_STRING;
 import static org.mule.tck.junit4.matcher.DataTypeMatcher.like;
 import org.mule.extensions.internal.JavaModuleAbstractTestCase;
-import org.mule.extensions.internal.model.Car;
 import org.mule.extensions.internal.model.ComplexReturnTypes;
 import org.mule.extensions.internal.model.ExecutableElement;
 import org.mule.extensions.java.api.exception.ArgumentMismatchModuleException;

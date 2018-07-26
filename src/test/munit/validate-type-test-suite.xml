@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:java="http://www.mulesoft.org/schema/mule/java"
+      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:munit="http://www.mulesoft.org/schema/mule/munit"
+      xmlns:munit-tools="http://www.mulesoft.org/schema/mule/munit-tools" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+      xmlns="http://www.mulesoft.org/schema/mule/core" xsi:schemaLocation="
+		http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+		http://www.mulesoft.org/schema/mule/munit http://www.mulesoft.org/schema/mule/munit/current/mule-munit.xsd
+		http://www.mulesoft.org/schema/mule/munit-tools  http://www.mulesoft.org/schema/mule/munit-tools/current/mule-munit-tools.xsd
+http://www.mulesoft.org/schema/mule/java http://www.mulesoft.org/schema/mule/java/current/mule-java.xsd">
+    <munit:config name="validate-type-test-suite.xml"/>
+    <munit:test name="validate-invalid-type-throws-error" description="MUnit Test"
+                expectedErrorType="JAVA:WRONG_INSTANCE_CLASS">
+        <munit:behavior>
+            <set-payload value='#[java!java::lang::Boolean::valueOf("true")]'
+            />
+        </munit:behavior>
+        <munit:execution>
+            <java:validate-type doc:name=""
+                                class="org.mule.extensions.internal.model.ExecutableElement" instance="#[payload]"/>
+        </munit:execution>
+        <munit:validation>
+            <munit-tools:fail
+                    message="An error should've been thrown "/>
+        </munit:validation>
+    </munit:test>
+    <munit:test name="validate-type-same-type-no-subtype-allowed" description="MUnit Test"
+    >
+        <munit:behavior>
+            <set-payload value="#[java!org::mule::extensions::internal::model::ExecutableElement::create()]"
+            />
+        </munit:behavior>
+        <munit:execution>
+            <java:validate-type doc:name=""
+                                class="org.mule.extensions.internal.model.ExecutableElement" instance="#[payload]"
+                                acceptSubtypes="false"/>
+        </munit:execution>
+        <munit:validation>
+            <munit-tools:assert-that
+                    expression="#[payload]" is="#[MunitTools::notNullValue()]"/>
+        </munit:validation>
+    </munit:test>
+    <munit:test name="validate-type-subtype-allowed" description="MUnit Test">
+        <munit:behavior>
+            <set-payload value="#[java!org::mule::extensions::internal::model::ChildOfExecutableElement::create()]"
+            />
+        </munit:behavior>
+        <munit:execution>
+            <java:validate-type doc:name=""
+                                class="org.mule.extensions.internal.model.ExecutableElement" instance="#[payload]"/>
+        </munit:execution>
+        <munit:validation>
+            <munit-tools:assert-that
+                    expression="#[payload]" is="#[MunitTools::notNullValue()]"/>
+        </munit:validation>
+    </munit:test>
+    <munit:test name="validate-type-subtype-not-allowed" description="MUnit Test"
+                expectedErrorType="JAVA:WRONG_INSTANCE_CLASS">
+        <munit:behavior>
+            <set-payload value="#[java!org::mule::extensions::internal::model::ChildOfExecutableElement::create()]"
+            />
+        </munit:behavior>
+        <munit:execution>
+            <java:validate-type
+                    class="org.mule.extensions.internal.model.ExecutableElement" instance="#[payload]"
+                    acceptSubtypes="false"/>
+        </munit:execution>
+        <munit:validation>
+            <munit-tools:fail
+                    message="Subtypes should not be allowed"/>
+        </munit:validation>
+    </munit:test>
+    <munit:test name="validate-type-missing-class" description="MUnit Test"
+                expectedErrorType="JAVA:CLASS_NOT_FOUND">
+        <munit:behavior>
+            <set-payload value="#[java!org::mule::extensions::internal::model::ExecutableElement::create()]"
+            />
+        </munit:behavior>
+        <munit:execution>
+            <java:validate-type doc:name="" class="foo.bar.NotExecutableElement"
+                                instance="#[payload]"/>
+        </munit:execution>
+        <munit:validation>
+            <munit-tools:fail
+                    message="Expected ClassNotFound "/>
+        </munit:validation>
+    </munit:test>
+    <munit:test name="isInstanceOf-function-same-type-test" description="MUnit Test"
+    >
+        <munit:behavior>
+            <set-payload value="#[java!org::mule::extensions::internal::model::ExecutableElement::create()]"
+            />
+            <set-variable value="org.mule.extensions.internal.model.ExecutableElement"
+                          variableName="clazz"/>
+        </munit:behavior>
+        <munit:execution>
+            <set-payload value="#[Java::isInstanceOf(payload, vars.clazz)]"
+            />
+        </munit:execution>
+        <munit:validation>
+            <munit-tools:assert-that expression="#[payload]"
+                                     is="#[MunitTools::equalTo(true)]"/>
+        </munit:validation>
+    </munit:test>
+    <munit:test name="instanceOf-function-different-types" description="MUnit Test">
+        <munit:behavior>
+            <set-payload value="#[java!org::mule::extensions::internal::model::ExecutableElement::create()]"
+            />
+            <set-variable value="java.lang.Boolean"
+                          variableName="clazz"/>
+        </munit:behavior>
+        <munit:execution>
+            <set-payload value="#[Java::isInstanceOf(payload, vars.clazz)]"
+            />
+        </munit:execution>
+        <munit:validation>
+            <munit-tools:assert-that expression="#[payload]"
+                                     is="#[MunitTools::equalTo(false)]"/>
+        </munit:validation>
+    </munit:test>
+    <munit:test name="instanceOf-function-is-subtype" description="MUnit Test">
+        <munit:behavior>
+            <set-payload value="#[java!org::mule::extensions::internal::model::ChildOfExecutableElement::create()]"
+            />
+        </munit:behavior>
+        <munit:execution>
+            <set-payload value="#[Java::isInstanceOf(payload, 'org.mule.extensions.internal.model.ExecutableElement')]"
+            />
+        </munit:execution>
+        <munit:validation>
+            <munit-tools:assert-that expression="#[payload]"
+                                     is="#[MunitTools::equalTo(true)]"/>
+        </munit:validation>
+    </munit:test>
+
+</mule>

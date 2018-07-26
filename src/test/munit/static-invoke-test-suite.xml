@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:java="http://www.mulesoft.org/schema/mule/java"
+      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:munit="http://www.mulesoft.org/schema/mule/munit"
+      xmlns:munit-tools="http://www.mulesoft.org/schema/mule/munit-tools" xmlns="http://www.mulesoft.org/schema/mule/core"
+      xsi:schemaLocation="
+		http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+		http://www.mulesoft.org/schema/mule/munit http://www.mulesoft.org/schema/mule/munit/current/mule-munit.xsd
+		http://www.mulesoft.org/schema/mule/munit-tools  http://www.mulesoft.org/schema/mule/munit-tools/current/mule-munit-tools.xsd
+http://www.mulesoft.org/schema/mule/java http://www.mulesoft.org/schema/mule/java/current/mule-java.xsd">
+    <munit:config name="static-invoke-test-suite.xml"/>
+    <munit:test name="static-invoke-no-args" description="MUnit Test">
+        <munit:execution>
+            <java:invoke-static
+                    class="org.mule.extensions.internal.model.ExecutableElement" method="create()"/>
+        </munit:execution>
+        <munit:validation>
+            <munit-tools:assert-that
+                    expression="#[Java::isInstanceOf(payload, 'org.mule.extensions.internal.model.ExecutableElement')]"
+                    is="#[MunitTools::equalTo(true)]"/>
+            <munit-tools:assert-that
+                    expression="#[payload.phase]" is="#[MunitTools::equalTo('NOT_STARTED')]"/>
+        </munit:validation>
+    </munit:test>
+    <munit:test name="static-invoke-with-args" description="MUnit Test">
+        <munit:execution>
+            <java:invoke-static
+                    class="org.mule.extensions.internal.model.ExecutableElement" method="create(Phase)">
+                <java:args><![CDATA[#[{initPhase: 'STOPPED'}]]]></java:args>
+            </java:invoke-static>
+        </munit:execution>
+        <munit:validation>
+            <munit-tools:assert-that
+                    expression="#[Java::isInstanceOf(payload, 'org.mule.extensions.internal.model.ExecutableElement')]"
+                    is="#[MunitTools::equalTo(true)]"/>
+            <munit-tools:assert-that
+                    expression="#[payload.phase]" is="#[MunitTools::equalTo('STOPPED')]"/>
+        </munit:validation>
+    </munit:test>
+    <munit:test name="invoke-static-with-two-different-classes-with-same-method-signature" description="MUnit Test"
+    >
+        <munit:execution>
+            <java:invoke-static
+                    class="org.mule.extensions.internal.model.ExecutableElement" method="className()"
+                    target="executableResult"/>
+            <java:invoke-static
+                    class="org.mule.extensions.internal.model.AnotherExecutableElement" method="className()"
+                    target="anotherResult"/>
+        </munit:execution>
+        <munit:validation>
+            <munit-tools:assert-that
+                    expression="#[vars.executableResult]"
+                    is="#[MunitTools::equalTo('org.mule.extensions.internal.model.ExecutableElement')]"/>
+            <munit-tools:assert-that
+                    expression="#[vars.anotherResult]"
+                    is="#[MunitTools::equalTo('org.mule.extensions.internal.model.AnotherExecutableElement')]"/>
+        </munit:validation>
+    </munit:test>
+    <munit:test name="fails-with-invocation-error" description="MUnit Test"
+                expectedErrorType="JAVA:INVOCATION">
+        <munit:execution>
+            <java:invoke-static
+                    class="org.mule.extensions.internal.model.ExecutableElement" method="throwException(String)">
+                <java:args><![CDATA[#[{message: 'My internal exception message'}]]]></java:args>
+            </java:invoke-static>
+        </munit:execution>
+    </munit:test>
+    <munit:test name="fails-with-arguments-mismatch" description="MUnit Test"
+                expectedErrorType="JAVA:ARGUMENTS_MISMATCH">
+        <munit:execution>
+            <java:invoke-static
+                    class="org.mule.extensions.internal.model.ExecutableElement" method="throwException(String)">
+                <java:args><![CDATA[#[{}]]]></java:args>
+            </java:invoke-static>
+        </munit:execution>
+    </munit:test>
+    <munit:test name="fails-with-invocation-cannot-convert-types" description="MUnit Test"
+                expectedErrorType="JAVA:INVOCATION">
+        <munit:execution>
+            <java:invoke-static
+                    class="org.mule.extensions.internal.model.ExecutableElement" method="throwException(String)">
+                <java:args><![CDATA[#[{arg0: ['listMessage']}]]]></java:args>
+            </java:invoke-static>
+        </munit:execution>
+    </munit:test>
+    <munit:test name="fails-with-argument-mismatch-too-many-args" description="MUnit Test"
+    >
+        <munit:execution>
+            <java:invoke-static
+                    class="org.mule.extensions.internal.model.ExecutableElement" method="create(Phase)">
+                <java:args><![CDATA[#[{arg0: 'STOPPED', arg1: 'something Else'}]]]></java:args>
+            </java:invoke-static>
+        </munit:execution>
+    </munit:test>
+    <munit:test name="fails-with-no-such-method-by-name" description="MUnit Test"
+                expectedErrorType="JAVA:NO_SUCH_METHOD">
+        <munit:execution>
+            <java:invoke-static
+                    class="org.mule.extensions.internal.model.ExecutableElement" method="notAnExistingMethodName()"
+                    target="anotherResult"/>
+        </munit:execution>
+    </munit:test>
+    <munit:test name="fail-no-such-method-by-args" description="MUnit Test"
+                expectedErrorType="JAVA:NO_SUCH_METHOD">
+        <munit:execution>
+            <java:invoke-static
+                    class="org.mule.extensions.internal.model.ExecutableElement" method="create(Phase,int)"
+                    target="anotherResult"/>
+        </munit:execution>
+    </munit:test>
+    <munit:test name="fail-no-such-method-instance-instead-of-class" description="MUnit Test"
+                expectedErrorType="JAVA:NO_SUCH_METHOD">
+        <munit:execution>
+            <java:invoke-static
+                    class="org.mule.extensions.internal.model.ExecutableElement" method="sayHi()"
+                    target="anotherResult"/>
+        </munit:execution>
+    </munit:test>
+    <munit:test name="fails-with-wrong-instance-class" description="MUnit Test">
+    </munit:test>
+    <munit:test name="fails-with-class-not-found" description="MUnit Test"
+                expectedErrorType="JAVA:CLASS_NOT_FOUND">
+        <munit:execution>
+            <java:invoke-static class="org.foo.Bar"
+                                method="do()"/>
+        </munit:execution>
+    </munit:test>
+</mule>
