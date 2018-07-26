@@ -3,7 +3,7 @@
 <mule xmlns:java="http://www.mulesoft.org/schema/mule/java"
       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:munit="http://www.mulesoft.org/schema/mule/munit"
       xmlns:munit-tools="http://www.mulesoft.org/schema/mule/munit-tools"
-      xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+      xmlns="http://www.mulesoft.org/schema/mule/core"
       xsi:schemaLocation="
 		http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
 		http://www.mulesoft.org/schema/mule/munit http://www.mulesoft.org/schema/mule/munit/current/mule-munit.xsd
@@ -24,8 +24,8 @@ http://www.mulesoft.org/schema/mule/java http://www.mulesoft.org/schema/mule/jav
             </java:invoke-static>
         </munit:execution>
         <munit:validation>
-            <munit-tools:assert-that doc:name="Assert"
-                                     expression="#[payload]" is="#[MunitTools::equalTo('3')]"/>
+            <munit-tools:assert-that
+                    expression="#[payload]" is="#[MunitTools::equalTo('3')]"/>
         </munit:validation>
     </munit:test>
 
@@ -43,8 +43,8 @@ http://www.mulesoft.org/schema/mule/java http://www.mulesoft.org/schema/mule/jav
             </java:invoke-static>
         </munit:execution>
         <munit:validation>
-            <munit-tools:assert-that doc:name="Assert"
-                                     expression="#[payload]" is="#[MunitTools::equalTo('Hello this is getting transformed')]"/>
+            <munit-tools:assert-that
+                    expression="#[payload]" is="#[MunitTools::equalTo('Hello this is getting transformed')]"/>
         </munit:validation>
     </munit:test>
 
@@ -66,8 +66,8 @@ http://www.mulesoft.org/schema/mule/java http://www.mulesoft.org/schema/mule/jav
             </java:invoke-static>
         </munit:execution>
         <munit:validation>
-            <munit-tools:assert-that doc:name="Assert"
-                                     expression="#[payload]" is="#[MunitTools::equalTo(4)]"/>
+            <munit-tools:assert-that
+                    expression="#[payload]" is="#[MunitTools::equalTo(4)]"/>
         </munit:validation>
     </munit:test>
 
@@ -90,8 +90,8 @@ http://www.mulesoft.org/schema/mule/java http://www.mulesoft.org/schema/mule/jav
             </java:invoke-static>
         </munit:execution>
         <munit:validation>
-            <munit-tools:assert-that doc:name="Assert"
-                                     expression="#[payload]" is="#[MunitTools::equalTo(4)]"/>
+            <munit-tools:assert-that
+                    expression="#[payload]" is="#[MunitTools::equalTo(4)]"/>
         </munit:validation>
     </munit:test>
 
@@ -114,8 +114,8 @@ http://www.mulesoft.org/schema/mule/java http://www.mulesoft.org/schema/mule/jav
             </java:invoke-static>
         </munit:execution>
         <munit:validation>
-            <munit-tools:assert-that doc:name="Assert"
-                                     expression="#[payload]" is="#[MunitTools::equalTo('11')]"/>
+            <munit-tools:assert-that
+                    expression="#[payload]" is="#[MunitTools::equalTo('11')]"/>
         </munit:validation>
     </munit:test>
 
@@ -133,8 +133,8 @@ http://www.mulesoft.org/schema/mule/java http://www.mulesoft.org/schema/mule/jav
             </java:invoke-static>
         </munit:execution>
         <munit:validation>
-            <munit-tools:assert-that doc:name="Assert"
-                                     expression="#[payload]" is="#[MunitTools::equalTo('4')]"/>
+            <munit-tools:assert-that
+                    expression="#[payload]" is="#[MunitTools::equalTo('4')]"/>
         </munit:validation>
     </munit:test>
 
@@ -153,8 +153,8 @@ http://www.mulesoft.org/schema/mule/java http://www.mulesoft.org/schema/mule/jav
             </java:invoke-static>
         </munit:execution>
         <munit:validation>
-            <munit-tools:assert-that doc:name="Assert"
-                                     expression="#[payload]" is="#[MunitTools::equalTo('3')]"/>
+            <munit-tools:assert-that
+                    expression="#[payload]" is="#[MunitTools::equalTo('3')]"/>
         </munit:validation>
     </munit:test>
 
@@ -176,26 +176,37 @@ http://www.mulesoft.org/schema/mule/java http://www.mulesoft.org/schema/mule/jav
             </java:invoke-static>
         </munit:execution>
         <munit:validation>
-            <munit-tools:assert-that doc:name="Assert"
-                                     expression="#[payload]" is="#[MunitTools::equalTo('Doors that open like this | / --')]"/>
+            <munit-tools:assert-that
+                    expression="#[payload]" is="#[MunitTools::equalTo('Doors that open like this | / --')]"/>
         </munit:validation>
     </munit:test>
 
-    <munit:test name="invokeStaticWithWildcard" description="MUnit Test" expectedErrorType="JAVA:INVOCATION">
+    <munit:test name="invokeStaticWithWildcard" description="MUnit Test">
         <munit:execution>
-            <java:invoke-static
-                    class="org.mule.extensions.internal.model.AnotherExecutableElement"
-                    method="getClassFromFirstItem(List)">
-                <java:args>
-                    #[{
-                    'items': ["Hello", "This", "Is", "An", "Array"]
-                    }]
-                </java:args>
-            </java:invoke-static>
+            <try>
+                <java:invoke-static class="org.mule.extensions.internal.model.AnotherExecutableElement"
+                                    method="getClassFromFirstItem(List)">
+                    <java:args>
+                        #[{
+                        'items': ["Hello", "This", "Is", "An", "Array"]
+                        }]
+                    </java:args>
+                </java:invoke-static>
+                <error-handler>
+                    <on-error-continue enableNotifications="true" logException="true"
+                                       type="JAVA:INVOCATION">
+                        <set-payload value="#[error]"/>
+                    </on-error-continue>
+                </error-handler>
+            </try>
         </munit:execution>
         <munit:validation>
-            <munit-tools:assert-that doc:name="Assert" expression="#[Java::isInstanceOf(payload, 'java.lang.String')]"
-                                     is="#[MunitTools::equalTo(true)]"/>
+            <munit-tools:assert>
+                <munit-tools:that><![CDATA[#[import * from dw::test::Asserts
+ ---
+payload.description must equalTo("Invocation of static Method 'getClassFromFirstItem(List)' from Class 'org.mule.extensions.internal.model.AnotherExecutableElement' with arguments [java.util.ArrayList<?> items] resulted in an error.\nExpected arguments are [java.util.List<org.mule.extensions.internal.model.ExecutableElement> items].\nCause: java.lang.ClassCastException - java.lang.String cannot be cast to org.mule.extensions.internal.model.ExecutableElement")
+]]]></munit-tools:that>
+            </munit-tools:assert>
         </munit:validation>
     </munit:test>
 
@@ -244,8 +255,8 @@ http://www.mulesoft.org/schema/mule/java http://www.mulesoft.org/schema/mule/jav
             </java:invoke-static>
         </munit:execution>
         <munit:validation>
-            <munit-tools:assert-that doc:name="Assert"
-                                     expression="#[payload]" is="#[MunitTools::equalTo('4')]"/>
+            <munit-tools:assert-that
+                    expression="#[payload]" is="#[MunitTools::equalTo('4')]"/>
         </munit:validation>
     </munit:test>
 
@@ -272,16 +283,13 @@ http://www.mulesoft.org/schema/mule/java http://www.mulesoft.org/schema/mule/jav
             </java:invoke-static>
         </munit:execution>
         <munit:validation>
-            <munit-tools:assert-that doc:name="Assert"
-                                     expression="#[payload]" is="#[MunitTools::equalTo(28)]"/>
+            <munit-tools:assert-that
+                    expression="#[payload]" is="#[MunitTools::equalTo(28)]"/>
         </munit:validation>
     </munit:test>
 
+    <!--Ignored until MU-1426 is enabled-->
     <munit:test name="invokeStaticWithNullParameter" description="MUnit Test" ignore="true">
-        <munit:behavior>
-            <set-variable variableName="nullValue"
-                          value="#[java!org::mule::extensions::internal::model::ExecutableElement::getNull()]"/>
-        </munit:behavior>
         <munit:execution>
             <java:invoke-static
                     class="org.mule.extensions.internal.model.AnotherExecutableElement"
@@ -292,17 +300,14 @@ http://www.mulesoft.org/schema/mule/java http://www.mulesoft.org/schema/mule/jav
             </java:invoke-static>
         </munit:execution>
         <munit:validation>
-            <munit-tools:assert-that doc:name="Assert"
-                                     expression="#[payload]" is="#[MunitTools::nullValue()]"/>
+            <munit-tools:assert-that
+                    expression="#[payload]" is="#[MunitTools::nullValue()]"/>
         </munit:validation>
     </munit:test>
 
-    <munit:test name="invokeStaticWitNullParameterForPrimitiveValue" expectedErrorType="JAVA:ARGUMENTS_MISMATCH"
+    <!--Ignored until MU-1426 is enabled-->
+    <munit:test name="invokeStaticWithNullParameterForPrimitiveValue" expectedErrorType="JAVA:ARGUMENTS_MISMATCH"
                 description="MUnit Test" ignore="true">
-        <munit:behavior>
-            <set-variable variableName="nullValue"
-                          value="#[java!org::mule::extensions::internal::model::ExecutableElement::getNull()]"/>
-        </munit:behavior>
         <munit:execution>
             <java:invoke-static
                     class="org.mule.extensions.internal.model.AnotherExecutableElement"
@@ -315,10 +320,6 @@ http://www.mulesoft.org/schema/mule/java http://www.mulesoft.org/schema/mule/jav
     </munit:test>
 
     <munit:test name="invokeStaticWithMapWithListValuesAndOneIsNull">
-        <munit:behavior>
-            <set-variable variableName="nullValue"
-                          value="#[java!org::mule::extensions::internal::model::ExecutableElement::getNull()]"/>
-        </munit:behavior>
         <munit:execution>
             <java:invoke-static
                     class="org.mule.extensions.internal.model.AnotherExecutableElement"
@@ -337,8 +338,34 @@ http://www.mulesoft.org/schema/mule/java http://www.mulesoft.org/schema/mule/jav
             </java:invoke-static>
         </munit:execution>
         <munit:validation>
-            <munit-tools:assert-that doc:name="Assert"
-                                     expression="#[payload]" is="#[MunitTools::equalTo('11')]"/>
+            <munit-tools:assert-that expression="#[payload]" is="#[MunitTools::equalTo('11')]"/>
+        </munit:validation>
+    </munit:test>
+    <munit:test name="arguments-transformation-test-suiteTest" description="MUnit Test">
+        <munit:execution>
+            <try>
+                <java:invoke-static
+                        class="org.mule.extensions.internal.model.AnotherExecutableElement"
+                        method="getCarFromList(List, int)">
+                    <java:args><![CDATA[#[{
+	arg0: ["My String"],
+    arg1: "0"
+}]]]></java:args>
+                </java:invoke-static>
+                <error-handler>
+                    <on-error-continue enableNotifications="true" logException="true"
+                                       type="JAVA:INVOCATION">
+                        <set-payload value="#[error]"/>
+                    </on-error-continue>
+                </error-handler>
+            </try>
+        </munit:execution>
+        <munit:validation>
+            <munit-tools:assert>
+                <munit-tools:that><![CDATA[#[import * from dw::test::Asserts
+ ---
+payload.description must equalTo("Invocation of static Method 'getCarFromList(List, int)' from Class 'org.mule.extensions.internal.model.AnotherExecutableElement' with arguments [java.util.ArrayList<?> arg0, java.lang.String arg1] resulted in an error.\nExpected arguments are [java.util.List<org.mule.extensions.internal.model.Car> cars, int index].\nCause: java.lang.ClassCastException - java.lang.String cannot be cast to org.mule.extensions.internal.model.Car")]]]></munit-tools:that>
+            </munit-tools:assert>
         </munit:validation>
     </munit:test>
 </mule>
