@@ -1,0 +1,288 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule
+        xmlns:java="http://www.mulesoft.org/schema/mule/java" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns:munit="http://www.mulesoft.org/schema/mule/munit"
+        xmlns:munit-tools="http://www.mulesoft.org/schema/mule/munit-tools"
+        xmlns="http://www.mulesoft.org/schema/mule/core"
+        xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+		http://www.mulesoft.org/schema/mule/munit http://www.mulesoft.org/schema/mule/munit/current/mule-munit.xsd
+		http://www.mulesoft.org/schema/mule/munit-tools  http://www.mulesoft.org/schema/mule/munit-tools/current/mule-munit-tools.xsd
+http://www.mulesoft.org/schema/mule/java http://www.mulesoft.org/schema/mule/java/current/mule-java.xsd">
+    <munit:config name="invoke-test-suite.xml"/>
+    <munit:before-test name="setup-test-instance" description="Before tests actions"
+    >
+        <java:new
+                class="org.mule.extensions.internal.model.ExecutableElement" constructor="ExecutableElement()"
+                target="instance"/>
+    </munit:before-test>
+    <munit:test name="invoke-no-args" description="MUnit Test">
+        <munit:execution>
+            <java:invoke instance="#[vars.instance]"
+                         class="org.mule.extensions.internal.model.ExecutableElement" method="sayHi()">
+            </java:invoke>
+        </munit:execution>
+        <munit:validation>
+            <munit-tools:assert-that
+                    expression="#[payload]" is="#[MunitTools::equalTo('Hi')]"/>
+        </munit:validation>
+    </munit:test>
+    <munit:test name="invoke-no-args-complex-type" description="MUnit Test">
+        <munit:execution>
+            <java:invoke instance="#[vars.instance]"
+                         class="org.mule.extensions.internal.model.ExecutableElement" method="createEmptyPojo()"/>
+        </munit:execution>
+        <munit:validation>
+            <munit-tools:assert-that
+                    expression="#[Java::isInstanceOf(payload, 'org.mule.extensions.internal.model.ComplexReturnTypes')]"
+                    is="#[MunitTools::equalTo(true)]"/>
+        </munit:validation>
+    </munit:test>
+    <munit:test name="invoke-affects-state" description="MUnit Test">
+        <munit:execution>
+            <munit-tools:assert-that
+                    expression="#[vars.instance.phase]" is="#[MunitTools::equalTo('NOT_STARTED')]"/>
+            <java:invoke instance="#[vars.instance]"
+                         class="org.mule.extensions.internal.model.ExecutableElement" method="nextPhase()"/>
+            <java:invoke instance="#[vars.instance]"
+                         class="org.mule.extensions.internal.model.ExecutableElement" method="getPhaseId()"/>
+            <munit-tools:assert-that
+                    expression="#[payload]" is="#[MunitTools::equalTo(1)]"/>
+            <java:invoke instance="#[vars.instance]"
+                         class="org.mule.extensions.internal.model.ExecutableElement" method="nextPhase()"/>
+            <java:invoke instance="#[vars.instance]"
+                         class="org.mule.extensions.internal.model.ExecutableElement" method="getPhase()"/>
+        </munit:execution>
+        <munit:validation>
+            <munit-tools:assert-that
+                    expression="#[vars.instance.phase]" is="#[MunitTools::equalTo('STOPPED')]"/>
+        </munit:validation>
+    </munit:test>
+    <munit:test name="invoke-affects-parameters" description="MUnit Test">
+        <munit:behavior>
+            <set-variable value="#[{}]"
+                          variableName="initialMap"/>
+        </munit:behavior>
+        <munit:execution>
+            <java:invoke instance="#[vars.instance]"
+                         class="org.mule.extensions.internal.model.ExecutableElement" method="addToMap(Map)">
+                <java:args><![CDATA[#[{arg0: vars.initialMap}]]]></java:args>
+            </java:invoke>
+        </munit:execution>
+        <munit:validation>
+            <munit-tools:assert-that
+                    expression="#[vars.initialMap]"
+                    is="#[MunitTools::hasValue(MunitTools::equalTo('ENRICHED'))]"/>
+        </munit:validation>
+    </munit:test>
+    <munit:test name="invoke-resolve-overload-by-type" description="MUnit Test">
+        <munit:execution>
+            <java:invoke instance="#[vars.instance]"
+                         class="org.mule.extensions.internal.model.ExecutableElement" method="sayHi(String)" target="hiString">
+                <java:args><![CDATA[#[{arg0: 'Rick'}]]]></java:args>
+            </java:invoke>
+            <java:invoke instance="#[vars.instance]"
+                         class="org.mule.extensions.internal.model.ExecutableElement" method="sayHi(int)" target="hiNumber">
+                <java:args><![CDATA[#[{arg0: 147}]]]></java:args>
+            </java:invoke>
+        </munit:execution>
+        <munit:validation>
+            <munit-tools:assert-that
+                    expression="#[vars.hiString]" is="#[MunitTools::equalTo('Hi Rick')]"/>
+            <munit-tools:assert-that
+                    expression="#[vars.hiNumber]" is="#[MunitTools::equalTo('Hi 147')]"/>
+        </munit:validation>
+    </munit:test>
+    <munit:test name="invoke-with-arg-names" description="MUnit Test">
+        <munit:execution>
+            <java:invoke instance="#[vars.instance]"
+                         class="org.mule.extensions.internal.model.ExecutableElement" method="sayHi(String,int)"
+                         target="hiString">
+                <java:args><![CDATA[#[{arg1: 137, arg0: 'Rick'}]]]></java:args>
+            </java:invoke>
+        </munit:execution>
+        <munit:validation>
+            <munit-tools:assert-that
+                    expression="#[vars.hiString]" is='#[ MunitTools::equalTo("Hi Rick::137")]'/>
+        </munit:validation>
+    </munit:test>
+    <munit:test name="resolve-overload-by-method-id" description="MUnit Test">
+        <munit:behavior>
+            <java:new class="java.util.ArrayList"
+                      constructor="ArrayList()" target="arrayList"/>
+            <java:new class="java.util.LinkedList"
+                      constructor="LinkedList()" target="linkedList"/>
+        </munit:behavior>
+        <munit:execution>
+            <java:invoke instance="#[vars.instance]"
+                         class="org.mule.extensions.internal.model.ExecutableElement" method="addToList(List)"
+                         target="listResult">
+                <java:args><![CDATA[#[{list: vars.linkedList}]]]></java:args>
+            </java:invoke>
+            <java:invoke
+                    instance="#[vars.instance]" class="org.mule.extensions.internal.model.ExecutableElement"
+                    method="addToList(LinkedList)" target="linkedListResult">
+                <java:args><![CDATA[#[{arg0: vars.linkedList}]]]></java:args>
+            </java:invoke>
+            <java:invoke instance="#[vars.instance]"
+                         class="org.mule.extensions.internal.model.ExecutableElement" method="addToList(ArrayList)"
+                         target="arrayListResult">
+                <java:args><![CDATA[#[{list: vars.arrayList}]]]></java:args>
+            </java:invoke>
+        </munit:execution>
+        <munit:validation>
+            <munit-tools:assert>
+                <munit-tools:that><![CDATA[#[import * from dw::test::Asserts
+ ---
+vars.linkedListResult must equalTo(['List', 'LinkedList'])]]]></munit-tools:that>
+            </munit-tools:assert>
+            <munit-tools:assert-that
+                    expression="#[vars.arrayListResult[0]]" is="#[MunitTools::equalTo('ArrayList')]"/>
+        </munit:validation>
+    </munit:test>
+    <munit:test name="invoke-validate-correct-type" description="MUnit Test"
+                expectedErrorType="JAVA:WRONG_INSTANCE_CLASS">
+        <munit:execution>
+            <java:invoke
+                    instance="#[vars.instance]" class="org.mule.extensions.internal.model.CompositePojo" method="sayHi()"/>
+        </munit:execution>
+        <munit:validation>
+            <munit-tools:fail
+                    message="Instance type is not of the expected class and no error was thrown"/>
+        </munit:validation>
+    </munit:test>
+
+    <munit:test name="invoke-function-inline-map" description="MUnit Test">
+        <munit:execution>
+            <java:new
+                    class="org.mule.extensions.internal.model.CompositePojo" constructor="CompositePojo()"/>
+            <set-variable
+                    value="#[Java::invoke('org.mule.extensions.internal.model.CompositePojo', 'setChilds(Map)', payload, {childs: {'repeat': [payload, payload]}})]"
+                    variableName="none"/>
+
+        </munit:execution>
+        <munit:validation>
+            <munit-tools:assert-that
+                    expression="#[payload.childs.repeat]" is="#[MunitTools::hasSize(MunitTools::equalTo(2))]"/>
+        </munit:validation>
+    </munit:test>
+
+    <munit:test name="invokeInstanceWithMissingOneArgument">
+        <munit:behavior>
+            <java:new class="org.mule.extensions.internal.model.ExecutableElement" constructor="ExecutableElement()"/>
+        </munit:behavior>
+        <munit:execution>
+            <try>
+                <java:invoke class="org.mule.extensions.internal.model.ExecutableElement" instance="#[payload]"
+                             method="sayHi(String,int)">
+                    <java:args>#[
+                        {
+                        arg0: 'zaraza'
+                        }
+                        ]
+                    </java:args>
+                </java:invoke>
+                <error-handler>
+                    <on-error-continue type="JAVA:ARGUMENTS_MISMATCH" enableNotifications="true" logException="true">
+                        <set-payload value="#[error]"/>
+                    </on-error-continue>
+                </error-handler>
+            </try>
+        </munit:execution>
+        <munit:validation>
+            <munit-tools:assert>
+                <munit-tools:that><![CDATA[#[import * from dw::test::Asserts
+ ---
+payload.description must equalTo("Failed to invoke Method 'sayHi(String,int)' from Class 'org.mule.extensions.internal.model.ExecutableElement'. Too few arguments were provided for the invocation. \nExpected arguments are [java.lang.String name, int id] and invocation was attempted with arguments [java.lang.String arg0].\nMissing parameter [id].")
+]]]></munit-tools:that>
+            </munit-tools:assert>
+
+        </munit:validation>
+    </munit:test>
+
+    <munit:test name="invoke-instance-with-wrong-argument-type">
+        <munit:behavior>
+            <java:new class="org.mule.extensions.internal.model.ExecutableElement" constructor="ExecutableElement()"/>
+        </munit:behavior>
+        <munit:execution>
+            <try>
+                <java:invoke class="org.mule.extensions.internal.model.ExecutableElement" instance="#[payload]"
+                             method="sayHi(int)">
+                    <java:args>#[
+                        {
+                        arg0: true
+                        }
+                        ]
+                    </java:args>
+                </java:invoke>
+                <error-handler>
+                    <on-error-continue type="JAVA:ARGUMENTS_MISMATCH" enableNotifications="true" logException="true">
+                        <set-payload value="#[error]"/>
+                    </on-error-continue>
+                </error-handler>
+            </try>
+        </munit:execution>
+        <munit:validation>
+            <munit-tools:assert>
+                <munit-tools:that><![CDATA[#[import * from dw::test::Asserts
+ ---
+payload.description must contain("Failed to invoke Method 'sayHi(int)' from Class 'org.mule.extensions.internal.model.ExecutableElement'. The given arguments could not be transformed to match those expected by the Method. \nExpected arguments are [int id] and invocation was attempted with arguments [java.lang.Boolean arg0].\nNo suitable transformation was found to match the expected type for the parameter [id].")
+]]]></munit-tools:that>
+            </munit-tools:assert>
+
+        </munit:validation>
+    </munit:test>
+
+    <munit:test name="invoke-instance-with-missing-argument">
+        <munit:behavior>
+            <java:new class="org.mule.extensions.internal.model.ExecutableElement" constructor="ExecutableElement()"/>
+        </munit:behavior>
+        <munit:execution>
+            <try>
+                <java:invoke class="org.mule.extensions.internal.model.ExecutableElement" instance="#[payload]"
+                             method="sayHi(int)"/>
+                <error-handler>
+                    <on-error-continue type="JAVA:ARGUMENTS_MISMATCH" enableNotifications="true" logException="true">
+                        <set-payload value="#[error]"/>
+                    </on-error-continue>
+                </error-handler>
+            </try>
+        </munit:execution>
+        <munit:validation>
+            <munit-tools:assert>
+                <munit-tools:that><![CDATA[#[import * from dw::test::Asserts
+ ---
+payload.description must contain("Failed to invoke Method 'sayHi(int)' from Class 'org.mule.extensions.internal.model.ExecutableElement'. Too few arguments were provided for the invocation. \nExpected arguments are [int id] and invocation was attempted without any argument")
+]]]></munit-tools:that>
+            </munit-tools:assert>
+
+        </munit:validation>
+    </munit:test>
+
+    <munit:test name="invoke-static-throws-exception-with-custom-message">
+        <munit:behavior>
+            <set-variable variableName="expectedMessage" value="My internal exception message"></set-variable>
+        </munit:behavior>
+        <munit:execution>
+            <try>
+                <java:invoke-static class="org.mule.extensions.internal.model.ExecutableElement" method="throwException(String)">
+                    <java:args><![CDATA[#[{message: vars.expectedMessage}]]]></java:args>
+                </java:invoke-static>
+                <error-handler>
+                    <on-error-continue type="JAVA:INVOCATION" enableNotifications="true" logException="true">
+                        <set-payload value="#[error]"/>
+                    </on-error-continue>
+                </error-handler>
+            </try>
+        </munit:execution>
+        <munit:validation>
+            <munit-tools:assert>
+                <munit-tools:that><![CDATA[#[import * from dw::test::Asserts
+ ---
+payload.description must contain("Invocation of static Method 'throwException(String)' from Class 'org.mule.extensions.internal.model.ExecutableElement' with arguments [java.lang.String message] resulted in an error.\nExpected arguments are [java.lang.String message].\nCause: java.lang.RuntimeException - " ++ vars.expectedMessage)
+]]]></munit-tools:that>
+            </munit-tools:assert>
+
+        </munit:validation>
+    </munit:test>
+</mule>

@@ -1,0 +1,371 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:java="http://www.mulesoft.org/schema/mule/java"
+      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:munit="http://www.mulesoft.org/schema/mule/munit"
+      xmlns:munit-tools="http://www.mulesoft.org/schema/mule/munit-tools"
+      xmlns="http://www.mulesoft.org/schema/mule/core"
+      xsi:schemaLocation="
+		http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+		http://www.mulesoft.org/schema/mule/munit http://www.mulesoft.org/schema/mule/munit/current/mule-munit.xsd
+		http://www.mulesoft.org/schema/mule/munit-tools  http://www.mulesoft.org/schema/mule/munit-tools/current/mule-munit-tools.xsd
+http://www.mulesoft.org/schema/mule/java http://www.mulesoft.org/schema/mule/java/current/mule-java.xsd">
+    <munit:config name="argument-transformation-test-suite.xml"/>
+
+    <munit:test name="invokeStaticWithNumberUsingStringTransformation">
+        <munit:execution>
+            <java:invoke-static
+                    class="org.mule.extensions.internal.model.AnotherExecutableElement"
+                    method="getNumber(String)">
+                <java:args>
+                    #[{
+                    'number': 3
+                    }]
+                </java:args>
+            </java:invoke-static>
+        </munit:execution>
+        <munit:validation>
+            <munit-tools:assert-that
+                    expression="#[payload]" is="#[MunitTools::equalTo('3')]"/>
+        </munit:validation>
+    </munit:test>
+
+
+    <munit:test name="invokeStaticWithStringUsingInputStreamTransformation">
+        <munit:execution>
+            <java:invoke-static
+                    class="org.mule.extensions.internal.model.AnotherExecutableElement"
+                    method="sayInputStream(InputStream)">
+                <java:args>
+                    #[{
+                    'inputStream': "Hello this is getting transformed"
+                    }]
+                </java:args>
+            </java:invoke-static>
+        </munit:execution>
+        <munit:validation>
+            <munit-tools:assert-that
+                    expression="#[payload]" is="#[MunitTools::equalTo('Hello this is getting transformed')]"/>
+        </munit:validation>
+    </munit:test>
+
+    <munit:test name="invokeStaticWithMapParameter">
+        <munit:execution>
+            <java:invoke-static
+                    class="org.mule.extensions.internal.model.AnotherExecutableElement"
+                    method="getMapEntry(Map,String)">
+                <java:args>
+                    #[{
+                    'map': {
+                    '1' : 2,
+                    '3' : "4",
+                    '5' : 6
+                    },
+                    'key': 3
+                    }]
+                </java:args>
+            </java:invoke-static>
+        </munit:execution>
+        <munit:validation>
+            <munit-tools:assert-that
+                    expression="#[payload]" is="#[MunitTools::equalTo(4)]"/>
+        </munit:validation>
+    </munit:test>
+
+
+    <munit:test name="invokeStaticWithMapParameterByPositionIndexInsteadOfName">
+        <munit:execution>
+            <java:invoke-static
+                    class="org.mule.extensions.internal.model.AnotherExecutableElement"
+                    method="getMapEntry(Map,String)">
+                <java:args>
+                    #[{
+                    'arg0': {
+                    '1' : 2,
+                    '3' : "4",
+                    '5' : 6
+                    },
+                    'arg1': 3
+                    }]
+                </java:args>
+            </java:invoke-static>
+        </munit:execution>
+        <munit:validation>
+            <munit-tools:assert-that
+                    expression="#[payload]" is="#[MunitTools::equalTo(4)]"/>
+        </munit:validation>
+    </munit:test>
+
+    <munit:test name="invokeStaticWithMapWithListValues">
+        <munit:execution>
+            <java:invoke-static
+                    class="org.mule.extensions.internal.model.AnotherExecutableElement"
+                    method="sayItemFromMapEntry(Map,String,Integer)">
+                <java:args>
+                    #[{
+                    'map': {
+                    '1' : ["2" , 3 , "4", "5"],
+                    '6' : ["7", 8, 9],
+                    '10' : [11, "12"]
+                    },
+                    'key': 10,
+                    'index': "0"
+                    }]
+                </java:args>
+            </java:invoke-static>
+        </munit:execution>
+        <munit:validation>
+            <munit-tools:assert-that
+                    expression="#[payload]" is="#[MunitTools::equalTo('11')]"/>
+        </munit:validation>
+    </munit:test>
+
+    <munit:test name="invokeStaticWithSpecificListImplementation">
+        <munit:execution>
+            <java:invoke-static
+                    class="org.mule.extensions.internal.model.AnotherExecutableElement"
+                    method="sayItemFromSpecificListImplementation(ArrayList,Integer)">
+                <java:args>
+                    #[{
+                    'list': [ "0", 1, "2", 3, 4, "5"],
+                    'index': "4"
+                    }]
+                </java:args>
+            </java:invoke-static>
+        </munit:execution>
+        <munit:validation>
+            <munit-tools:assert-that
+                    expression="#[payload]" is="#[MunitTools::equalTo('4')]"/>
+        </munit:validation>
+    </munit:test>
+
+    <munit:test name="invokeStaticWithNestedLists">
+        <munit:execution>
+            <java:invoke-static
+                    class="org.mule.extensions.internal.model.AnotherExecutableElement"
+                    method="getFirstItemFromNestedList(List)">
+                <java:args>
+                    #[{
+                    'nestedLists': [[[[3, "This Is Another
+                    String"],["Inside Another List Of
+                    Strings"]]]]
+                    }]
+                </java:args>
+            </java:invoke-static>
+        </munit:execution>
+        <munit:validation>
+            <munit-tools:assert-that
+                    expression="#[payload]" is="#[MunitTools::equalTo('3')]"/>
+        </munit:validation>
+    </munit:test>
+
+    <munit:test name="invokeStaticWithCustomPojo">
+        <munit:execution>
+            <java:invoke-static
+                    class="org.mule.extensions.internal.model.AnotherExecutableElement"
+                    method="getCarDoors(Car)">
+                <java:args>
+                    #[{
+                    'car': {
+                    'doors' : "Doors that open like this | / --",
+                    'engine' : "A very powerful one",
+                    'windows' : "Good Windows",
+                    'wheels' : "Four Wheels"
+                    }
+                    }]
+                </java:args>
+            </java:invoke-static>
+        </munit:execution>
+        <munit:validation>
+            <munit-tools:assert-that
+                    expression="#[payload]" is="#[MunitTools::equalTo('Doors that open like this | / --')]"/>
+        </munit:validation>
+    </munit:test>
+
+    <munit:test name="invokeStaticWithWildcard" description="MUnit Test">
+        <munit:execution>
+            <try>
+                <java:invoke-static class="org.mule.extensions.internal.model.AnotherExecutableElement"
+                                    method="getClassFromFirstItem(List)">
+                    <java:args>
+                        #[{
+                        'items': ["Hello", "This", "Is", "An", "Array"]
+                        }]
+                    </java:args>
+                </java:invoke-static>
+                <error-handler>
+                    <on-error-continue enableNotifications="true" logException="true"
+                                       type="JAVA:INVOCATION">
+                        <set-payload value="#[error]"/>
+                    </on-error-continue>
+                </error-handler>
+            </try>
+        </munit:execution>
+        <munit:validation>
+            <munit-tools:assert>
+                <munit-tools:that><![CDATA[#[import * from dw::test::Asserts
+ ---
+payload.description must equalTo("Invocation of static Method 'getClassFromFirstItem(List)' from Class 'org.mule.extensions.internal.model.AnotherExecutableElement' with arguments [java.util.ArrayList<?> items] resulted in an error.\nExpected arguments are [java.util.List<org.mule.extensions.internal.model.ExecutableElement> items].\nCause: java.lang.ClassCastException - java.lang.String cannot be cast to org.mule.extensions.internal.model.ExecutableElement")
+]]]></munit-tools:that>
+            </munit-tools:assert>
+        </munit:validation>
+    </munit:test>
+
+    <munit:test name="invokeStaticWithListOfCustomPojoAndWithResultAfterwards">
+        <munit:execution>
+            <java:invoke-static
+                    class="org.mule.extensions.internal.model.AnotherExecutableElement"
+                    method="getCarFromList(List,int)">
+                <java:args>
+                    #[{
+                    'cars' : [
+                    {
+                    'doors' : "Common Doors",
+                    'engine' : "A very
+                    powerful one",
+                    'windows' : "Good Windows",
+                    'wheels' : "Four Wheels"
+                    },
+                    {
+                    'doors' : 4,
+                    'engine' : "A very powerful one",
+                    'windows' : "Good
+                    Windows",
+                    'wheels' : "Four Wheels"
+                    },
+                    {
+                    'doors' : "Big Doors",
+                    'engine'
+                    : "A very powerful one",
+                    'windows' : "Good Windows",
+                    'wheels' : "Four
+                    Wheels"
+                    }],
+                    'index' : "1"
+                    }]
+                </java:args>
+            </java:invoke-static>
+            <java:invoke-static
+                    class="org.mule.extensions.internal.model.AnotherExecutableElement"
+                    method="getCarDoors(Car)">
+                <java:args>
+                    #[{
+                    'car': payload
+                    }]
+                </java:args>
+            </java:invoke-static>
+        </munit:execution>
+        <munit:validation>
+            <munit-tools:assert-that
+                    expression="#[payload]" is="#[MunitTools::equalTo('4')]"/>
+        </munit:validation>
+    </munit:test>
+
+    <munit:test name="invokeStaticWithListOfMapsAndStringsTransformed">
+        <munit:execution>
+            <java:invoke-static
+                    class="org.mule.extensions.internal.model.AnotherExecutableElement"
+                    method="getFromMapInsideListAndSumFour(List,int,String)">
+                <java:args>
+                    #[{
+                    'listOfMaps': [{
+                    'hello' : "33",
+                    'cat' : "44",
+                    'dog' : "22"
+                    },{
+                    'fish' : "11",
+                    'water' : "24",
+                    'mac' : "65"
+                    }],
+                    'index' : "1",
+                    'key' : "water"
+                    }]
+                </java:args>
+            </java:invoke-static>
+        </munit:execution>
+        <munit:validation>
+            <munit-tools:assert-that
+                    expression="#[payload]" is="#[MunitTools::equalTo(28)]"/>
+        </munit:validation>
+    </munit:test>
+
+    <!--Ignored until MU-1426 is enabled-->
+    <munit:test name="invokeStaticWithNullParameter" description="MUnit Test" ignore="true">
+        <munit:execution>
+            <java:invoke-static
+                    class="org.mule.extensions.internal.model.AnotherExecutableElement"
+                    method="getSameWord(String)">
+                <java:args>
+                    #[{ 'word' : payload} ]
+                </java:args>
+            </java:invoke-static>
+        </munit:execution>
+        <munit:validation>
+            <munit-tools:assert-that
+                    expression="#[payload]" is="#[MunitTools::nullValue()]"/>
+        </munit:validation>
+    </munit:test>
+
+    <!--Ignored until MU-1426 is enabled-->
+    <munit:test name="invokeStaticWithNullParameterForPrimitiveValue" expectedErrorType="JAVA:ARGUMENTS_MISMATCH"
+                description="MUnit Test" ignore="true">
+        <munit:execution>
+            <java:invoke-static
+                    class="org.mule.extensions.internal.model.AnotherExecutableElement"
+                    method="getSameNumber(int)">
+                <java:args>
+                    #[{ 'number' : vars.nullValue } ]
+                </java:args>
+            </java:invoke-static>
+        </munit:execution>
+    </munit:test>
+
+    <munit:test name="invokeStaticWithMapWithListValuesAndOneIsNull">
+        <munit:execution>
+            <java:invoke-static
+                    class="org.mule.extensions.internal.model.AnotherExecutableElement"
+                    method="sayItemFromMapEntry(Map,String,Integer)">
+                <java:args>
+                    #[{
+                    'map': {
+                    '6' : vars.nullValue,
+                    '1' : ["2" , "3" , "4", "5"],
+                    '10' : ["11", "12"]
+                    },
+                    'key': 10,
+                    'index': "0"
+                    }]
+                </java:args>
+            </java:invoke-static>
+        </munit:execution>
+        <munit:validation>
+            <munit-tools:assert-that expression="#[payload]" is="#[MunitTools::equalTo('11')]"/>
+        </munit:validation>
+    </munit:test>
+    <munit:test name="arguments-transformation-test-suiteTest" description="MUnit Test">
+        <munit:execution>
+            <try>
+                <java:invoke-static
+                        class="org.mule.extensions.internal.model.AnotherExecutableElement"
+                        method="getCarFromList(List, int)">
+                    <java:args><![CDATA[#[{
+	arg0: ["My String"],
+    arg1: "0"
+}]]]></java:args>
+                </java:invoke-static>
+                <error-handler>
+                    <on-error-continue enableNotifications="true" logException="true"
+                                       type="JAVA:INVOCATION">
+                        <set-payload value="#[error]"/>
+                    </on-error-continue>
+                </error-handler>
+            </try>
+        </munit:execution>
+        <munit:validation>
+            <munit-tools:assert>
+                <munit-tools:that><![CDATA[#[import * from dw::test::Asserts
+ ---
+payload.description must equalTo("Invocation of static Method 'getCarFromList(List, int)' from Class 'org.mule.extensions.internal.model.AnotherExecutableElement' with arguments [java.util.ArrayList<?> arg0, java.lang.String arg1] resulted in an error.\nExpected arguments are [java.util.List<org.mule.extensions.internal.model.Car> cars, int index].\nCause: java.lang.ClassCastException - java.lang.String cannot be cast to org.mule.extensions.internal.model.Car")]]]></munit-tools:that>
+            </munit-tools:assert>
+        </munit:validation>
+    </munit:test>
+</mule>
