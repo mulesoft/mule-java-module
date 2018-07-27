@@ -32,6 +32,7 @@ import org.mule.runtime.extension.api.annotation.param.DefaultEncoding;
 import org.mule.runtime.extension.api.annotation.param.NullSafe;
 import org.mule.runtime.extension.api.annotation.param.Optional;
 import org.mule.runtime.extension.api.annotation.param.ParameterGroup;
+import org.mule.runtime.extension.api.annotation.param.display.Placement;
 import org.mule.runtime.extension.api.annotation.param.display.Summary;
 import org.mule.runtime.extension.api.runtime.operation.Result;
 
@@ -154,8 +155,10 @@ public class JavaInvokeOperations {
                                          name = "Method") @MetadataKeyId(InstanceMethodTypeResolver.class) MethodIdentifier identifier,
                                      Object instance,
                                      @Optional @NullSafe @Content @TypeResolver(InstanceMethodTypeResolver.class) Map<String, TypedValue<Object>> args,
-                                     @Optional @Summary("The mime type of the payload that this invocation will output") String outputMimeType,
-                                     @Optional @Summary("The encoding of the payload that this invocation will output") String outputEncoding,
+                                     @Optional @Placement(
+                                         tab = "Advanced") @Summary("The mime type of the payload that this invocation will output") String outputMimeType,
+                                     @Optional @Placement(
+                                         tab = "Advanced") @Summary("The encoding of the payload that this invocation will output") String outputEncoding,
                                      @DefaultEncoding String defaultEncoding)
       throws ClassNotFoundModuleException, WrongTypeModuleException, ArgumentMismatchModuleException,
       InvocationModuleException, NoSuchMethodModuleException {
