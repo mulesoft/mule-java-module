@@ -7,9 +7,9 @@
 package org.mule.extensions.java.api.exception;
 
 import static org.mule.extensions.java.api.error.JavaModuleError.INVOCATION;
-import static org.mule.extensions.java.internal.JavaModuleUtils.getArgumentsMessage;
-import static org.mule.extensions.java.internal.JavaModuleUtils.getCauseMessage;
-import static org.mule.extensions.java.internal.JavaModuleUtils.toHumanReadableArgs;
+import static org.mule.extensions.java.internal.util.JavaModuleUtils.getArgumentsMessage;
+import static org.mule.extensions.java.internal.util.JavaModuleUtils.getCauseMessage;
+import static org.mule.extensions.java.internal.util.JavaModuleUtils.toHumanReadableArgs;
 import org.mule.extensions.java.api.error.JavaModuleError;
 import org.mule.runtime.api.metadata.TypedValue;
 

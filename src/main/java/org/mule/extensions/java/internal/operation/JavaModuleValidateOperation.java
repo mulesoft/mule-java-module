@@ -10,7 +10,7 @@ import static org.mule.runtime.api.meta.ExpressionSupport.NOT_SUPPORTED;
 import org.mule.extensions.java.api.exception.ClassNotFoundModuleException;
 import org.mule.extensions.java.api.exception.WrongTypeModuleException;
 import org.mule.extensions.java.internal.JavaModule;
-import org.mule.extensions.java.internal.JavaModuleUtils;
+import org.mule.extensions.java.internal.util.JavaModuleUtils;
 import org.mule.extensions.java.internal.cache.JavaModuleLoadingCache;
 import org.mule.extensions.java.internal.error.JavaValidateTypeErrorProvider;
 import org.mule.runtime.extension.api.annotation.Alias;

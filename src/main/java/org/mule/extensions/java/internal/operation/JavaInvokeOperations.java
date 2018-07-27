@@ -6,8 +6,8 @@
  */
 package org.mule.extensions.java.internal.operation;
 
-import static org.mule.extensions.java.internal.JavaModuleUtils.invokeMethod;
-import static org.mule.extensions.java.internal.JavaModuleUtils.validateType;
+import static org.mule.extensions.java.internal.util.JavaModuleUtils.validateType;
+import static org.mule.extensions.java.internal.util.MethodInvoker.invokeMethod;
 import org.mule.extensions.java.api.exception.ArgumentMismatchModuleException;
 import org.mule.extensions.java.api.exception.ClassNotFoundModuleException;
 import org.mule.extensions.java.api.exception.InvocationModuleException;
@@ -28,9 +28,12 @@ import org.mule.runtime.extension.api.annotation.metadata.MetadataKeyId;
 import org.mule.runtime.extension.api.annotation.metadata.OutputResolver;
 import org.mule.runtime.extension.api.annotation.metadata.TypeResolver;
 import org.mule.runtime.extension.api.annotation.param.Content;
+import org.mule.runtime.extension.api.annotation.param.DefaultEncoding;
 import org.mule.runtime.extension.api.annotation.param.NullSafe;
 import org.mule.runtime.extension.api.annotation.param.Optional;
 import org.mule.runtime.extension.api.annotation.param.ParameterGroup;
+import org.mule.runtime.extension.api.annotation.param.display.Summary;
+import org.mule.runtime.extension.api.runtime.operation.Result;
 
 import java.lang.reflect.Method;
 import java.util.Map;
@@ -83,6 +86,8 @@ public class JavaInvokeOperations {
    *                   }]
    *                   You can always use the canonical name for the arguments, even if the source code was compiled with
    *                   -parameters.
+   * @param outputMimeType The mime type of the payload that this invocation will output
+   * @param outputEncoding The encoding of the payload that this invocation will output
    * @return the result of the {@link Method} invocation with the given {@code args}
    * @throws ClassNotFoundModuleException    if the given {@code class} is not found in the current context
    * @throws NoSuchMethodModuleException     if the given {@code class} does not declare a method with the given signature
@@ -91,18 +96,20 @@ public class JavaInvokeOperations {
    */
   @Throws(JavaInvokeErrorProvider.class)
   @OutputResolver(output = StaticMethodTypeResolver.class)
-  public Object invokeStatic(
-                             @ParameterGroup(
-                                 name = "Method") @MetadataKeyId(StaticMethodTypeResolver.class) StaticMethodIdentifier identifier,
-                             @Optional @NullSafe @Content @TypeResolver(StaticMethodTypeResolver.class) Map<String, TypedValue<Object>> args)
+  public Result<Object, Void> invokeStatic(
+                                           @ParameterGroup(
+                                               name = "Method") @MetadataKeyId(StaticMethodTypeResolver.class) StaticMethodIdentifier identifier,
+                                           @Optional @NullSafe @Content @TypeResolver(StaticMethodTypeResolver.class) Map<String, TypedValue<Object>> args,
+                                           @Optional @Summary("The mime type of the payload that this invocation will output") String outputMimeType,
+                                           @Optional @Summary("The encoding of the payload that this invocation will output") String outputEncoding,
+                                           @DefaultEncoding String defaultEncoding)
       throws ClassNotFoundModuleException, ArgumentMismatchModuleException,
       InvocationModuleException, NoSuchMethodModuleException {
 
     Class<?> targetClass = cache.loadClass(identifier.getClazz());
-
     Method method = cache.getMethod(identifier, targetClass, args, true);
-    return invokeMethod(method, args, null, identifier,
-                        transformationService, expressionManager, LOGGER);
+    return invokeMethod(method, args, null, identifier, outputMimeType, outputEncoding,
+                        transformationService, expressionManager, LOGGER, defaultEncoding);
   }
 
   /**
@@ -131,6 +138,8 @@ public class JavaInvokeOperations {
    *                   }]
    *                   You can always use the canonical name for the arguments, even if the source code was compiled with
    *                   -parameters.
+   * @param outputMimeType The mime type of the payload that this invocation will output
+   * @param outputEncoding The encoding of the payload that this invocation will output
    * @return the result of the {@link Method} invocation with the given {@code args}
    * @throws ClassNotFoundModuleException    if the given {@code class} is not found in the current context
    * @throws NoSuchMethodModuleException     if the given {@code class} does not declare a method with the given signature
@@ -140,19 +149,22 @@ public class JavaInvokeOperations {
    */
   @Throws(JavaInvokeErrorProvider.class)
   @OutputResolver(output = InstanceMethodTypeResolver.class)
-  public Object invoke(
-                       @ParameterGroup(
-                           name = "Method") @MetadataKeyId(InstanceMethodTypeResolver.class) MethodIdentifier identifier,
-                       Object instance,
-                       @Optional @NullSafe @Content @TypeResolver(InstanceMethodTypeResolver.class) Map<String, TypedValue<Object>> args)
+  public Result<Object, Void> invoke(
+                                     @ParameterGroup(
+                                         name = "Method") @MetadataKeyId(InstanceMethodTypeResolver.class) MethodIdentifier identifier,
+                                     Object instance,
+                                     @Optional @NullSafe @Content @TypeResolver(InstanceMethodTypeResolver.class) Map<String, TypedValue<Object>> args,
+                                     @Optional @Summary("The mime type of the payload that this invocation will output") String outputMimeType,
+                                     @Optional @Summary("The encoding of the payload that this invocation will output") String outputEncoding,
+                                     @DefaultEncoding String defaultEncoding)
       throws ClassNotFoundModuleException, WrongTypeModuleException, ArgumentMismatchModuleException,
       InvocationModuleException, NoSuchMethodModuleException {
 
     validateType(identifier.getClazz(), instance, true, cache);
 
     Method method = cache.getMethod(identifier, instance.getClass(), args, false);
-    return invokeMethod(method, args, instance, identifier,
-                        transformationService, expressionManager, LOGGER);
+    return invokeMethod(method, args, instance, identifier, outputMimeType, outputEncoding,
+                        transformationService, expressionManager, LOGGER, defaultEncoding);
   }
 
 }

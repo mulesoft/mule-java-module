@@ -7,9 +7,9 @@
 package org.mule.extensions.java.api.exception;
 
 import static org.mule.extensions.java.api.error.JavaModuleError.NOT_INSTANTIABLE_TYPE;
-import static org.mule.extensions.java.internal.JavaModuleUtils.getArgumentsMessage;
-import static org.mule.extensions.java.internal.JavaModuleUtils.getCauseMessage;
-import static org.mule.extensions.java.internal.JavaModuleUtils.toHumanReadableArgs;
+import static org.mule.extensions.java.internal.util.JavaModuleUtils.getArgumentsMessage;
+import static org.mule.extensions.java.internal.util.JavaModuleUtils.getCauseMessage;
+import static org.mule.extensions.java.internal.util.JavaModuleUtils.toHumanReadableArgs;
 import org.mule.extensions.java.api.error.JavaModuleError;
 import org.mule.extensions.java.internal.parameters.ExecutableIdentifier;
 import org.mule.runtime.api.metadata.TypedValue;

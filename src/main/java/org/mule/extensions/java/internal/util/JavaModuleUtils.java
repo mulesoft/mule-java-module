@@ -4,16 +4,13 @@
  * license, a copy of which has been included with this distribution in the
  * LICENSE.txt file.
  */
-package org.mule.extensions.java.internal;
+package org.mule.extensions.java.internal.util;
 
 import static java.lang.String.format;
 import static java.util.Collections.emptyList;
 import static java.util.stream.Collectors.toList;
 import static org.mule.runtime.core.api.util.ClassUtils.isInstance;
-import org.mule.extensions.java.api.exception.ArgumentMismatchModuleException;
 import org.mule.extensions.java.api.exception.ClassNotFoundModuleException;
-import org.mule.extensions.java.api.exception.InvocationModuleException;
-import org.mule.extensions.java.api.exception.NoSuchMethodModuleException;
 import org.mule.extensions.java.api.exception.WrongTypeModuleException;
 import org.mule.extensions.java.internal.cache.JavaModuleLoadingCache;
 import org.mule.extensions.java.internal.parameters.ExecutableIdentifier;
@@ -25,7 +22,6 @@ import org.mule.runtime.core.api.el.ExpressionManager;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Executable;
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
 import java.util.ArrayList;
@@ -41,7 +37,7 @@ import org.springframework.core.ResolvableType;
 /**
  * Utility class to common functions across operations
  *
- * @since 1.0
+ * @since 1.0.0
  */
 public final class JavaModuleUtils {
 
@@ -61,54 +57,6 @@ public final class JavaModuleUtils {
 
     if (!isValid) {
       throw new WrongTypeModuleException(clazz, instance.getClass().getName());
-    }
-  }
-
-  public static Object invokeMethod(Method method, Map<String, TypedValue<Object>> args,
-                                    Object instance, ExecutableIdentifier identifier,
-                                    TransformationService transformationService, ExpressionManager expressionManager,
-                                    Logger logger)
-      throws ArgumentMismatchModuleException, InvocationModuleException, NoSuchMethodModuleException {
-
-    ParametersTransformationResult transformationResult =
-        JavaModuleUtils.getSortedAndTransformedArgs(args, method, transformationService, expressionManager, logger);
-
-    if (method.getParameters().length > args.size()) {
-      throw new ArgumentMismatchModuleException(format("Failed to invoke %s '%s' from Class '%s'. Too few arguments were provided for the invocation",
-                                                       identifier.getExecutableTypeName(), identifier.getElementId(),
-                                                       identifier.getClazz()),
-                                                method, args, transformationResult);
-
-    } else if (method.getParameters().length < args.size()) {
-      logTooManyArgsWarning(method, args, identifier, logger);
-    }
-
-    if (transformationResult.isSuccess()) {
-      return doInvoke(method, args, instance, identifier, transformationResult);
-    }
-
-    throw new ArgumentMismatchModuleException(format("Failed to invoke %s '%s' from Class '%s'. The given arguments could not be transformed to match those expected by the %s",
-                                                     identifier.getExecutableTypeName(), identifier.getElementId(),
-                                                     identifier.getClazz(), identifier.getExecutableTypeName()),
-                                              method, args, transformationResult);
-
-  }
-
-  private static Object doInvoke(Method method, Map<String, TypedValue<Object>> args, Object instance,
-                                 ExecutableIdentifier identifier, ParametersTransformationResult transformationResult) {
-    try {
-      return method.invoke(instance, transformationResult.getTransformed().toArray());
-    } catch (IllegalArgumentException e) {
-      throw new ArgumentMismatchModuleException(format("Failed to invoke %s '%s' from Class '%s'",
-                                                       identifier.getExecutableTypeName(), identifier.getElementId(),
-                                                       identifier.getClazz()),
-                                                method, args, transformationResult, e);
-
-    } catch (IllegalAccessException | InvocationTargetException e) {
-      throw new InvocationModuleException(format("%s '%s' from Class '%s' ",
-                                                 identifier.getExecutableTypeName(), identifier.getElementId(),
-                                                 identifier.getClazz()),
-                                          method, args, e);
     }
   }
 
