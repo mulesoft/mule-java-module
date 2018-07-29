@@ -101,8 +101,10 @@ public class JavaInvokeOperations {
                                            @ParameterGroup(
                                                name = "Method") @MetadataKeyId(StaticMethodTypeResolver.class) StaticMethodIdentifier identifier,
                                            @Optional @NullSafe @Content @TypeResolver(StaticMethodTypeResolver.class) Map<String, TypedValue<Object>> args,
-                                           @Optional @Summary("The mime type of the payload that this invocation will output") String outputMimeType,
-                                           @Optional @Summary("The encoding of the payload that this invocation will output") String outputEncoding,
+                                           @Optional @Placement(
+                                               tab = "Advanced") @Summary("The mime type of the payload that this invocation will output") String outputMimeType,
+                                           @Optional @Placement(
+                                               tab = "Advanced") @Summary("The encoding of the payload that this invocation will output") String outputEncoding,
                                            @DefaultEncoding String defaultEncoding)
       throws ClassNotFoundModuleException, ArgumentMismatchModuleException,
       InvocationModuleException, NoSuchMethodModuleException {
