@@ -7,8 +7,8 @@
 package org.mule.extensions.java.internal.operation;
 
 import static java.lang.String.format;
-import static org.mule.extensions.java.internal.JavaModuleUtils.getSortedAndTransformedArgs;
-import static org.mule.extensions.java.internal.JavaModuleUtils.logTooManyArgsWarning;
+import static org.mule.extensions.java.internal.util.JavaModuleUtils.getSortedAndTransformedArgs;
+import static org.mule.extensions.java.internal.util.JavaModuleUtils.logTooManyArgsWarning;
 import org.mule.extensions.java.api.exception.ArgumentMismatchModuleException;
 import org.mule.extensions.java.api.exception.ClassNotFoundModuleException;
 import org.mule.extensions.java.api.exception.InvocationModuleException;

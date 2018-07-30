@@ -285,4 +285,36 @@ payload.description must contain("Invocation of static Method 'throwException(St
 
         </munit:validation>
     </munit:test>
+
+    <munit:test name="invoke-with-mimetype-and-encoding-override">
+        <munit:execution>
+            <java:invoke-static class="org.mule.extensions.internal.model.ExecutableElement" method="className()"
+            outputMimeType="application/json" outputEncoding="UTF-16"/>
+        </munit:execution>
+        <munit:validation>
+            <munit-tools:assert-that expression="#[payload]" is="#[MunitTools::withMediaType('application/json')]"/>
+            <munit-tools:assert-that expression="#[payload]" is="#[MunitTools::withEncoding('UTF-16')]"/>
+        </munit:validation>
+    </munit:test>
+
+    <munit:test name="invoke-without-mimetype-override">
+        <munit:execution>
+            <java:invoke-static class="org.mule.extensions.internal.model.ExecutableElement" method="className()"/>
+        </munit:execution>
+        <munit:validation>
+            <munit-tools:assert-that expression="#[payload]" is="#[MunitTools::withMediaType('application/java')]"/>
+            <munit-tools:assert-that expression="#[payload]" is="#[MunitTools::withEncoding('UTF-8')]"/>
+        </munit:validation>
+    </munit:test>
+
+    <munit:test name="invoke-without-encoding-override">
+        <munit:execution>
+            <java:invoke-static class="org.mule.extensions.internal.model.ExecutableElement" method="className()"
+                                outputMimeType="application/json"/>
+        </munit:execution>
+        <munit:validation>
+            <munit-tools:assert-that expression="#[payload]" is="#[MunitTools::withMediaType('application/json')]"/>
+            <munit-tools:assert-that expression="#[payload]" is="#[MunitTools::withEncoding('UTF-8')]"/>
+        </munit:validation>
+    </munit:test>
 </mule>
