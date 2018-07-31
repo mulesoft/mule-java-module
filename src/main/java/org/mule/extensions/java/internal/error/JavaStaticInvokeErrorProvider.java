@@ -6,25 +6,21 @@
  */
 package org.mule.extensions.java.internal.error;
 
-import org.mule.extensions.java.api.error.JavaModuleError;
 import org.mule.runtime.extension.api.annotation.error.ErrorTypeProvider;
 import org.mule.runtime.extension.api.error.ErrorTypeDefinition;
 
 import java.util.Collections;
-import java.util.LinkedHashSet;
 import java.util.Set;
 
 /**
- * An {@link ErrorTypeProvider} for the Java invoke operation.
+ * An {@link ErrorTypeProvider} for the Java static invoke operation.
  *
  * @since 1.1.2 1.2.0
  */
-public class JavaInvokeErrorProvider extends AbstractJavaInvokeErrorProvider {
+public class JavaStaticInvokeErrorProvider extends AbstractJavaInvokeErrorProvider {
 
   @Override
   public Set<ErrorTypeDefinition> getErrorTypes() {
-    Set<ErrorTypeDefinition> errors = super.getErrorTypes();
-    errors.add(JavaModuleError.WRONG_INSTANCE_CLASS);
-    return Collections.unmodifiableSet(errors);
+    return Collections.unmodifiableSet(super.getErrorTypes());
   }
 }
