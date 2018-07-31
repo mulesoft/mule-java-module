@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:java="http://www.mulesoft.org/schema/mule/java"
+      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:munit="http://www.mulesoft.org/schema/mule/munit"
+      xmlns:munit-tools="http://www.mulesoft.org/schema/mule/munit-tools"
+      xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+      xmlns="http://www.mulesoft.org/schema/mule/core" xsi:schemaLocation="
+		http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+		http://www.mulesoft.org/schema/mule/munit http://www.mulesoft.org/schema/mule/munit/current/mule-munit.xsd
+		http://www.mulesoft.org/schema/mule/munit-tools  http://www.mulesoft.org/schema/mule/munit-tools/current/mule-munit-tools.xsd
+http://www.mulesoft.org/schema/mule/java http://www.mulesoft.org/schema/mule/java/current/mule-java.xsd">
+    <munit:config name="invalid-error-type-test-suite.xml"/>
+
+    <munit:test name="invokeStaticWithImpossibleErrorOnTry">
+        <munit:execution>
+            <try>
+                <set-variable variableName="value" value="Hello!"/>
+                <java:invoke-static class="java.lang.String" method="valueOf(Object)">
+                    <java:args><![CDATA[#[{ arg0 : vars.value}]]]></java:args>
+                </java:invoke-static>
+                <error-handler>
+                    <on-error-continue enableNotifications="true" logException="true" type="JAVA:WRONG_INSTANCE_CLASS">
+                        <logger level="INFO" message="Will never fall here"/>
+                    </on-error-continue>
+                </error-handler>
+            </try>
+        </munit:execution>
+
+        <munit:validation>
+            <munit-tools:assert-that
+                    expression="#[payload]" is="#[MunitTools::equalTo(vars.value)]"/>
+        </munit:validation>
+
+    </munit:test>
+
+    <munit:test name="failedInvokeStaticWithImpossibleErrorOnTry">
+        <munit:execution>
+            <try>
+                <set-variable variableName="value" value="Hello!"/>
+                <java:invoke-static class="java.lang.Strong" method="valueOf(Object)">
+                    <java:args><![CDATA[#[{ arg0 : vars.value}]]]></java:args>
+                </java:invoke-static>
+                <error-handler>
+                    <on-error-continue enableNotifications="true" logException="true" type="JAVA:WRONG_INSTANCE_CLASS">
+                        <logger level="INFO" message="Will never fall here"/>
+                    </on-error-continue>
+                    <on-error-continue enableNotifications="true" logException="true" type="JAVA:CLASS_NOT_FOUND">
+                        <set-payload value="CLASS NOT FOUND!"/>
+                    </on-error-continue>
+                </error-handler>
+            </try>
+        </munit:execution>
+
+        <munit:validation>
+            <munit-tools:assert-that
+                    expression="#[payload]" is="#[MunitTools::equalTo('CLASS NOT FOUND!')]"/>
+        </munit:validation>
+
+    </munit:test>
+
+</mule>

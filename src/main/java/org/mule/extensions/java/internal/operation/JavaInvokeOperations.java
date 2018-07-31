@@ -16,6 +16,7 @@ import org.mule.extensions.java.api.exception.WrongTypeModuleException;
 import org.mule.extensions.java.internal.JavaModule;
 import org.mule.extensions.java.internal.cache.JavaModuleLoadingCache;
 import org.mule.extensions.java.internal.error.JavaInvokeErrorProvider;
+import org.mule.extensions.java.internal.error.JavaStaticInvokeErrorProvider;
 import org.mule.extensions.java.internal.metadata.InstanceMethodTypeResolver;
 import org.mule.extensions.java.internal.metadata.StaticMethodTypeResolver;
 import org.mule.extensions.java.internal.parameters.MethodIdentifier;
@@ -95,7 +96,7 @@ public class JavaInvokeOperations {
    * @throws ArgumentMismatchModuleException if the {@code method} requires a different set of arguments than the ones provided
    * @throws InvocationModuleException       if an error occurs during the execution of the method
    */
-  @Throws(JavaInvokeErrorProvider.class)
+  @Throws(JavaStaticInvokeErrorProvider.class)
   @OutputResolver(output = StaticMethodTypeResolver.class)
   public Result<Object, Void> invokeStatic(
                                            @ParameterGroup(
@@ -166,7 +167,6 @@ public class JavaInvokeOperations {
       InvocationModuleException, NoSuchMethodModuleException {
 
     validateType(identifier.getClazz(), instance, true, cache);
-
     Method method = cache.getMethod(identifier, instance.getClass(), args, false);
     return invokeMethod(method, args, instance, identifier, outputMimeType, outputEncoding,
                         transformationService, expressionManager, LOGGER, defaultEncoding);
