@@ -10,21 +10,26 @@ import org.mule.extensions.java.api.error.JavaModuleError;
 import org.mule.runtime.extension.api.annotation.error.ErrorTypeProvider;
 import org.mule.runtime.extension.api.error.ErrorTypeDefinition;
 
-import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
 /**
- * An {@link ErrorTypeProvider} for the Java invoke operation.
+ * An abstract {@link ErrorTypeProvider} used for instance and static invocations of Java methods.
  *
  * @since 1.1.2 1.2.0
  */
-public class JavaInvokeErrorProvider extends AbstractJavaInvokeErrorProvider {
+public abstract class AbstractJavaInvokeErrorProvider implements ErrorTypeProvider {
 
   @Override
   public Set<ErrorTypeDefinition> getErrorTypes() {
-    Set<ErrorTypeDefinition> errors = super.getErrorTypes();
+    Set<ErrorTypeDefinition> errors = new LinkedHashSet<>();
+    errors.add(JavaModuleError.INVOCATION);
+    errors.add(JavaModuleError.ARGUMENTS_MISMATCH);
+    errors.add(JavaModuleError.NO_SUCH_METHOD);
     errors.add(JavaModuleError.WRONG_INSTANCE_CLASS);
-    return Collections.unmodifiableSet(errors);
+    errors.add(JavaModuleError.CLASS_NOT_FOUND);
+
+    return errors;
   }
 }
+
