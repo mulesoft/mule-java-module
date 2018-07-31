@@ -33,4 +33,29 @@ http://www.mulesoft.org/schema/mule/java http://www.mulesoft.org/schema/mule/jav
 
     </munit:test>
 
+    <munit:test name="failedInvokeStaticWithImpossibleErrorOnTry">
+        <munit:execution>
+            <try>
+                <set-variable variableName="value" value="Hello!"/>
+                <java:invoke-static class="java.lang.Strong" method="valueOf(Object)">
+                    <java:args><![CDATA[#[{ arg0 : vars.value}]]]></java:args>
+                </java:invoke-static>
+                <error-handler>
+                    <on-error-continue enableNotifications="true" logException="true" type="JAVA:WRONG_INSTANCE_CLASS">
+                        <logger level="INFO" message="Will never fall here"/>
+                    </on-error-continue>
+                    <on-error-continue enableNotifications="true" logException="true" type="JAVA:CLASS_NOT_FOUND">
+                        <set-payload value="CLASS NOT FOUND!"/>
+                    </on-error-continue>
+                </error-handler>
+            </try>
+        </munit:execution>
+
+        <munit:validation>
+            <munit-tools:assert-that
+                    expression="#[payload]" is="#[MunitTools::equalTo('CLASS NOT FOUND!')]"/>
+        </munit:validation>
+
+    </munit:test>
+
 </mule>
