@@ -48,8 +48,8 @@ public class KeysMetadataTestCase extends AbstractMetadataTestCase {
                                                 "CompositePojo(String)", "CompositePojo(String,Map)"));
 
     keys = getKeys(flow(NEW, EXECUTABLE_ELEMENT), CONSTRUCTOR_CATEGORY);
-    assertThat(keys.iterator().next().getChilds().size(), is(2));
-    assertThat(getIds(keys), containsInAnyOrder("ExecutableElement()", "ExecutableElement(Phase)"));
+    assertThat(keys.iterator().next().getChilds().size(), is(3));
+    assertThat(getIds(keys), containsInAnyOrder("ExecutableElement()", "ExecutableElement(Phase)", "ExecutableElement(String)"));
   }
 
   private List<String> getIds(Set<MetadataKey> keys) {

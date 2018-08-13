@@ -11,8 +11,6 @@ import org.mule.extensions.java.internal.operation.JavaNewInstanceOperation;
 import org.mule.runtime.extension.api.annotation.error.ErrorTypeProvider;
 import org.mule.runtime.extension.api.error.ErrorTypeDefinition;
 
-import com.google.common.collect.ImmutableSet;
-
 import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.Set;
@@ -31,6 +29,7 @@ public class JavaNewInstanceErrorProvider implements ErrorTypeProvider {
     errors.add(JavaModuleError.CLASS_NOT_FOUND);
     errors.add(JavaModuleError.ARGUMENTS_MISMATCH);
     errors.add(JavaModuleError.NOT_INSTANTIABLE_TYPE);
+    errors.add(JavaModuleError.INVOCATION);
 
     return Collections.unmodifiableSet(errors);
   }

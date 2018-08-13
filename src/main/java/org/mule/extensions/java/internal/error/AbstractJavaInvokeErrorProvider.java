@@ -26,7 +26,6 @@ public abstract class AbstractJavaInvokeErrorProvider implements ErrorTypeProvid
     errors.add(JavaModuleError.INVOCATION);
     errors.add(JavaModuleError.ARGUMENTS_MISMATCH);
     errors.add(JavaModuleError.NO_SUCH_METHOD);
-    errors.add(JavaModuleError.WRONG_INSTANCE_CLASS);
     errors.add(JavaModuleError.CLASS_NOT_FOUND);
 
     return errors;

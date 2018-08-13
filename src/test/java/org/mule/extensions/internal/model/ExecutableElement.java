@@ -42,6 +42,11 @@ public class ExecutableElement {
     this.phase = initPhase;
   }
 
+  public ExecutableElement(String errorMessage) {
+
+    throw new IllegalArgumentException(errorMessage);
+  }
+
   public String sayHi() {
     return "Hi";
   }
