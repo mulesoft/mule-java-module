@@ -63,10 +63,10 @@ public abstract class ExecutableIdentifier {
   }
 
   /**
-   * Provides the name of the {@link Executable} element being represented by {@code this} {@link ExecutableIdentifierFactory}.
+   * Provides the type name of the {@link Executable} arguments being represented by {@code this} {@link ExecutableIdentifierFactory}.
    * <p>
    * For example, for method {@code public void echo(String message, int times)}, the result of invoking this method will be
-   * {@code "echo"}.
+   * {@code ["String", "int"]}.
    *
    * @return the name of the {@link Executable} element being represented by {@code this} {@link ExecutableIdentifierFactory}.
    */

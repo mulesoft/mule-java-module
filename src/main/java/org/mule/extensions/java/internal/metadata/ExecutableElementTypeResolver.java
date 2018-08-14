@@ -204,11 +204,8 @@ abstract class ExecutableElementTypeResolver implements OutputTypeResolver<Execu
     List<String> argTypes = new LinkedList<>();
     for (int parameterIndex = 0; parameterIndex < method.getParameterTypes().length; parameterIndex++) {
       Parameter parameter = parameters[parameterIndex];
-      if (parameterIndexesThatNeedFqn.contains(parameterIndex)) {
-        argTypes.add(parameter.getType().getCanonicalName() + " " + parameter.getName());
-      } else {
-        argTypes.add(parameter.getType().getSimpleName() + " " + parameter.getName());
-      }
+      argTypes.add((parameterIndexesThatNeedFqn.contains(parameterIndex) ? parameter.getType().getCanonicalName()
+          : parameter.getType().getSimpleName()) + " " + parameter.getName());
     }
 
     ExecutableIdentifier identifier = ExecutableIdentifierFactory.create(method);
