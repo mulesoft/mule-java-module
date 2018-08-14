@@ -102,6 +102,14 @@ public class ExecutableElement {
     return ExecutableElement.class.getName();
   }
 
+  public static String makeCatSaySomething(org.mule.extensions.internal.model.real.Cat cat) {
+    return cat.saySomething();
+  }
+
+  public static String makeCatSaySomething(org.mule.extensions.internal.model.robot.Cat cat) {
+    return cat.saySomething();
+  }
+
   protected void protectedMethod() {}
 
   private Object privateMethod() {

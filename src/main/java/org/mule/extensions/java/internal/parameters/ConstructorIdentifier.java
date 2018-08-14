@@ -70,7 +70,8 @@ public class ConstructorIdentifier extends ExecutableIdentifier {
 
   @Override
   public boolean matches(Executable element) {
-    return element instanceof Constructor && new ConstructorIdentifier((Constructor) element).equals(this);
+    return element instanceof Constructor
+        && matchesArguments(element.getParameterTypes());
   }
 
   @Override

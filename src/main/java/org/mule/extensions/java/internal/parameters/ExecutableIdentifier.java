@@ -8,9 +8,13 @@ package org.mule.extensions.java.internal.parameters;
 
 import static java.lang.String.format;
 import static java.util.Arrays.stream;
+import static java.util.Optional.empty;
+import static java.util.Optional.of;
 import static java.util.stream.Collectors.joining;
 
 import java.lang.reflect.Executable;
+import java.util.List;
+import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -59,6 +63,27 @@ public abstract class ExecutableIdentifier {
   }
 
   /**
+   * Provides the name of the {@link Executable} element being represented by {@code this} {@link ExecutableIdentifierFactory}.
+   * <p>
+   * For example, for method {@code public void echo(String message, int times)}, the result of invoking this method will be
+   * {@code "echo"}.
+   *
+   * @return the name of the {@link Executable} element being represented by {@code this} {@link ExecutableIdentifierFactory}.
+   */
+  public Optional<String[]> getArgumentTypeNames() {
+    Matcher match = METHOD_MATCHER.matcher(getElementId().trim().replaceAll(" ", ""));
+    if (match.matches()) {
+      String[] argumentTypeNames = match.group(2).split(ARG_SEPARATOR);
+      if (argumentTypeNames.length == 1 && argumentTypeNames[0].equals("")) {
+        return of(new String[0]);
+      } else {
+        return of(argumentTypeNames);
+      }
+    }
+    return empty();
+  }
+
+  /**
    * @return whether or not {@code this} identifier matches the given {@link ExecutableIdentifierFactory identifier}
    */
   public abstract boolean matches(Executable element);
@@ -95,7 +120,29 @@ public abstract class ExecutableIdentifier {
   protected String buildId(String elementName, Class<?>[] argTypes) {
     return format(METHOD_MASK,
                   elementName.trim(),
-                  stream(argTypes).map(Class::getSimpleName).collect(joining(ARG_SEPARATOR)));
+                  stream(argTypes).map(Class::getCanonicalName).collect(joining(ARG_SEPARATOR)));
+  }
+
+  protected boolean matchesArguments(Class[] arguments) {
+    Optional<String[]> optionalArgumentTypeNames = getArgumentTypeNames();
+    if (!optionalArgumentTypeNames.isPresent()) {
+      return false;
+    }
+    String[] argumentTypeNames = optionalArgumentTypeNames.get();
+
+    if (arguments.length != argumentTypeNames.length) {
+      return false;
+    }
+
+    for (int i = 0; i < arguments.length; i++) {
+      if (!argumentTypeNames[i].equals(arguments[i].getSimpleName())
+          && !argumentTypeNames[i].equals(arguments[i].getCanonicalName())
+          && !argumentTypeNames[i].equals(arguments[i].getName())) {
+        return false;
+      }
+    }
+
+    return true;
   }
 
   private String sanitize(String id) {

@@ -75,7 +75,8 @@ public class StaticMethodIdentifier extends ExecutableIdentifier {
   public boolean matches(Executable element) {
     return element instanceof Method
         && isStatic(element.getModifiers())
-        && this.equals(new StaticMethodIdentifier((Method) element));
+        && getElementName().equals(element.getName())
+        && matchesArguments(element.getParameterTypes());
   }
 
   @Override
