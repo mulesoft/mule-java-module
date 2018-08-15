@@ -71,10 +71,10 @@
                             <includeSnapshots>true</includeSnapshots>
                             <minMuleVersion>4.1.1</minMuleVersion>
                         </discoverRuntimes>
-                        <targetRuntimes>
-                            <targetRuntime>MULE_EE:4.1.1</targetRuntime>
-                            <targetRuntime>MULE_EE:4.1.2</targetRuntime>
-                        </targetRuntimes>
+                        <additionalRuntimes>
+                            <additionalRuntime>MULE_EE:4.1.2</additionalRuntime>
+                            <additionalRuntime>MULE_EE:4.1.3</additionalRuntime>
+                        </additionalRuntimes>
                     </runtimeConfiguration>
                 </configuration>
                 <dependencies>
