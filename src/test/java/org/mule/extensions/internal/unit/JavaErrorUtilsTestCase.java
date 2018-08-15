@@ -14,7 +14,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import org.mule.extensions.java.api.exception.ClassNotFoundModuleException;
 import org.mule.extensions.java.api.exception.InvocationModuleException;
-import org.mule.extensions.java.internal.util.JavaErrorUtils;
+import org.mule.extensions.java.internal.util.JavaExceptionUtils;
 import org.mule.runtime.api.exception.TypedException;
 
 import java.lang.reflect.Executable;
@@ -38,43 +38,43 @@ public class JavaErrorUtilsTestCase {
   @Test
   public void getRootCauseObtainsNestedCause() {
     when(typedException.getCause()).thenReturn(WITH_NPE_CAUSE);
-    Throwable actualCause = JavaErrorUtils.getRootCause(new ClassNotFoundModuleException("No class", typedException));
+    Throwable actualCause = JavaExceptionUtils.getRootCause(new ClassNotFoundModuleException("No class", typedException));
     assertThat(actualCause, is(NPE));
   }
 
   @Test
   public void getRootCauseUnwrapsReflectionInvocation() {
     InvocationTargetException invocationException = new InvocationTargetException(WITH_NPE_CAUSE);
-    Throwable actualCause = JavaErrorUtils.getRootCause(createInvocationException(invocationException));
+    Throwable actualCause = JavaExceptionUtils.getRootCause(createInvocationException(invocationException));
     assertThat(actualCause, is(NPE));
   }
 
   @Test
   public void isCausedByIsTrueRootExactType() {
     InvocationTargetException invocationException = new InvocationTargetException(WITH_NPE_CAUSE);
-    boolean result = JavaErrorUtils.isCausedBy(createInvocationException(invocationException),
-                                               NullPointerException.class, false);
+    boolean result = JavaExceptionUtils.isCausedBy(createInvocationException(invocationException),
+                                                   NullPointerException.class, false);
     assertThat(result, is(true));
   }
 
   @Test
   public void isCausedByIsTrueTopExactType() {
-    boolean result = JavaErrorUtils.isCausedBy(WITH_NPE_CAUSE, RuntimeException.class, false);
+    boolean result = JavaExceptionUtils.isCausedBy(WITH_NPE_CAUSE, RuntimeException.class, false);
     assertThat(result, is(true));
   }
 
   @Test
   public void isCausedByIsFalseRootExactType() {
     InvocationTargetException invocationException = new InvocationTargetException(WITH_NPE_CAUSE);
-    boolean result = JavaErrorUtils.isCausedBy(createInvocationException(invocationException),
-                                               CustomNPException.class, false);
+    boolean result = JavaExceptionUtils.isCausedBy(createInvocationException(invocationException),
+                                                   CustomNPException.class, false);
     assertThat(result, is(false));
   }
 
   @Test
   public void isCausedByIsTrueSubtype() {
     RuntimeException runtimeException = new RuntimeException("Some Runtime", new CustomNPException());
-    boolean result = JavaErrorUtils.isCausedBy(runtimeException, NullPointerException.class, true);
+    boolean result = JavaExceptionUtils.isCausedBy(runtimeException, NullPointerException.class, true);
     assertThat(result, is(true));
   }
 

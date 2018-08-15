@@ -19,9 +19,8 @@ import org.mule.extensions.java.api.exception.WrongTypeModuleException;
 import org.mule.extensions.java.internal.JavaModule;
 import org.mule.extensions.java.internal.cache.JavaModuleLoadingCache;
 import org.mule.extensions.java.internal.parameters.MethodIdentifier;
-import org.mule.extensions.java.internal.util.JavaErrorUtils;
+import org.mule.extensions.java.internal.util.JavaExceptionUtils;
 import org.mule.runtime.api.el.ExpressionFunction;
-import org.mule.runtime.api.message.Error;
 import org.mule.runtime.api.metadata.TypedValue;
 import org.mule.runtime.api.transformation.TransformationService;
 import org.mule.runtime.core.api.el.ExpressionManager;
@@ -109,18 +108,18 @@ public class JavaModuleFunctions {
   }
 
   /**
-   * Function that provides a way to obtain the root cause of a given {@link Error}.
+   * Function that provides a way to obtain the root cause of a given {@link Throwable}.
    *
    * @param exception the {@link Throwable} whose root cause is wanted
    * @return the root {@link Throwable cause} of the given {@code exception},
    * or {@code null} if no cause is found.
    */
   public Throwable getRootCause(Throwable exception) {
-    return JavaErrorUtils.getRootCause(exception);
+    return JavaExceptionUtils.getRootCause(exception);
   }
 
   /**
-   * This Function returns {@code true} if the {@link Error} contains a {@link Throwable} that matches
+   * This Function returns {@code true} if the given {@link Throwable} that matches
    * the specified class in the exception cause chain.
    * If {@code acceptSubtypes} is {@code true}, subclasses of the specified class will also match.
    *
@@ -132,7 +131,7 @@ public class JavaModuleFunctions {
   public boolean isCausedBy(Throwable exception,
                             @Summary("Fully qualified name of the Class you want to check against") String throwableType,
                             @Optional(defaultValue = "true") boolean includeSubtypes) {
-    return JavaErrorUtils.isCausedBy(exception, cache.loadClass(throwableType), includeSubtypes);
+    return JavaExceptionUtils.isCausedBy(exception, cache.loadClass(throwableType), includeSubtypes);
   }
 
 }

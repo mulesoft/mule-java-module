@@ -11,13 +11,13 @@ import java.util.function.BiFunction;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 
 /**
- * Utility class for introspecting Mule Errors and their Java causes
+ * Utility class for introspecting Throwables and their causes
  *
  * @since 1.2.0
  */
-public class JavaErrorUtils {
+public class JavaExceptionUtils {
 
-  private JavaErrorUtils() {}
+  private JavaExceptionUtils() {}
 
   public static Throwable getRootCause(Throwable exception) {
     Throwable rootCause = ExceptionUtils.getRootCause(exception);
