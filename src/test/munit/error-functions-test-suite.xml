@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:java="http://www.mulesoft.org/schema/mule/java"
+      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:munit="http://www.mulesoft.org/schema/mule/munit"
+      xmlns:munit-tools="http://www.mulesoft.org/schema/mule/munit-tools"
+      xmlns="http://www.mulesoft.org/schema/mule/core"
+      xsi:schemaLocation="
+		http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+		http://www.mulesoft.org/schema/mule/munit http://www.mulesoft.org/schema/mule/munit/current/mule-munit.xsd
+		http://www.mulesoft.org/schema/mule/munit-tools  http://www.mulesoft.org/schema/mule/munit-tools/current/mule-munit-tools.xsd
+http://www.mulesoft.org/schema/mule/java http://www.mulesoft.org/schema/mule/java/current/mule-java.xsd">
+    <munit:config name="error-functions-test-suite.xml"/>
+
+    <munit:before-test name="setup-test-message" description="Before tests actions">
+        <set-variable variableName="errorMessage" value="My internal exception message"></set-variable>
+    </munit:before-test>
+
+    <munit:test name="causedByFiltersUsingSubtypes">
+        <munit:execution>
+            <try>
+                <java:invoke-static class="org.mule.extensions.internal.model.ExecutableElement" method="throwException(String)">
+                    <java:args>#[{message: vars.errorMessage}]</java:args>
+                </java:invoke-static>
+                <set-payload value="NO ERROR THROWN"/>
+                <error-handler>
+                    <on-error-continue type="JAVA:INVOCATION"
+                                       when="#[Java::causedBy(error, 'java.lang.IllegalArgumentException')]"
+                                       enableNotifications="true" logException="true">
+                        <set-payload value="SUCCESS"/>
+                    </on-error-continue>
+                </error-handler>
+            </try>
+        </munit:execution>
+        <munit:validation>
+            <munit-tools:assert-equals actual="#[payload]" expected="#['SUCCESS']"/>
+        </munit:validation>
+    </munit:test>
+
+    <munit:test name="causedByFiltersUsingExactType">
+        <munit:execution>
+            <try>
+                <java:invoke-static class="org.mule.extensions.internal.model.ExecutableElement" method="throwException(String)">
+                    <java:args>#[{message: vars.errorMessage}]</java:args>
+                </java:invoke-static>
+                <set-payload value="NO ERROR THROWN"/>
+                <error-handler>
+                    <on-error-continue type="JAVA:INVOCATION"
+                                       when="#[Java::causedBy(error, 'java.lang.NullPointerException', false)]"
+                                       enableNotifications="true" logException="true">
+                        <set-payload value="SUCCESS"/>
+                    </on-error-continue>
+                </error-handler>
+            </try>
+        </munit:execution>
+        <munit:validation>
+            <munit-tools:assert-equals actual="#[payload]" expected="#['SUCCESS']"/>
+        </munit:validation>
+    </munit:test>
+
+    <munit:test name="getCauseReturnsTheActualInvocationExceptionOnNew">
+        <munit:execution>
+            <try>
+                <java:new class="org.mule.extensions.internal.model.ExecutableElement" constructor="ExecutableElement(String)">
+                    <java:args>#[{message: vars.errorMessage}]</java:args>
+                </java:new>
+                <error-handler>
+                    <on-error-continue type="JAVA:INVOCATION" enableNotifications="true" logException="true">
+                        <set-payload value="#[Java::getCause(error)]"/>
+                    </on-error-continue>
+                </error-handler>
+            </try>
+        </munit:execution>
+        <munit:validation>
+            <munit-tools:assert-equals actual="#[Java::isInstanceOf(payload, 'org.mule.extensions.internal.model.CustomIllegalArgumentException')]"
+                                       expected="#[true]"/>
+        </munit:validation>
+    </munit:test>
+
+    <munit:test name="getCauseReturnsTheTopInvocationExceptionOnInvoke">
+        <munit:execution>
+            <try>
+                <java:invoke-static class="org.mule.extensions.internal.model.ExecutableElement" method="throwException(String)">
+                    <java:args>#[{message: vars.errorMessage}]</java:args>
+                </java:invoke-static>
+                <error-handler>
+                    <on-error-continue type="JAVA:INVOCATION" enableNotifications="true" logException="true">
+                        <set-payload value="#[Java::getCause(error)]"/>
+                    </on-error-continue>
+                </error-handler>
+            </try>
+        </munit:execution>
+        <munit:validation>
+            <munit-tools:assert-equals actual="#[payload.class]" expected="#['java.lang.RuntimeException']"/>
+            <munit-tools:assert-equals actual="#[payload.detailMessage]"
+                                       expected="#['org.mule.extensions.internal.model.CustomIllegalArgumentException: ' ++ vars.errorMessage]"/>
+        </munit:validation>
+    </munit:test>
+
+    <munit:test name="getRootCauseReturnsTheRootInvocationException">
+        <munit:execution>
+            <try>
+                <java:invoke-static class="org.mule.extensions.internal.model.ExecutableElement" method="throwException(String)">
+                    <java:args>#[{message: vars.errorMessage}]</java:args>
+                </java:invoke-static>
+                <error-handler>
+                    <on-error-continue type="JAVA:INVOCATION" enableNotifications="true" logException="true">
+                        <set-payload value="#[Java::getRootCause(error)]"/>
+                    </on-error-continue>
+                </error-handler>
+            </try>
+        </munit:execution>
+        <munit:validation>
+            <munit-tools:assert-equals actual="#[Java::isInstanceOf(payload, 'java.lang.NullPointerException')]"
+                                       expected="#[true]"/>
+            <munit-tools:assert-equals actual="#[payload.detailMessage]" expected="#[vars.errorMessage]"/>
+        </munit:validation>
+    </munit:test>
+
+</mule>

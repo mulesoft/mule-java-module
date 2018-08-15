@@ -65,7 +65,8 @@ public class JavaInvokeStaticOperationsTestCase extends JavaModuleAbstractTestCa
         + "from Class 'org.mule.extensions.internal.model.ExecutableElement' with arguments "
         + "[java.lang.String message] resulted in an error.\n"
         + "Expected arguments are [java.lang.String message].\n"
-        + "Cause: java.lang.RuntimeException - " + messageOfCause;
+        + "Cause: java.lang.RuntimeException - org.mule.extensions.internal.model.CustomIllegalArgumentException: "
+        + messageOfCause;
 
     expectedError.expectError("JAVA", "INVOCATION", InvocationModuleException.class, errorMessage);
     flowRunner("invokeStaticThrowsExceptionWithCustomMessage")

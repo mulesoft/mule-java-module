@@ -10,6 +10,7 @@ import static java.util.Collections.emptyMap;
 import static java.util.stream.Collectors.toMap;
 import static org.mule.extensions.java.internal.util.JavaModuleUtils.validateType;
 import static org.mule.extensions.java.internal.util.MethodInvoker.invokeMethod;
+import static org.mule.runtime.api.util.Preconditions.checkArgument;
 import static org.mule.runtime.core.api.util.ClassUtils.isInstance;
 import org.mule.extensions.java.api.exception.ArgumentMismatchModuleException;
 import org.mule.extensions.java.api.exception.ClassNotFoundModuleException;
@@ -19,7 +20,9 @@ import org.mule.extensions.java.api.exception.WrongTypeModuleException;
 import org.mule.extensions.java.internal.JavaModule;
 import org.mule.extensions.java.internal.cache.JavaModuleLoadingCache;
 import org.mule.extensions.java.internal.parameters.MethodIdentifier;
+import org.mule.extensions.java.internal.util.JavaErrorUtils;
 import org.mule.runtime.api.el.ExpressionFunction;
+import org.mule.runtime.api.message.Error;
 import org.mule.runtime.api.metadata.TypedValue;
 import org.mule.runtime.api.transformation.TransformationService;
 import org.mule.runtime.core.api.el.ExpressionManager;
@@ -73,7 +76,8 @@ public class JavaModuleFunctions {
    * @throws WrongTypeModuleException        if the given {@code instance} is not an instance of the expected {@code class}
    * @throws InvocationModuleException       if an error occurs during the execution of the method
    */
-  public Object invoke(@Alias("class") @Summary("Fully qualified name of the Class containing the referenced Method") String clazz,
+  public Object invoke(
+                       @Alias("class") @Summary("Fully qualified name of the Class containing the referenced Method") String clazz,
                        @Alias("method") @Summary("Represents the Method signature containing the method name and it's argument types.") String methodName,
                        Object instance,
                        @Optional Map<String, TypedValue<Object>> args)
@@ -93,14 +97,68 @@ public class JavaModuleFunctions {
   }
 
   /**
-   * Operation that allows the user to check that a given {@code instance} is an {@code instanceof} the specified {@code class}.
+   * Function that allows the user to check that a given {@code instance} is an {@code instanceof} the specified {@code class}.
    *
-   * @param clazz the fully qualified name of the expected {@link Class} for the instance
+   * @param clazz    the fully qualified name of the expected {@link Class} for the instance
    * @param instance the object whose type is expected to be an {@code instanceof} of the given {@code class}
    * @throws ClassNotFoundModuleException if the given {@code class} is not found in the current context
    */
-  public boolean isInstanceOf(Object instance, @Alias("class") String clazz) throws ClassNotFoundModuleException {
+  public boolean isInstanceOf(Object instance,
+                              @Alias("class") @Summary("Fully qualified name of the Class you want to check against") String clazz)
+      throws ClassNotFoundModuleException {
     return isInstance(cache.loadClass(clazz), instance);
+  }
+
+  /**
+   * Function that provides a canonical way to obtain the first cause that is not related to the internals of a
+   * given Module nor the Runtime, or the {@code #[error.cause]} if no further causes are found.
+   *
+   * @param error the {@link Error} whose actual cause is wanted
+   * @return the first {@link Throwable cause} found that is not related to the internals of the Runtime implementations,
+   * or {@code null} if no cause is found.
+   */
+  public Throwable getCause(Object error) {
+    // cannot declare to receive an Error type because it will be filtered by the Runtime as an Non-advertised parameter
+    checkIsErrorType(error);
+    return JavaErrorUtils.getCause((Error) error);
+  }
+
+  /**
+   * Function that provides a way to obtain the root cause of a given {@link Error}.
+   *
+   * @param error the {@link Error} whose root cause is wanted
+   * @return the root {@link Throwable cause} of the {@link Error},
+   * or {@code null} if no cause is found.
+   */
+  public Throwable getRootCause(Object error) {
+    // cannot declare to receive an Error type because it will be filtered by the Runtime as an Non-advertised parameter
+    checkIsErrorType(error);
+    return JavaErrorUtils.getRootCause((Error) error);
+  }
+
+  /**
+   * This Function returns {@code true} if the {@link Error} contains a {@link Throwable} that matches
+   * the specified class in the exception cause chain.
+   * If {@code acceptSubtypes} is {@code true}, subclasses of the specified class will also match.
+   *
+   * @param error           the error to inspect
+   * @param clazz           fully qualified name of the Class you want to check against
+   * @param includeSubtypes if true, subclasses of the specified class will also result in a match
+   * @return the index into the throwable chain, false if no match or null input
+   */
+  public boolean isCausedBy(Object error,
+                            @Alias("class") @Summary("Fully qualified name of the Class you want to check against") String clazz,
+                            @Optional(defaultValue = "true") boolean includeSubtypes) {
+    // cannot declare to receive an Error type because it will be filtered by the Runtime as an Non-advertised parameter
+    checkIsErrorType(error);
+    return JavaErrorUtils.isCausedBy((Error) error, cache.loadClass(clazz), includeSubtypes);
+  }
+
+  private void checkIsErrorType(Object error) {
+    checkArgument(error instanceof Error,
+                  () -> String
+                      .format("An instance of 'org.mule.runtime.api.message.Error' was expected but got an instance of '%s' instead",
+                              error == null ? "null" : error.getClass().getName()));
   }
 
 }
