@@ -10,7 +10,6 @@ import static java.util.Collections.emptyMap;
 import static java.util.stream.Collectors.toMap;
 import static org.mule.extensions.java.internal.util.JavaModuleUtils.validateType;
 import static org.mule.extensions.java.internal.util.MethodInvoker.invokeMethod;
-import static org.mule.runtime.api.util.Preconditions.checkArgument;
 import static org.mule.runtime.core.api.util.ClassUtils.isInstance;
 import org.mule.extensions.java.api.exception.ArgumentMismatchModuleException;
 import org.mule.extensions.java.api.exception.ClassNotFoundModuleException;
@@ -110,30 +109,14 @@ public class JavaModuleFunctions {
   }
 
   /**
-   * Function that provides a canonical way to obtain the first cause that is not related to the internals of a
-   * given Module nor the Runtime, or the {@code #[error.cause]} if no further causes are found.
-   *
-   * @param error the {@link Error} whose actual cause is wanted
-   * @return the first {@link Throwable cause} found that is not related to the internals of the Runtime implementations,
-   * or {@code null} if no cause is found.
-   */
-  public Throwable getCause(Object error) {
-    // cannot declare to receive an Error type because it will be filtered by the Runtime as an Non-advertised parameter
-    checkIsErrorType(error);
-    return JavaErrorUtils.getCause((Error) error);
-  }
-
-  /**
    * Function that provides a way to obtain the root cause of a given {@link Error}.
    *
-   * @param error the {@link Error} whose root cause is wanted
-   * @return the root {@link Throwable cause} of the {@link Error},
+   * @param exception the {@link Throwable} whose root cause is wanted
+   * @return the root {@link Throwable cause} of the given {@code exception},
    * or {@code null} if no cause is found.
    */
-  public Throwable getRootCause(Object error) {
-    // cannot declare to receive an Error type because it will be filtered by the Runtime as an Non-advertised parameter
-    checkIsErrorType(error);
-    return JavaErrorUtils.getRootCause((Error) error);
+  public Throwable getRootCause(Throwable exception) {
+    return JavaErrorUtils.getRootCause(exception);
   }
 
   /**
@@ -141,24 +124,15 @@ public class JavaModuleFunctions {
    * the specified class in the exception cause chain.
    * If {@code acceptSubtypes} is {@code true}, subclasses of the specified class will also match.
    *
-   * @param error           the error to inspect
-   * @param clazz           fully qualified name of the Class you want to check against
+   * @param exception       the {@link Throwable} to inspect
+   * @param throwableType   fully qualified name of the Class you want to check against
    * @param includeSubtypes if true, subclasses of the specified class will also result in a match
    * @return the index into the throwable chain, false if no match or null input
    */
-  public boolean isCausedBy(Object error,
-                            @Alias("class") @Summary("Fully qualified name of the Class you want to check against") String clazz,
+  public boolean isCausedBy(Throwable exception,
+                            @Summary("Fully qualified name of the Class you want to check against") String throwableType,
                             @Optional(defaultValue = "true") boolean includeSubtypes) {
-    // cannot declare to receive an Error type because it will be filtered by the Runtime as an Non-advertised parameter
-    checkIsErrorType(error);
-    return JavaErrorUtils.isCausedBy((Error) error, cache.loadClass(clazz), includeSubtypes);
-  }
-
-  private void checkIsErrorType(Object error) {
-    checkArgument(error instanceof Error,
-                  () -> String
-                      .format("An instance of 'org.mule.runtime.api.message.Error' was expected but got an instance of '%s' instead",
-                              error == null ? "null" : error.getClass().getName()));
+    return JavaErrorUtils.isCausedBy(exception, cache.loadClass(throwableType), includeSubtypes);
   }
 
 }

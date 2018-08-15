@@ -6,12 +6,6 @@
  */
 package org.mule.extensions.java.internal.util;
 
-import org.mule.runtime.api.exception.MuleRuntimeException;
-import org.mule.runtime.api.exception.TypedException;
-import org.mule.runtime.api.message.Error;
-import org.mule.runtime.extension.api.exception.ModuleException;
-
-import java.lang.reflect.InvocationTargetException;
 import java.util.function.BiFunction;
 
 import org.apache.commons.lang3.exception.ExceptionUtils;
@@ -25,34 +19,17 @@ public class JavaErrorUtils {
 
   private JavaErrorUtils() {}
 
-  public static Throwable getCause(Error error) {
-    Throwable actualCause = error.getCause();
-    while (isMuleExceptionWrapper(actualCause)) {
-      actualCause = actualCause.getCause();
-    }
-    if (actualCause instanceof InvocationTargetException) {
-      actualCause = ((InvocationTargetException) actualCause).getTargetException();
-    }
-
-    return actualCause != null ? actualCause : error.getCause();
+  public static Throwable getRootCause(Throwable exception) {
+    Throwable rootCause = ExceptionUtils.getRootCause(exception);
+    return rootCause != null ? rootCause : exception;
   }
 
-  public static Throwable getRootCause(Error error) {
-    Throwable rootCause = ExceptionUtils.getRootCause(error.getCause());
-    return rootCause != null ? rootCause : error.getCause();
-  }
-
-  public static boolean isCausedBy(Error error, Class<?> typeOfCause, boolean includeSubtypes) {
+  public static boolean isCausedBy(Throwable exception, Class<?> typeOfCause, boolean includeSubtypes) {
     BiFunction<Throwable, Class, Integer> resolver = includeSubtypes
         ? ExceptionUtils::indexOfType
         : ExceptionUtils::indexOfThrowable;
 
-    return resolver.apply(error.getCause(), typeOfCause) > -1;
+    return resolver.apply(exception, typeOfCause) > -1;
   }
 
-  private static boolean isMuleExceptionWrapper(Throwable exception) {
-    return exception instanceof ModuleException
-        || exception instanceof TypedException
-        || exception instanceof MuleRuntimeException;
-  }
 }

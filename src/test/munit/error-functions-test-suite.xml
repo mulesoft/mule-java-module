@@ -24,7 +24,7 @@ http://www.mulesoft.org/schema/mule/java http://www.mulesoft.org/schema/mule/jav
                 <set-payload value="NO ERROR THROWN"/>
                 <error-handler>
                     <on-error-continue type="JAVA:INVOCATION"
-                                       when="#[Java::causedBy(error, 'java.lang.IllegalArgumentException')]"
+                                       when="#[Java::causedBy(error.cause, 'java.lang.IllegalArgumentException')]"
                                        enableNotifications="true" logException="true">
                         <set-payload value="SUCCESS"/>
                     </on-error-continue>
@@ -45,7 +45,7 @@ http://www.mulesoft.org/schema/mule/java http://www.mulesoft.org/schema/mule/jav
                 <set-payload value="NO ERROR THROWN"/>
                 <error-handler>
                     <on-error-continue type="JAVA:INVOCATION"
-                                       when="#[Java::causedBy(error, 'java.lang.NullPointerException', false)]"
+                                       when="#[Java::causedBy(error.cause, 'java.lang.NullPointerException', false)]"
                                        enableNotifications="true" logException="true">
                         <set-payload value="SUCCESS"/>
                     </on-error-continue>
@@ -57,45 +57,6 @@ http://www.mulesoft.org/schema/mule/java http://www.mulesoft.org/schema/mule/jav
         </munit:validation>
     </munit:test>
 
-    <munit:test name="getCauseReturnsTheActualInvocationExceptionOnNew">
-        <munit:execution>
-            <try>
-                <java:new class="org.mule.extensions.internal.model.ExecutableElement" constructor="ExecutableElement(String)">
-                    <java:args>#[{message: vars.errorMessage}]</java:args>
-                </java:new>
-                <error-handler>
-                    <on-error-continue type="JAVA:INVOCATION" enableNotifications="true" logException="true">
-                        <set-payload value="#[Java::getCause(error)]"/>
-                    </on-error-continue>
-                </error-handler>
-            </try>
-        </munit:execution>
-        <munit:validation>
-            <munit-tools:assert-equals actual="#[Java::isInstanceOf(payload, 'org.mule.extensions.internal.model.CustomIllegalArgumentException')]"
-                                       expected="#[true]"/>
-        </munit:validation>
-    </munit:test>
-
-    <munit:test name="getCauseReturnsTheTopInvocationExceptionOnInvoke">
-        <munit:execution>
-            <try>
-                <java:invoke-static class="org.mule.extensions.internal.model.ExecutableElement" method="throwException(String)">
-                    <java:args>#[{message: vars.errorMessage}]</java:args>
-                </java:invoke-static>
-                <error-handler>
-                    <on-error-continue type="JAVA:INVOCATION" enableNotifications="true" logException="true">
-                        <set-payload value="#[Java::getCause(error)]"/>
-                    </on-error-continue>
-                </error-handler>
-            </try>
-        </munit:execution>
-        <munit:validation>
-            <munit-tools:assert-equals actual="#[payload.class]" expected="#['java.lang.RuntimeException']"/>
-            <munit-tools:assert-equals actual="#[payload.detailMessage]"
-                                       expected="#['org.mule.extensions.internal.model.CustomIllegalArgumentException: ' ++ vars.errorMessage]"/>
-        </munit:validation>
-    </munit:test>
-
     <munit:test name="getRootCauseReturnsTheRootInvocationException">
         <munit:execution>
             <try>
@@ -104,7 +65,7 @@ http://www.mulesoft.org/schema/mule/java http://www.mulesoft.org/schema/mule/jav
                 </java:invoke-static>
                 <error-handler>
                     <on-error-continue type="JAVA:INVOCATION" enableNotifications="true" logException="true">
-                        <set-payload value="#[Java::getRootCause(error)]"/>
+                        <set-payload value="#[Java::getRootCause(error.cause)]"/>
                     </on-error-continue>
                 </error-handler>
             </try>
