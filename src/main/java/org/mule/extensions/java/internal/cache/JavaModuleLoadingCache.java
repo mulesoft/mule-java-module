@@ -65,36 +65,44 @@ public final class JavaModuleLoadingCache {
                                     Map<String, TypedValue<Object>> args) {
     List<Constructor> constructors =
         constructorsCache.computeIfAbsent(String.format(METHOD_IDENTIFIER, declaringClass.getName(), id.getElementId()),
-                                          key -> stream(declaringClass.getConstructors()).filter(c -> isPublic(c.getModifiers()))
-                                              .filter(id::matches).collect(toList()));
+                                          key -> stream(declaringClass.getConstructors())
+                                              .filter(c -> isPublic(c.getModifiers()))
+                                              .filter(id::matches)
+                                              .collect(toList()));
 
-    if (constructors.size() == 0) {
-      throw new NoSuchConstructorModuleException(id, declaringClass, args);
-    } else if (constructors.size() > 1) {
-      LOGGER.warn(ambiguousExecutableWarningMessages
-          .computeIfAbsent(String.format(METHOD_IDENTIFIER, declaringClass.getName(), id.getElementId()),
-                           key -> constructWarningMessage(constructors, "Constructor", key)));
-    }
+    verifyExecutables(id, declaringClass, args, constructors);
 
-    return (Constructor) constructors.get(0);
+    return constructors.get(0);
   }
 
   public Method getMethod(ExecutableIdentifier id, Class<?> clazz, Map<String, TypedValue<Object>> args, boolean expectStatic) {
     Map<String, List<Method>> methodsCache = expectStatic ? classMethodsCache : instanceMethodsCache;
 
     List<Method> methods = methodsCache.computeIfAbsent(String.format(METHOD_IDENTIFIER, clazz.getName(), id.getElementId()),
-                                                        key -> getPublicMethods(clazz, expectStatic).stream().filter(id::matches)
+                                                        key -> getPublicMethods(clazz, expectStatic).stream()
+                                                            .filter(id::matches)
                                                             .collect(toList()));
 
-    if (methods.size() == 0) {
-      throw new NoSuchMethodModuleException(id, clazz, args);
-    } else if (methods.size() > 1) {
-      LOGGER.warn(ambiguousExecutableWarningMessages
-          .computeIfAbsent(String.format(METHOD_IDENTIFIER, clazz.getName(), id.getElementId()),
-                           key -> constructWarningMessage(methods, expectStatic ? "Static Method" : "Instance Method", key)));
-    }
+    verifyExecutables(id, clazz, args, methods);
 
-    return (Method) methods.get(0);
+    return methods.get(0);
+  }
+
+  public void verifyExecutables(ExecutableIdentifier id, Class<?> declaringClass, Map<String, TypedValue<Object>> args,
+                                List<? extends Executable> executables) {
+    if (executables.size() == 0) {
+      if (id instanceof ConstructorIdentifier) {
+        throw new NoSuchConstructorModuleException(id, declaringClass, args);
+      } else {
+        throw new NoSuchMethodModuleException(id, declaringClass, args);
+      }
+    } else if (executables.size() > 1) {
+      if (LOGGER.isWarnEnabled()) {
+        LOGGER.warn(ambiguousExecutableWarningMessages
+            .computeIfAbsent(String.format(METHOD_IDENTIFIER, declaringClass.getName(), id.getElementId()),
+                             key -> constructWarningMessage(executables, id.getExecutableTypeName(), key)));
+      }
+    }
   }
 
   private List<Method> getPublicMethods(Class<?> clazz, boolean expectStatic) {

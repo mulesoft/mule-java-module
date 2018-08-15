@@ -6,6 +6,7 @@
  */
 package org.mule.extensions.internal.metadata;
 
+import static java.util.stream.Collectors.toList;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.Matchers.is;
@@ -13,7 +14,6 @@ import org.mule.runtime.api.metadata.MetadataKey;
 
 import java.util.List;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 import org.junit.Test;
 
@@ -79,12 +79,12 @@ public class KeysMetadataTestCase extends AbstractMetadataTestCase {
   private List<String> getIds(Set<MetadataKey> keys) {
     return keys.stream().flatMap(k -> k.getChilds().stream())
         .map(MetadataKey::getId)
-        .collect(Collectors.toList());
+        .collect(toList());
   }
 
   private List<String> getDisplayNames(Set<MetadataKey> keys) {
     return keys.stream().flatMap(k -> k.getChilds().stream())
         .map(MetadataKey::getDisplayName)
-        .collect(Collectors.toList());
+        .collect(toList());
   }
 }
