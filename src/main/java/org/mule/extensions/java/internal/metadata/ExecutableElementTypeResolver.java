@@ -38,10 +38,15 @@ import java.lang.reflect.Executable;
 import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
 import java.lang.reflect.Type;
+import java.util.Arrays;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
+import java.util.function.Function;
+import java.util.function.Supplier;
 
 /**
  * Base {@link InputTypeResolver}, {@link OutputTypeResolver} and {@link TypeKeysResolver} for any {@link Executable} element.
@@ -160,14 +165,27 @@ abstract class ExecutableElementTypeResolver implements OutputTypeResolver<Execu
 
   private List<MetadataKey> getMetadataKeysWithSameSimpleName(List<Pair<Executable, MetadataKey>> executablesWithNameSimpleDisplayName) {
     if (executablesWithNameSimpleDisplayName.size() == 1) {
-      return singletonList(executablesWithNameSimpleDisplayName.get(0).getSecond());
+      if (parameterTypesWithinExecutableClash(executablesWithNameSimpleDisplayName.get(0).getFirst())) {
+        return singletonList(buildMethodKeyWithFullyQualifiedNames(executablesWithNameSimpleDisplayName.get(0).getFirst()));
+      } else {
+        return singletonList(executablesWithNameSimpleDisplayName.get(0).getSecond());
+      }
     } else {
-      List<Executable> executables = executablesWithNameSimpleDisplayName.stream().map(pair -> pair.getFirst()).collect(toList());
-      Set<Integer> fqnIndexes = getParameterIndexesThatNeedFqn(executables);
-      return executables.stream()
-          .map(executable -> buildMethodKeyWithFullyQualifiedNames(executable, fqnIndexes))
+      return executablesWithNameSimpleDisplayName.stream()
+          .map(pair -> pair.getFirst())
+          .map(executable -> buildMethodKeyWithFullyQualifiedNames(executable))
           .collect(toList());
     }
+  }
+
+  private boolean parameterTypesWithinExecutableClash(Executable executable) {
+    Class[] parameterTypes = executable.getParameterTypes();
+    Map<String, Set<String>> parameterTypesMap = new HashMap<>();
+    for (Class type : parameterTypes) {
+      parameterTypesMap.computeIfAbsent(type.getSimpleName(), key -> new HashSet<>()).add(type.getCanonicalName());
+    }
+
+    return parameterTypesMap.values().stream().anyMatch(set -> set.size() > 1);
   }
 
   private Class<?> loadClass(String className) throws MetadataResolvingException {
@@ -180,42 +198,25 @@ abstract class ExecutableElementTypeResolver implements OutputTypeResolver<Execu
     }
   }
 
-  private Set<Integer> getParameterIndexesThatNeedFqn(List<Executable> executablesWithNameSimpleDisplayName) {
-    Set<Integer> indexes = new HashSet<>();
-    Executable firstExecutable = executablesWithNameSimpleDisplayName.get(0);
-    for (int parameterIndex = 0; parameterIndex < firstExecutable.getParameterTypes().length; parameterIndex++) {
-      for (int methodIndex = 1; methodIndex < executablesWithNameSimpleDisplayName.size(); methodIndex++) {
-        if (parameterTypeCanonicalNamesDiffer(firstExecutable, executablesWithNameSimpleDisplayName.get(methodIndex),
-                                              parameterIndex)) {
-          indexes.add(parameterIndex);
-          break;
-        }
-      }
-    }
-    return indexes;
-  }
-
-  private boolean parameterTypeCanonicalNamesDiffer(Executable firstExecutable, Executable secondExecutable, int parameterIndex) {
-    return !firstExecutable.getParameterTypes()[parameterIndex].getCanonicalName()
-        .equals(secondExecutable.getParameterTypes()[parameterIndex].getCanonicalName());
-  }
-
   private MetadataKey buildMethodKeyWithSimpleNames(Executable method) {
-    return buildMethodKeyWithFullyQualifiedNames(method, emptySet());
+    return buildMethodKeyWithSupliedNames(method, parameter -> parameter.getType().getSimpleName());
   }
 
-  private MetadataKey buildMethodKeyWithFullyQualifiedNames(Executable method, Set<Integer> parameterIndexesThatNeedFqn) {
+  private MetadataKey buildMethodKeyWithFullyQualifiedNames(Executable method) {
+    return buildMethodKeyWithSupliedNames(method, parameter -> parameter.getType().getCanonicalName());
+  }
 
+  private MetadataKey buildMethodKeyWithSupliedNames(Executable method, Function<Parameter, String> getTypeNameFromExecutable) {
     Parameter[] parameters = method.getParameters();
     List<String> argTypes = new LinkedList<>();
     for (int parameterIndex = 0; parameterIndex < method.getParameterTypes().length; parameterIndex++) {
       Parameter parameter = parameters[parameterIndex];
-      argTypes.add((parameterIndexesThatNeedFqn.contains(parameterIndex) ? parameter.getType().getCanonicalName()
-          : parameter.getType().getSimpleName()) + " " + parameter.getName());
+      argTypes.add(getTypeNameFromExecutable.apply(parameter) + " " + parameter.getName());
     }
 
     ExecutableIdentifier identifier = ExecutableIdentifierFactory.create(method);
     String displayName = format("%s(%s)", identifier.getElementName(), join(", ", argTypes));
     return newKey(identifier.getElementId()).withDisplayName(displayName).build();
   }
+
 }

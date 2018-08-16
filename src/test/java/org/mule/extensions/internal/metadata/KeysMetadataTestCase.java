@@ -49,11 +49,13 @@ public class KeysMetadataTestCase extends AbstractMetadataTestCase {
                containsInAnyOrder("create(org.mule.extensions.internal.model.ExecutableElement.Phase)", "create()", "className()",
                                   "throwException(java.lang.String)", "getNull()",
                                   "makeCatSaySomething(org.mule.extensions.internal.model.robot.Cat)",
-                                  "makeCatSaySomething(org.mule.extensions.internal.model.real.Cat)"));
+                                  "makeCatSaySomething(org.mule.extensions.internal.model.real.Cat)",
+                                  "makeCatsSaySomething(org.mule.extensions.internal.model.robot.Cat,org.mule.extensions.internal.model.real.Cat)"));
     assertThat(getDisplayNames(keys), containsInAnyOrder("create(Phase initPhase)", "create()", "className()",
                                                          "throwException(String message)", "getNull()",
                                                          "makeCatSaySomething(org.mule.extensions.internal.model.robot.Cat cat)",
-                                                         "makeCatSaySomething(org.mule.extensions.internal.model.real.Cat cat)"));
+                                                         "makeCatSaySomething(org.mule.extensions.internal.model.real.Cat cat)",
+                                                         "makeCatsSaySomething(org.mule.extensions.internal.model.robot.Cat robotCat, org.mule.extensions.internal.model.real.Cat realCat)"));
   }
 
   @Test

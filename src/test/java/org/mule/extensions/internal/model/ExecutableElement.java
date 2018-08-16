@@ -110,6 +110,11 @@ public class ExecutableElement {
     return cat.saySomething();
   }
 
+  public static String makeCatsSaySomething(org.mule.extensions.internal.model.robot.Cat robotCat,
+                                            org.mule.extensions.internal.model.real.Cat realCat) {
+    return robotCat.saySomething() + " " + realCat.saySomething();
+  }
+
   protected void protectedMethod() {}
 
   private Object privateMethod() {
