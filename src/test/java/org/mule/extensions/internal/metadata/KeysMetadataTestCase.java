@@ -75,7 +75,7 @@ public class KeysMetadataTestCase extends AbstractMetadataTestCase {
     assertThat(getIds(keys), containsInAnyOrder("ExecutableElement(org.mule.extensions.internal.model.ExecutableElement.Phase)",
                                                 "ExecutableElement()", "ExecutableElement(java.lang.String)"));
     assertThat(getDisplayNames(keys), containsInAnyOrder("ExecutableElement(Phase initPhase)", "ExecutableElement()",
-                                                         "ExecutableElement(String errorMessage)"));
+                                                         "ExecutableElement(String message)"));
   }
 
   private List<String> getIds(Set<MetadataKey> keys) {
