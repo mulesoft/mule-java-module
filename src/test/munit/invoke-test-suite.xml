@@ -10,8 +10,7 @@
 		http://www.mulesoft.org/schema/mule/munit-tools  http://www.mulesoft.org/schema/mule/munit-tools/current/mule-munit-tools.xsd
 http://www.mulesoft.org/schema/mule/java http://www.mulesoft.org/schema/mule/java/current/mule-java.xsd">
     <munit:config name="invoke-test-suite.xml"/>
-    <munit:before-test name="setup-test-instance" description="Before tests actions"
-    >
+    <munit:before-test name="setup-test-instance" description="Before tests actions">
         <java:new
                 class="org.mule.extensions.internal.model.ExecutableElement" constructor="ExecutableElement()"
                 target="instance"/>
@@ -279,10 +278,9 @@ payload.description must contain("Failed to invoke Method 'sayHi(int)' from Clas
             <munit-tools:assert>
                 <munit-tools:that><![CDATA[#[import * from dw::test::Asserts
  ---
-payload.description must contain("Invocation of static Method 'throwException(String)' from Class 'org.mule.extensions.internal.model.ExecutableElement' with arguments [java.lang.String message] resulted in an error.\nExpected arguments are [java.lang.String message].\nCause: java.lang.RuntimeException - " ++ vars.expectedMessage)
+payload.description must contain("Invocation of static Method 'throwException(String)' from Class 'org.mule.extensions.internal.model.ExecutableElement' with arguments [java.lang.String message] resulted in an error.\nExpected arguments are [java.lang.String message].\nCause: java.lang.RuntimeException - org.mule.extensions.internal.model.CustomIllegalArgumentException: " ++ vars.expectedMessage)
 ]]]></munit-tools:that>
             </munit-tools:assert>
-
         </munit:validation>
     </munit:test>
 

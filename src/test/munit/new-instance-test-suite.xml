@@ -205,7 +205,7 @@ payload.description must contain(vars.errorMessage)
 ]]]></munit-tools:that>
             </munit-tools:assert>
             <munit-tools:assert-equals actual="#[payload.cause.cause.target.class]"
-                                       expected="#['java.lang.IllegalArgumentException']"/>
+                                       expected="#['org.mule.extensions.internal.model.CustomIllegalArgumentException']"/>
         </munit:validation>
     </munit:test>
 </mule>

@@ -31,7 +31,7 @@ public class ExecutableElement {
   }
 
   public static Object throwException(String message) {
-    throw new RuntimeException(message);
+    throw new RuntimeException(new CustomIllegalArgumentException(new NullPointerException(message)));
   }
 
   public ExecutableElement() {
@@ -42,9 +42,8 @@ public class ExecutableElement {
     this.phase = initPhase;
   }
 
-  public ExecutableElement(String errorMessage) {
-
-    throw new IllegalArgumentException(errorMessage);
+  public ExecutableElement(String message) {
+    throw new CustomIllegalArgumentException(message);
   }
 
   public String sayHi() {
