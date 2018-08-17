@@ -179,13 +179,15 @@ abstract class ExecutableElementTypeResolver implements OutputTypeResolver<Execu
   }
 
   private boolean parameterTypesWithinExecutableClash(Executable executable) {
-    Class[] parameterTypes = executable.getParameterTypes();
-    Map<String, Set<String>> parameterTypesMap = new HashMap<>();
-    for (Class type : parameterTypes) {
-      parameterTypesMap.computeIfAbsent(type.getSimpleName(), key -> new HashSet<>()).add(type.getCanonicalName());
+    Map<String, String> paramTypes = new HashMap<>();
+    for (Class type : executable.getParameterTypes()) {
+      String canonicalName = type.getCanonicalName();
+      String boundName = paramTypes.computeIfAbsent(type.getSimpleName(), k -> canonicalName);
+      if (!canonicalName.equals(boundName)) {
+        return true;
+      }
     }
-
-    return parameterTypesMap.values().stream().anyMatch(set -> set.size() > 1);
+    return false;
   }
 
   private Class<?> loadClass(String className) throws MetadataResolvingException {
