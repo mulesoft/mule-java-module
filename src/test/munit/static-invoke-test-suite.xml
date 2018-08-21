@@ -2,7 +2,8 @@
 
 <mule xmlns:java="http://www.mulesoft.org/schema/mule/java"
       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:munit="http://www.mulesoft.org/schema/mule/munit"
-      xmlns:munit-tools="http://www.mulesoft.org/schema/mule/munit-tools" xmlns="http://www.mulesoft.org/schema/mule/core"
+      xmlns:munit-tools="http://www.mulesoft.org/schema/mule/munit-tools"
+      xmlns="http://www.mulesoft.org/schema/mule/core"
       xsi:schemaLocation="
 		http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
 		http://www.mulesoft.org/schema/mule/munit http://www.mulesoft.org/schema/mule/munit/current/mule-munit.xsd
@@ -125,4 +126,76 @@ http://www.mulesoft.org/schema/mule/java http://www.mulesoft.org/schema/mule/jav
                                 method="do()"/>
         </munit:execution>
     </munit:test>
+
+    <munit:test name="does-not-fail-with-ambiguous-method-id" description="MUnit Test">
+        <munit:execution>
+            <java:invoke-static class="org.mule.extensions.internal.model.ExecutableElement"
+                                method="makeCatSaySomething(Cat)">
+                <java:args>
+                    #[{
+                    'cat':{
+                    'name' : 'Garfield'
+                    }
+                    }]
+                </java:args>
+            </java:invoke-static>
+        </munit:execution>
+    </munit:test>
+
+    <munit:test name="static-invoke-with-fqn" description="MUnit Test">
+        <munit:execution>
+            <java:invoke-static class="org.mule.extensions.internal.model.ExecutableElement"
+                                method="makeCatSaySomething(org.mule.extensions.internal.model.real.Cat)"
+                                target="realCat">
+                <java:args>
+                    #[{
+                    'cat':{
+                    'name' : 'Mr.Mittens'
+                    }
+                    }]
+                </java:args>
+            </java:invoke-static>
+            <java:invoke-static class="org.mule.extensions.internal.model.ExecutableElement"
+                                method="makeCatSaySomething(org.mule.extensions.internal.model.robot.Cat)"
+                                target="robotCat">
+                <java:args>
+                    #[{
+                    'cat':{
+                    'name' : 'RoboCat'
+                    }
+                    }]
+                </java:args>
+            </java:invoke-static>
+        </munit:execution>
+        <munit:validation>
+            <munit-tools:assert-that
+                    expression="#[vars.realCat]" is="#[MunitTools::equalTo('Meow')]"/>
+            <munit-tools:assert-that
+                    expression="#[vars.robotCat]" is="#[MunitTools::equalTo('Beep meow beep')]"/>
+        </munit:validation>
+    </munit:test>
+
+    <munit:test name="invoke-static-with-fqn-when-is-not-required">
+        <munit:execution>
+            <java:invoke-static
+                    class="org.mule.extensions.internal.model.AnotherExecutableElement"
+                    method="getMapEntry(Map,java.lang.String)">
+                <java:args>
+                    #[{
+                    'map': {
+                    '1' : 2,
+                    '3' : "4",
+                    '5' : 6
+                    },
+                    'key': 3
+                    }]
+                </java:args>
+            </java:invoke-static>
+        </munit:execution>
+        <munit:validation>
+            <munit-tools:assert-that
+                    expression="#[payload]" is="#[MunitTools::equalTo(4)]"/>
+        </munit:validation>
+    </munit:test>
+
 </mule>

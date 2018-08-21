@@ -6,15 +6,19 @@
  */
 package org.mule.extensions.java.internal.cache;
 
+import static java.lang.String.format;
+import static java.lang.String.join;
 import static java.lang.reflect.Modifier.isPublic;
 import static java.lang.reflect.Modifier.isStatic;
 import static java.util.Arrays.stream;
 import static java.util.stream.Collectors.toList;
+
 import org.mule.extensions.java.api.exception.ClassNotFoundModuleException;
 import org.mule.extensions.java.api.exception.NoSuchConstructorModuleException;
 import org.mule.extensions.java.api.exception.NoSuchMethodModuleException;
 import org.mule.extensions.java.internal.parameters.ConstructorIdentifier;
 import org.mule.extensions.java.internal.parameters.ExecutableIdentifier;
+import org.mule.extensions.java.internal.parameters.ExecutableIdentifierFactory;
 import org.mule.runtime.api.metadata.TypedValue;
 import org.mule.runtime.core.api.util.ClassUtils;
 
@@ -25,6 +29,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 /**
  * A thread safe loading cache implementation for {@link Class} and {@link Executable} elements, using its {@link Class#getName()}
  * and {@link ExecutableIdentifier} as keys respectively. This cache is intended to be used every time a given {@link Class}
@@ -34,10 +41,15 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 public final class JavaModuleLoadingCache {
 
+  private static final Logger LOGGER = LoggerFactory.getLogger(JavaModuleLoadingCache.class);
+
   private final String METHOD_IDENTIFIER = "%s#%s";
 
   private final Map<String, Class<?>> typesCache = new ConcurrentHashMap<>();
-  private final Map<String, Executable> executablesCache = new ConcurrentHashMap<>();
+  private final Map<String, List<Constructor>> constructorsCache = new ConcurrentHashMap<>();
+  private final Map<String, List<Method>> classMethodsCache = new ConcurrentHashMap<>();
+  private final Map<String, List<Method>> instanceMethodsCache = new ConcurrentHashMap<>();
+  private final Map<String, String> ambiguousExecutableWarningMessages = new ConcurrentHashMap<>();
 
   public Class<?> loadClass(String className) {
     return typesCache.computeIfAbsent(className, key -> {
@@ -51,24 +63,46 @@ public final class JavaModuleLoadingCache {
 
   public Constructor getConstructor(ConstructorIdentifier id, Class<?> declaringClass,
                                     Map<String, TypedValue<Object>> args) {
-    return (Constructor) executablesCache.computeIfAbsent(
-                                                          String.format(METHOD_IDENTIFIER, declaringClass.getName(),
-                                                                        id.getElementId()),
-                                                          key -> stream(declaringClass.getConstructors())
-                                                              .filter(c -> isPublic(c.getModifiers()))
-                                                              .filter(id::matches)
-                                                              .findFirst()
-                                                              .orElseThrow(() -> new NoSuchConstructorModuleException(id,
-                                                                                                                      declaringClass,
-                                                                                                                      args)));
+    List<Constructor> constructors =
+        constructorsCache.computeIfAbsent(String.format(METHOD_IDENTIFIER, declaringClass.getName(), id.getElementId()),
+                                          key -> stream(declaringClass.getConstructors())
+                                              .filter(c -> isPublic(c.getModifiers()))
+                                              .filter(id::matches)
+                                              .collect(toList()));
+
+    verifyExecutables(id, declaringClass, args, constructors);
+
+    return constructors.get(0);
   }
 
   public Method getMethod(ExecutableIdentifier id, Class<?> clazz, Map<String, TypedValue<Object>> args, boolean expectStatic) {
-    return (Method) executablesCache.computeIfAbsent(String.format(METHOD_IDENTIFIER, clazz.getName(), id.getElementId()),
-                                                     key -> getPublicMethods(clazz, expectStatic).stream()
-                                                         .filter(id::matches)
-                                                         .findFirst()
-                                                         .orElseThrow(() -> new NoSuchMethodModuleException(id, clazz, args)));
+    Map<String, List<Method>> methodsCache = expectStatic ? classMethodsCache : instanceMethodsCache;
+
+    List<Method> methods = methodsCache.computeIfAbsent(String.format(METHOD_IDENTIFIER, clazz.getName(), id.getElementId()),
+                                                        key -> getPublicMethods(clazz, expectStatic).stream()
+                                                            .filter(id::matches)
+                                                            .collect(toList()));
+
+    verifyExecutables(id, clazz, args, methods);
+
+    return methods.get(0);
+  }
+
+  public void verifyExecutables(ExecutableIdentifier id, Class<?> declaringClass, Map<String, TypedValue<Object>> args,
+                                List<? extends Executable> executables) {
+    if (executables.size() == 0) {
+      if (id instanceof ConstructorIdentifier) {
+        throw new NoSuchConstructorModuleException(id, declaringClass, args);
+      } else {
+        throw new NoSuchMethodModuleException(id, declaringClass, args);
+      }
+    } else if (executables.size() > 1) {
+      if (LOGGER.isWarnEnabled()) {
+        LOGGER.warn(ambiguousExecutableWarningMessages
+            .computeIfAbsent(String.format(METHOD_IDENTIFIER, declaringClass.getName(), id.getElementId()),
+                             key -> constructWarningMessage(executables, id.getExecutableTypeName(), key)));
+      }
+    }
   }
 
   private List<Method> getPublicMethods(Class<?> clazz, boolean expectStatic) {
@@ -76,6 +110,19 @@ public final class JavaModuleLoadingCache {
         .filter(m -> isPublic(m.getModifiers()))
         .filter(m -> expectStatic == isStatic(m.getModifiers()))
         .collect(toList());
+  }
+
+  private String constructWarningMessage(List<? extends Executable> executables, String category, String executableId) {
+    String possibleExecutables = join(", ", executables.stream().map(ExecutableIdentifierFactory::create)
+        .map(ExecutableIdentifier::getElementId).collect(toList()));
+    StringBuilder sb = new StringBuilder();
+
+    sb.append(format("There where multiple %ss found with the id \"%s\"", category, executableId));
+    sb.append(format("The %s %s will be executed.\n", category, executables.get(0)));
+    sb.append(format("The Possible %ss that share the same ID are [ %s ].\n", category, possibleExecutables));
+    sb.append("To use a specific one, use the fully-qualified name for the argument types.");
+
+    return sb.toString();
   }
 
 }

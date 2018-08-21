@@ -37,8 +37,8 @@ public class ConstructorIdentifier extends ExecutableIdentifier {
   /**
    * Represents the Constructor signature containing the name and it's argument types.
    * <p>
-   * For example, for the Constructor with signature {@code public Foo(String name, Integer age)}
-   * then the identifier of the method will be {@code "Foo(String, Integer)"}
+   * For example, for the Constructor with signature {@code public Foo(String name, Integer age)} then the identifier of the
+   * method will be {@code "Foo(String, Integer)"}
    */
   @Parameter
   @Alias("constructor")
@@ -70,7 +70,9 @@ public class ConstructorIdentifier extends ExecutableIdentifier {
 
   @Override
   public boolean matches(Executable element) {
-    return element instanceof Constructor && new ConstructorIdentifier((Constructor) element).equals(this);
+    return element instanceof Constructor
+        && getElementName().equals(element.getDeclaringClass().getSimpleName())
+        && matchesArguments(element.getParameterTypes());
   }
 
   @Override

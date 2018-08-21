@@ -368,4 +368,24 @@ payload.description must equalTo("Invocation of static Method 'getCarFromList(Li
             </munit-tools:assert>
         </munit:validation>
     </munit:test>
+
+    <munit:test name="invokeStaticWithArrayToTransform">
+        <munit:execution>
+            <java:invoke-static
+                    class="org.mule.extensions.internal.model.AnotherExecutableElement"
+                    method="getFromArrayOfIntegers(Integer[],int)">
+                <java:args>
+                    #[{
+                    'arg0': [0,"1","2","3",4],
+                    'arg1': 2
+                    }]
+                </java:args>
+            </java:invoke-static>
+        </munit:execution>
+        <munit:validation>
+            <munit-tools:assert-that
+                    expression="#[payload]" is="#[MunitTools::equalTo(2)]"/>
+        </munit:validation>
+    </munit:test>
+
 </mule>

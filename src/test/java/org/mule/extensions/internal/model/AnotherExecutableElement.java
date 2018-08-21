@@ -80,4 +80,8 @@ public class AnotherExecutableElement {
     return items.get(0).getClass();
   }
 
+  public static Integer getFromArrayOfIntegers(Integer[] array, int index) {
+    return array[index];
+  }
+
 }
