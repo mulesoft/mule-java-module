@@ -130,7 +130,7 @@ public class JavaModuleFunctions {
    */
   public boolean isCausedBy(Throwable exception,
                             @Summary("Fully qualified name of the Class you want to check against") String throwableType,
-                            @Optional(defaultValue = "true") boolean includeSubtypes) {
+                            @Optional boolean includeSubtypes) {
     return JavaExceptionUtils.isCausedBy(exception, cache.loadClass(throwableType), includeSubtypes);
   }
 
