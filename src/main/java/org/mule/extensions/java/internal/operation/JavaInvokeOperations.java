@@ -53,6 +53,7 @@ import org.slf4j.LoggerFactory;
 public class JavaInvokeOperations {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(JavaInvokeOperations.class);
+  private static final String MIME_TYPE_TAB = "MIME Type";
 
   @Inject
   private JavaModuleLoadingCache cache;
@@ -103,9 +104,9 @@ public class JavaInvokeOperations {
                                                name = "Method") @MetadataKeyId(StaticMethodTypeResolver.class) StaticMethodIdentifier identifier,
                                            @Optional @NullSafe @Content @TypeResolver(StaticMethodTypeResolver.class) Map<String, TypedValue<Object>> args,
                                            @Optional @Placement(
-                                               tab = "Advanced") @Summary("The mime type of the payload that this invocation will output") String outputMimeType,
+                                               tab = MIME_TYPE_TAB) @Summary("The mime type of the payload that this invocation will output") String outputMimeType,
                                            @Optional @Placement(
-                                               tab = "Advanced") @Summary("The encoding of the payload that this invocation will output") String outputEncoding,
+                                               tab = MIME_TYPE_TAB) @Summary("The encoding of the payload that this invocation will output") String outputEncoding,
                                            @DefaultEncoding String defaultEncoding)
       throws ClassNotFoundModuleException, ArgumentMismatchModuleException,
       InvocationModuleException, NoSuchMethodModuleException {
@@ -159,9 +160,9 @@ public class JavaInvokeOperations {
                                      Object instance,
                                      @Optional @NullSafe @Content @TypeResolver(InstanceMethodTypeResolver.class) Map<String, TypedValue<Object>> args,
                                      @Optional @Placement(
-                                         tab = "Advanced") @Summary("The mime type of the payload that this invocation will output") String outputMimeType,
+                                         tab = MIME_TYPE_TAB) @Summary("The mime type of the payload that this invocation will output") String outputMimeType,
                                      @Optional @Placement(
-                                         tab = "Advanced") @Summary("The encoding of the payload that this invocation will output") String outputEncoding,
+                                         tab = MIME_TYPE_TAB) @Summary("The encoding of the payload that this invocation will output") String outputEncoding,
                                      @DefaultEncoding String defaultEncoding)
       throws ClassNotFoundModuleException, WrongTypeModuleException, ArgumentMismatchModuleException,
       InvocationModuleException, NoSuchMethodModuleException {
