@@ -23,10 +23,12 @@ http://www.mulesoft.org/schema/mule/java http://www.mulesoft.org/schema/mule/jav
                 </java:invoke-static>
                 <set-payload value="NO ERROR THROWN"/>
                 <error-handler>
-                    <on-error-continue type="JAVA:INVOCATION"
-                                       when="#[Java::causedBy(error.cause, 'java.lang.IllegalArgumentException')]"
+                    <on-error-continue when="#[Java::isCausedBy(error.cause, 'java.lang.IllegalArgumentException', true)]"
                                        enableNotifications="true" logException="true">
                         <set-payload value="SUCCESS"/>
+                    </on-error-continue>
+                    <on-error-continue type="MULE:ANY" enableNotifications="true" logException="true">
+                        <set-payload value="FAIL"/>
                     </on-error-continue>
                 </error-handler>
             </try>
@@ -44,10 +46,13 @@ http://www.mulesoft.org/schema/mule/java http://www.mulesoft.org/schema/mule/jav
                 </java:invoke-static>
                 <set-payload value="NO ERROR THROWN"/>
                 <error-handler>
-                    <on-error-continue type="JAVA:INVOCATION"
-                                       when="#[Java::causedBy(error.cause, 'java.lang.NullPointerException', false)]"
+                    <on-error-continue when="#[Java::isCausedBy(error.cause, 'java.lang.NullPointerException')]"
                                        enableNotifications="true" logException="true">
                         <set-payload value="SUCCESS"/>
+                    </on-error-continue>
+                    <on-error-continue type="MULE:ANY"
+                                       enableNotifications="true" logException="true">
+                        <set-payload value="FAIL"/>
                     </on-error-continue>
                 </error-handler>
             </try>
