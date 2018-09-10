@@ -18,7 +18,7 @@
 
     <properties>
         <commonsLang.version>3.7</commonsLang.version>
-        <springCore.version>5.0.5.RELEASE</springCore.version>
+        <springCore.version>5.0.9.RELEASE</springCore.version>
         <muleJmsConnectorVersion>1.0.0</muleJmsConnectorVersion>
 
         <!-- Remove when a new parent version with MTF is available -->
