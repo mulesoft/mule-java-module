@@ -8,6 +8,8 @@ package org.mule.extensions.java.internal.operation;
 
 import static org.mule.extensions.java.internal.util.JavaModuleUtils.validateType;
 import static org.mule.extensions.java.internal.util.MethodInvoker.invokeMethod;
+import static org.mule.runtime.api.meta.model.operation.ExecutionType.CPU_INTENSIVE;
+
 import org.mule.extensions.java.api.exception.ArgumentMismatchModuleException;
 import org.mule.extensions.java.api.exception.ClassNotFoundModuleException;
 import org.mule.extensions.java.api.exception.InvocationModuleException;
@@ -21,10 +23,12 @@ import org.mule.extensions.java.internal.metadata.InstanceMethodTypeResolver;
 import org.mule.extensions.java.internal.metadata.StaticMethodTypeResolver;
 import org.mule.extensions.java.internal.parameters.MethodIdentifier;
 import org.mule.extensions.java.internal.parameters.StaticMethodIdentifier;
+import org.mule.runtime.api.meta.model.operation.ExecutionType;
 import org.mule.runtime.api.metadata.TypedValue;
 import org.mule.runtime.api.transformation.TransformationService;
 import org.mule.runtime.core.api.el.ExpressionManager;
 import org.mule.runtime.extension.api.annotation.error.Throws;
+import org.mule.runtime.extension.api.annotation.execution.Execution;
 import org.mule.runtime.extension.api.annotation.metadata.MetadataKeyId;
 import org.mule.runtime.extension.api.annotation.metadata.OutputResolver;
 import org.mule.runtime.extension.api.annotation.metadata.TypeResolver;
@@ -99,6 +103,7 @@ public class JavaInvokeOperations {
    */
   @Throws(JavaStaticInvokeErrorProvider.class)
   @OutputResolver(output = StaticMethodTypeResolver.class)
+  @Execution(CPU_INTENSIVE)
   public Result<Object, Void> invokeStatic(
                                            @ParameterGroup(
                                                name = "Method") @MetadataKeyId(StaticMethodTypeResolver.class) StaticMethodIdentifier identifier,
@@ -154,6 +159,7 @@ public class JavaInvokeOperations {
    */
   @Throws(JavaInvokeErrorProvider.class)
   @OutputResolver(output = InstanceMethodTypeResolver.class)
+  @Execution(CPU_INTENSIVE)
   public Result<Object, Void> invoke(
                                      @ParameterGroup(
                                          name = "Method") @MetadataKeyId(InstanceMethodTypeResolver.class) MethodIdentifier identifier,
