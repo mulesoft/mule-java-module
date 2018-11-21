@@ -49,7 +49,6 @@ public class JavaModuleValidateOperation {
    */
   @Validator
   @Throws(JavaValidateTypeErrorProvider.class)
-  @Execution(CPU_INTENSIVE)
   public void validateType(@ClassValue @Alias("class") @Optional @Expression(NOT_SUPPORTED) String clazz,
                            Object instance,
                            @Optional(defaultValue = "true") boolean acceptSubtypes)
