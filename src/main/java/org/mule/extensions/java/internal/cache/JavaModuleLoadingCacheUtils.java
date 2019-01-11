@@ -6,25 +6,24 @@
  */
 package org.mule.extensions.java.internal.cache;
 
-import java.lang.reflect.Method;
-import java.util.List;
-
 import static java.lang.reflect.Modifier.isPublic;
 import static java.lang.reflect.Modifier.isStatic;
 import static java.util.Arrays.stream;
 import static java.util.stream.Collectors.toList;
 
+import java.lang.reflect.Method;
+import java.util.List;
+
 public final class JavaModuleLoadingCacheUtils {
 
-  private JavaModuleLoadingCacheUtils() {
+    private JavaModuleLoadingCacheUtils() {
+    }
 
-  }
-
-  public static List<Method> getPublicMethods(Class<?> clazz, boolean expectStatic) {
-    return stream(clazz.getMethods())
-        .filter(m -> isPublic(m.getModifiers()))
-        .filter(m -> expectStatic == isStatic(m.getModifiers()))
-        .filter(m -> !m.isBridge())
-        .collect(toList());
-  }
+    public static List<Method> getPublicMethods(Class<?> clazz, boolean expectStatic) {
+        return stream(clazz.getMethods())
+                .filter(m -> isPublic(m.getModifiers()))
+                .filter(m -> expectStatic == isStatic(m.getModifiers()))
+                .filter(m -> !m.isBridge())
+                .collect(toList());
+    }
 }
