@@ -9,7 +9,6 @@ package org.mule.extensions.java.internal.cache;
 import static java.lang.String.format;
 import static java.lang.String.join;
 import static java.lang.reflect.Modifier.isPublic;
-import static java.lang.reflect.Modifier.isStatic;
 import static java.util.Arrays.stream;
 import static java.util.stream.Collectors.toList;
 
@@ -79,7 +78,8 @@ public final class JavaModuleLoadingCache {
     Map<String, List<Method>> methodsCache = expectStatic ? classMethodsCache : instanceMethodsCache;
 
     List<Method> methods = methodsCache.computeIfAbsent(String.format(METHOD_IDENTIFIER, clazz.getName(), id.getElementId()),
-                                                        key -> getPublicMethods(clazz, expectStatic).stream()
+                                                        key -> JavaModuleLoadingCacheUtils.getPublicMethods(clazz, expectStatic)
+                                                            .stream()
                                                             .filter(id::matches)
                                                             .collect(toList()));
 
@@ -103,13 +103,6 @@ public final class JavaModuleLoadingCache {
                              key -> constructWarningMessage(executables, id.getExecutableTypeName(), key)));
       }
     }
-  }
-
-  private List<Method> getPublicMethods(Class<?> clazz, boolean expectStatic) {
-    return stream(clazz.getMethods())
-        .filter(m -> isPublic(m.getModifiers()))
-        .filter(m -> expectStatic == isStatic(m.getModifiers()))
-        .collect(toList());
   }
 
   private String constructWarningMessage(List<? extends Executable> executables, String category, String executableId) {
