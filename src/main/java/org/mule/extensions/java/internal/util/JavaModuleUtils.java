@@ -7,6 +7,9 @@
 package org.mule.extensions.java.internal.util;
 
 import static java.lang.String.format;
+import static java.lang.reflect.Modifier.isPublic;
+import static java.lang.reflect.Modifier.isStatic;
+import static java.util.Arrays.stream;
 import static java.util.Collections.emptyList;
 import static java.util.stream.Collectors.toList;
 import static org.mule.runtime.core.api.util.ClassUtils.isInstance;
@@ -157,6 +160,25 @@ public final class JavaModuleUtils {
     }
 
     return "with arguments " + args;
+  }
+
+  /**
+   * Method to obtain the Public Methods for a given class.
+   * <p>
+   * Always filters the non Bridge Methods. For more information about Bridge Methods see
+   * https://docs.oracle.com/javase/tutorial/java/generics/bridgeMethods.html
+   * </p>
+   *
+   * @param clazz the Java class for which we want its Public methods.
+   * @param expectStatic boolean to filter (or not) the Static methods.
+   * @return List of Methods for the class.
+   */
+  public static List<Method> getPublicMethods(Class<?> clazz, boolean expectStatic) {
+    return stream(clazz.getMethods())
+        .filter(m -> isPublic(m.getModifiers()))
+        .filter(m -> expectStatic == isStatic(m.getModifiers()))
+        .filter(m -> !m.isBridge())
+        .collect(toList());
   }
 
 }
