@@ -170,7 +170,7 @@ public final class JavaModuleUtils {
    * </p>
    *
    * @param clazz the Java class for which we want its Public methods.
-   * @param expectStatic boolean to filter (or not) the Static methods.
+   * @param expectStatic true to get only static methods, false to get only non static methods.
    * @return List of Methods for the class.
    */
   public static List<Method> getPublicMethods(Class<?> clazz, boolean expectStatic) {
