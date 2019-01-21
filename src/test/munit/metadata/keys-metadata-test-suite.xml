@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:java="http://www.mulesoft.org/schema/mule/java"
+      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:munit="http://www.mulesoft.org/schema/mule/munit"
+      xmlns:munit-tools="http://www.mulesoft.org/schema/mule/munit-tools"
+      xmlns:mtf="http://www.mulesoft.org/schema/mule/mtf"
+      xmlns="http://www.mulesoft.org/schema/mule/core"
+      xsi:schemaLocation="
+		http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+		http://www.mulesoft.org/schema/mule/munit http://www.mulesoft.org/schema/mule/munit/current/mule-munit.xsd
+		http://www.mulesoft.org/schema/mule/munit-tools  http://www.mulesoft.org/schema/mule/munit-tools/current/mule-munit-tools.xsd
+		http://www.mulesoft.org/schema/mule/mtf  http://www.mulesoft.org/schema/mule/mtf/current/mule-mtf.xsd
+http://www.mulesoft.org/schema/mule/java http://www.mulesoft.org/schema/mule/java/current/mule-java.xsd">
+
+    <munit:config name="keys-metadata-test-suite.xml"/>
+
+    <mtf:tooling-test name="instanceMethodKeys" >
+        <mtf:get-metadata-keys>
+            <java:invoke class="org.mule.extensions.internal.model.ExecutableElement" />
+        </mtf:get-metadata-keys>
+        <mtf:validation>
+            <set-variable value="#[payload.'org.mule.extensions.internal.model.ExecutableElement'.childs pluck $]" variableName="childKeys"/>
+            <munit-tools:assert-equals actual="#[vars.childKeys.id]" expected="#[[
+            'getPhaseId()' ,
+            'addToList(java.util.LinkedList)' ,
+            'toString()' ,
+            'addToList(java.util.List)' ,
+            'sayHi(java.lang.String,int)' ,
+            'addToList(java.util.ArrayList)' ,
+            'getClass()' ,
+            'createEmptyPojo()' ,
+            'getPhase()' ,
+            'notifyAll()' ,
+            'wait()' ,
+            'hashCode()' ,
+            'sayHi(java.lang.String)' ,
+            'wait(long,int)' ,
+            'addToMap(java.util.Map)' ,
+            'sayHi()' ,
+            'notify()' ,
+            'sayHi(int)' ,
+            'nextPhase()' ,
+            'equals(java.lang.Object)' ,
+            'wait(long)'
+            ]]"/>
+            <munit-tools:assert-equals actual="#[vars.childKeys.displayName]" expected="#[[
+            'getPhaseId()',
+             'addToList(LinkedList linkedList)',
+             'toString()',
+             'addToList(List list)',
+             'sayHi(String name, int id)',
+             'addToList(ArrayList list)',
+             'getClass()',
+             'createEmptyPojo()',
+             'getPhase()',
+             'notifyAll()',
+             'wait()',
+             'hashCode()',
+             'sayHi(String name)',
+             'wait(long arg0, int arg1)',
+             'addToMap(Map input)',
+             'sayHi()',
+             'notify()',
+             'sayHi(int id)',
+             'nextPhase()',
+             'equals(Object arg0)',
+             'wait(long arg0)']]"/>
+        </mtf:validation>
+    </mtf:tooling-test>
+
+</mule>

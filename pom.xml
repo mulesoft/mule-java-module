@@ -28,6 +28,7 @@
         <munit.extensions.maven.plugin.version>1.0.0-SNAPSHOT</munit.extensions.maven.plugin.version>
         <munit.version>2.2.0-SNAPSHOT</munit.version>
         <mavenResources.version>3.0.2</mavenResources.version>
+        <mtf.tools.version>1.0.0-SNAPSHOT</mtf.tools.version>
     </properties>
 
 
@@ -123,6 +124,14 @@
             <artifactId>mule-jms-connector</artifactId>
             <classifier>mule-plugin</classifier>
             <version>${muleJmsConnectorVersion}</version>
+            <scope>test</scope>
+        </dependency>
+        <!--Test dependency for metadata testing-->
+        <dependency>
+            <groupId>com.mulesoft.munit</groupId>
+            <artifactId>mtf-tools</artifactId>
+            <version>${mtf.tools.version}</version>
+            <classifier>mule-plugin</classifier>
             <scope>test</scope>
         </dependency>
     </dependencies>
