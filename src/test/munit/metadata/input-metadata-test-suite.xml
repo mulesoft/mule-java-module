@@ -36,7 +36,7 @@ http://www.mulesoft.org/schema/mule/java http://www.mulesoft.org/schema/mule/jav
         </mtf:validation>
     </mtf:tooling-test>
 
-    <mtf:tooling-test name="staticMethodInputParameters" description="change for pojo matcher">
+    <mtf:tooling-test name="staticMethodInputParameters">
         <mtf:get-input-metadata parameter="args">
             <java:invoke-static class="org.mule.extensions.internal.model.ExecutableElement" method="create(Phase)"/>
         </mtf:get-input-metadata>
@@ -45,7 +45,7 @@ http://www.mulesoft.org/schema/mule/java http://www.mulesoft.org/schema/mule/jav
             <munit-tools:assert-equals actual="#[payload.'type']" expected="Object"/>
             <munit-tools:assert-equals actual="#[payload.fields[0].key.name]" expected="initPhase"/>
             <munit-tools:assert-equals actual="#[payload.fields[0].model.'type']" expected="String"/>
-            <munit-tools:assert-equals actual="#[payload.fields[0].model.annotations.typeId]" expected=""/>
+            <munit-tools:assert-equals actual="#[payload.fields[0].model.annotations.typeId]" expected="org.mule.extensions.internal.model.ExecutableElement.Phase"/>
         </mtf:validation>
     </mtf:tooling-test>
 
@@ -69,7 +69,7 @@ http://www.mulesoft.org/schema/mule/java http://www.mulesoft.org/schema/mule/jav
 
     <mtf:tooling-test name="constructorInputParameters" >
         <mtf:get-input-metadata parameter="args">
-            <java:new class="org.mule.extensions.internal.model.CompositePojo" constructor="CompositePojo(CompositePojo)" description="change for pojo matcher"/>
+            <java:new class="org.mule.extensions.internal.model.CompositePojo" constructor="CompositePojo(CompositePojo)"/>
         </mtf:get-input-metadata>
         <mtf:validation>
             <!--<mtf:assert-type fromClass="org.mule.extensions.internal.model.CompositePojo"/>-->
