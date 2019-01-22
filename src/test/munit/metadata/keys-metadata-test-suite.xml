@@ -68,4 +68,50 @@ http://www.mulesoft.org/schema/mule/java http://www.mulesoft.org/schema/mule/jav
         </mtf:validation>
     </mtf:tooling-test>
 
+    <mtf:tooling-test name="staticMethodKeys" >
+        <mtf:get-metadata-keys>
+            <java:invoke-static class="org.mule.extensions.internal.model.ExecutableElement" method="create(Phase)"/>
+        </mtf:get-metadata-keys>
+        <mtf:validation>
+            <set-variable value="#[payload.'org.mule.extensions.internal.model.ExecutableElement'.childs pluck $]" variableName="childKeys"/>
+            <munit-tools:assert-equals actual="#[vars.childKeys.id]" expected="#[[
+            'getNull()',
+            'throwException(java.lang.String)',
+            'className()',
+            'makeCatSaySomething(org.mule.extensions.internal.model.real.Cat)',
+            'makeCatSaySomething(org.mule.extensions.internal.model.robot.Cat)',
+            'makeCatsSaySomething(org.mule.extensions.internal.model.robot.Cat,org.mule.extensions.internal.model.real.Cat)',
+            'create(org.mule.extensions.internal.model.ExecutableElement.Phase)',
+            'create()']]"/>
+            <munit-tools:assert-equals actual="#[vars.childKeys.displayName]" expected="#[[
+            'getNull()',
+            'throwException(String message)',
+            'className()',
+            'makeCatSaySomething(org.mule.extensions.internal.model.real.Cat cat)',
+            'makeCatSaySomething(org.mule.extensions.internal.model.robot.Cat cat)',
+            'makeCatsSaySomething(org.mule.extensions.internal.model.robot.Cat robotCat, org.mule.extensions.internal.model.real.Cat realCat)',
+            'create(Phase initPhase)',
+            'create()']]"/>
+        </mtf:validation>
+    </mtf:tooling-test>
+
+    <mtf:tooling-test name="constructorKeys" >
+        <mtf:get-metadata-keys>
+            <java:new class="org.mule.extensions.internal.model.CompositePojo" constructor="CompositePojo(String)"/>
+        </mtf:get-metadata-keys>
+        <mtf:validation>
+            <set-variable value="#[payload.'org.mule.extensions.internal.model.CompositePojo'.childs pluck $]" variableName="childKeys"/>
+            <munit-tools:assert-equals actual="#[vars.childKeys.id]" expected="#[[
+            'CompositePojo(org.mule.extensions.internal.model.CompositePojo)',
+            'CompositePojo(java.lang.String)',
+            'CompositePojo(java.lang.String,java.util.Map)',
+            'CompositePojo()']]"/>
+            <munit-tools:assert-equals actual="#[vars.childKeys.displayName]" expected="#[[
+            'CompositePojo(CompositePojo child)',
+            'CompositePojo(String name)',
+            'CompositePojo(String name, Map childs)',
+            'CompositePojo()']]"/>
+        </mtf:validation>
+    </mtf:tooling-test>
+
 </mule>

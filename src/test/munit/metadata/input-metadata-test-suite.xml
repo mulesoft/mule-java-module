@@ -27,4 +27,67 @@ http://www.mulesoft.org/schema/mule/java http://www.mulesoft.org/schema/mule/jav
         </mtf:validation>
     </mtf:tooling-test>
 
+    <mtf:tooling-test name="methodInputParametersNoArgs" >
+        <mtf:get-input-metadata parameter="args">
+            <java:invoke class="org.mule.extensions.internal.model.ExecutableElement" method="sayHi()"/>
+        </mtf:get-input-metadata>
+        <mtf:validation>
+            <munit-tools:assert-equals actual="#[payload.'type']" expected="Null"/>
+        </mtf:validation>
+    </mtf:tooling-test>
+
+    <mtf:tooling-test name="staticMethodInputParameters" description="change for pojo matcher">
+        <mtf:get-input-metadata parameter="args">
+            <java:invoke-static class="org.mule.extensions.internal.model.ExecutableElement" method="create(Phase)"/>
+        </mtf:get-input-metadata>
+        <mtf:validation>
+            <!--<mtf:assert-type fromClass="org.mule.extensions.internal.model.ExecutableElement.Phase"/>-->
+            <munit-tools:assert-equals actual="#[payload.'type']" expected="Object"/>
+            <munit-tools:assert-equals actual="#[payload.fields[0].key.name]" expected="initPhase"/>
+            <munit-tools:assert-equals actual="#[payload.fields[0].model.'type']" expected="String"/>
+            <munit-tools:assert-equals actual="#[payload.fields[0].model.annotations.typeId]" expected=""/>
+        </mtf:validation>
+    </mtf:tooling-test>
+
+    <mtf:tooling-test name="staticMethodInputParametersNoArgs" >
+        <mtf:get-input-metadata parameter="args">
+            <java:invoke-static class="org.mule.extensions.internal.model.ExecutableElement" method="create()"/>
+        </mtf:get-input-metadata>
+        <mtf:validation>
+            <munit-tools:assert-equals actual="#[payload.'type']" expected="Null"/>
+        </mtf:validation>
+    </mtf:tooling-test>
+
+    <mtf:tooling-test name="constructorInputParametersNoArgs">
+        <mtf:get-input-metadata parameter="args">
+            <java:new class="org.mule.extensions.internal.model.CompositePojo" constructor="CompositePojo()"/>
+        </mtf:get-input-metadata>
+        <mtf:validation>
+            <munit-tools:assert-equals actual="#[payload.'type']" expected="Null"/>
+        </mtf:validation>
+    </mtf:tooling-test>
+
+    <mtf:tooling-test name="constructorInputParameters" >
+        <mtf:get-input-metadata parameter="args">
+            <java:new class="org.mule.extensions.internal.model.CompositePojo" constructor="CompositePojo(CompositePojo)" description="change for pojo matcher"/>
+        </mtf:get-input-metadata>
+        <mtf:validation>
+            <!--<mtf:assert-type fromClass="org.mule.extensions.internal.model.CompositePojo"/>-->
+            <munit-tools:assert-equals actual="#[payload.'type']" expected="Object"/>
+            <munit-tools:assert-equals actual="#[payload.fields[0].key.name]" expected="child"/>
+            <munit-tools:assert-equals actual="#[payload.fields[0].model.'type']" expected="Object"/>
+            <munit-tools:assert-equals actual="#[payload.fields[0].model.annotations.typeId]" expected="org.mule.extensions.internal.model.CompositePojo"/>
+        </mtf:validation>
+    </mtf:tooling-test>
+
+    <mtf:tooling-test name="constructorInputParametersOverload" >
+        <mtf:get-input-metadata parameter="args">
+            <java:new class="org.mule.extensions.internal.model.CompositePojo" constructor="CompositePojo(String)"/>
+        </mtf:get-input-metadata>
+        <mtf:validation>
+            <munit-tools:assert-equals actual="#[payload.'type']" expected="Object"/>
+            <munit-tools:assert-equals actual="#[payload.fields[0].key.name]" expected="name"/>
+            <munit-tools:assert-equals actual="#[payload.fields[0].model.'type']" expected="String"/>
+        </mtf:validation>
+    </mtf:tooling-test>
 </mule>

@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:java="http://www.mulesoft.org/schema/mule/java"
+      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:munit="http://www.mulesoft.org/schema/mule/munit"
+      xmlns:munit-tools="http://www.mulesoft.org/schema/mule/munit-tools"
+      xmlns:mtf="http://www.mulesoft.org/schema/mule/mtf"
+      xmlns="http://www.mulesoft.org/schema/mule/core"
+      xsi:schemaLocation="
+		http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+		http://www.mulesoft.org/schema/mule/munit http://www.mulesoft.org/schema/mule/munit/current/mule-munit.xsd
+		http://www.mulesoft.org/schema/mule/munit-tools  http://www.mulesoft.org/schema/mule/munit-tools/current/mule-munit-tools.xsd
+		http://www.mulesoft.org/schema/mule/mtf  http://www.mulesoft.org/schema/mule/mtf/current/mule-mtf.xsd
+http://www.mulesoft.org/schema/mule/java http://www.mulesoft.org/schema/mule/java/current/mule-java.xsd">
+
+    <munit:config name="input-metadata-test-suite.xml"/>
+
+    <mtf:tooling-test name="instanceMethodSimpleOutput" >
+        <mtf:get-output-metadata parameter="args">
+            <java:invoke class="org.mule.extensions.internal.model.ExecutableElement" method="sayHi(String,int)"/>
+        </mtf:get-output-metadata>
+        <mtf:validation>
+            <munit-tools:assert-equals actual="#[payload.'type']" expected="String"/>
+        </mtf:validation>
+    </mtf:tooling-test>
+
+    <mtf:tooling-test name="instanceMethodVoid" >
+        <mtf:get-output-metadata parameter="args">
+            <java:invoke class="org.mule.extensions.internal.model.ExecutableElement" method="nextPhase()"/>
+        </mtf:get-output-metadata>
+        <mtf:validation>
+            <munit-tools:assert-equals actual="#[payload.'type']" expected="Void"/>
+        </mtf:validation>
+    </mtf:tooling-test>
+
+    <mtf:tooling-test name="staticMethodBuilderOutput" >
+        <mtf:get-output-metadata parameter="args">
+            <java:invoke-static class="org.mule.extensions.internal.model.ExecutableElement" method="create(Phase)"/>
+        </mtf:get-output-metadata>
+        <mtf:validation>
+            <!--<mtf:assert-type fromClass="org.mule.extensions.internal.model.ExecutableElement" />-->
+            <munit-tools:assert-equals actual="#[payload.'type']" expected="Object"/>
+            <munit-tools:assert-equals actual="#[payload.annotations.classInformation.classname]" expected="org.mule.extensions.internal.model.ExecutableElement"/>
+        </mtf:validation>
+    </mtf:tooling-test>
+
+    <mtf:tooling-test name="staticMethodBuilderOutputNoArgs" >
+        <mtf:get-output-metadata parameter="args">
+            <java:invoke-static class="org.mule.extensions.internal.model.ExecutableElement" method="create()"/>
+        </mtf:get-output-metadata>
+        <mtf:validation>
+            <!--<mtf:assert-type fromClass="org.mule.extensions.internal.model.ExecutableElement" />-->
+            <munit-tools:assert-equals actual="#[payload.'type']" expected="Object"/>
+            <munit-tools:assert-equals actual="#[payload.annotations.classInformation.classname]" expected="org.mule.extensions.internal.model.ExecutableElement"/>
+        </mtf:validation>
+    </mtf:tooling-test>
+
+    <mtf:tooling-test name="constructorInputParametersNoArgs" >
+        <mtf:get-output-metadata parameter="args">
+            <java:new class="org.mule.extensions.internal.model.CompositePojo" constructor="CompositePojo()"/>
+        </mtf:get-output-metadata>
+        <mtf:validation>
+            <!--<mtf:assert-type fromClass="org.mule.extensions.internal.model.CompositePojo" />-->
+            <munit-tools:assert-equals actual="#[payload.'type']" expected="Object"/>
+            <munit-tools:assert-equals actual="#[payload.annotations.classInformation.classname]" expected="org.mule.extensions.internal.model.CompositePojo"/>
+        </mtf:validation>
+    </mtf:tooling-test>
+
+    <mtf:tooling-test name="constructorInputParameters" >
+        <mtf:get-output-metadata parameter="args">
+            <java:new class="org.mule.extensions.internal.model.CompositePojo" constructor="CompositePojo(CompositePojo)"/>
+        </mtf:get-output-metadata>
+        <mtf:validation>
+            <!--<mtf:assert-type fromClass="org.mule.extensions.internal.model.CompositePojo" />-->
+            <munit-tools:assert-equals actual="#[payload.'type']" expected="Object"/>
+            <munit-tools:assert-equals actual="#[payload.annotations.classInformation.classname]" expected="org.mule.extensions.internal.model.CompositePojo"/>
+        </mtf:validation>
+    </mtf:tooling-test>
+
+    <mtf:tooling-test name="instanceMethodOptionalReturnType" >
+        <mtf:get-output-metadata parameter="args">
+            <java:invoke class="org.mule.extensions.internal.model.ComplexReturnTypes" method="tripleStateBoolean(boolean)"/>
+        </mtf:get-output-metadata>
+        <mtf:validation>
+            <!--<mtf:assert-type fromClass="java.util.Optional" />-->
+            <munit-tools:assert-equals actual="#[payload.'type']" expected="Object"/>
+            <munit-tools:assert-equals actual="#[payload.annotations.classInformation.classname]" expected="java.util.Optional"/>
+            <munit-tools:assert-equals actual="#[payload.annotations.classInformation.genericTypes[0]]" expected="java.lang.Boolean"/>
+        </mtf:validation>
+    </mtf:tooling-test>
+
+    <mtf:tooling-test name="instanceMethodFunctionReturnType" >
+        <mtf:get-output-metadata parameter="args">
+            <java:invoke class="org.mule.extensions.internal.model.ComplexReturnTypes" method="getFunction()"/>
+        </mtf:get-output-metadata>
+        <mtf:validation>
+            <!--<mtf:assert-type fromClass="java.util.function.Function" />-->
+            <munit-tools:assert-equals actual="#[payload.'type']" expected="Object"/>
+            <munit-tools:assert-equals actual="#[payload.annotations.classInformation.classname]" expected="java.util.function.Function"/>
+            <munit-tools:assert-equals actual="#[payload.annotations.classInformation.genericTypes[0]]" expected="java.lang.Integer"/>
+            <munit-tools:assert-equals actual="#[payload.annotations.classInformation.genericTypes[1]]" expected="java.util.List"/>
+        </mtf:validation>
+    </mtf:tooling-test>
+
+    <mtf:tooling-test name="instanceMethodTypedValueReturnType" >
+        <mtf:get-output-metadata parameter="args">
+            <java:invoke class="org.mule.extensions.internal.model.ComplexReturnTypes" method="getTypedValue(String)"/>
+        </mtf:get-output-metadata>
+        <mtf:validation>
+            <munit-tools:assert-equals actual="#[payload.'type']" expected="String"/>
+        </mtf:validation>
+    </mtf:tooling-test>
+</mule>
