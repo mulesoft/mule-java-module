@@ -41,7 +41,7 @@ http://www.mulesoft.org/schema/mule/java http://www.mulesoft.org/schema/mule/jav
             <java:invoke-static class="org.mule.extensions.internal.model.ExecutableElement" method="create(Phase)"/>
         </mtf:get-input-metadata>
         <mtf:validation>
-            <!--<mtf:assert-type fromClass="org.mule.extensions.internal.model.ExecutableElement.Phase"/>-->
+            <!--<mtf:assert-type fromClass="org.mule.extensions.internal.model.ExecutableElement$Phase"/>-->
             <munit-tools:assert-equals actual="#[payload.'type']" expected="Object"/>
             <munit-tools:assert-equals actual="#[payload.fields[0].key.name]" expected="initPhase"/>
             <munit-tools:assert-equals actual="#[payload.fields[0].model.'type']" expected="String"/>

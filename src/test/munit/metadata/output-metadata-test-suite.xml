@@ -12,7 +12,7 @@
 		http://www.mulesoft.org/schema/mule/mtf  http://www.mulesoft.org/schema/mule/mtf/current/mule-mtf.xsd
 http://www.mulesoft.org/schema/mule/java http://www.mulesoft.org/schema/mule/java/current/mule-java.xsd">
 
-    <munit:config name="input-metadata-test-suite.xml"/>
+    <munit:config name="output-metadata-test-suite.xml"/>
 
     <mtf:tooling-test name="instanceMethodSimpleOutput" >
         <mtf:get-output-metadata>
@@ -50,7 +50,7 @@ http://www.mulesoft.org/schema/mule/java http://www.mulesoft.org/schema/mule/jav
         </mtf:validation>
     </mtf:tooling-test>
 
-    <mtf:tooling-test name="constructorInputParametersNoArgs" >
+    <mtf:tooling-test name="outputConstructorInputParametersNoArgs" >
         <mtf:get-output-metadata>
             <java:new class="org.mule.extensions.internal.model.CompositePojo" constructor="CompositePojo()"/>
         </mtf:get-output-metadata>
@@ -59,7 +59,7 @@ http://www.mulesoft.org/schema/mule/java http://www.mulesoft.org/schema/mule/jav
         </mtf:validation>
     </mtf:tooling-test>
 
-    <mtf:tooling-test name="constructorInputParameters" >
+    <mtf:tooling-test name="outputConstructorInputParameters" >
         <mtf:get-output-metadata>
             <java:new class="org.mule.extensions.internal.model.CompositePojo" constructor="CompositePojo(CompositePojo)"/>
         </mtf:get-output-metadata>
@@ -73,7 +73,7 @@ http://www.mulesoft.org/schema/mule/java http://www.mulesoft.org/schema/mule/jav
             <java:invoke class="org.mule.extensions.internal.model.ComplexReturnTypes" method="tripleStateBoolean(boolean)"/>
         </mtf:get-output-metadata>
         <mtf:validation>
-            <!--<mtf:assert-type fromClass="java.util.Optional"/>-->
+            <mtf:assert-type fromClass="java.util.Optional"/>
             <munit-tools:assert-equals actual="#[payload.'type']" expected="Object"/>
             <munit-tools:assert-equals actual="#[payload.annotations.classInformation.classname]" expected="java.util.Optional"/>
             <munit-tools:assert-equals actual="#[payload.annotations.classInformation.genericTypes[0]]" expected="java.lang.Boolean"/>
@@ -85,7 +85,7 @@ http://www.mulesoft.org/schema/mule/java http://www.mulesoft.org/schema/mule/jav
             <java:invoke class="org.mule.extensions.internal.model.ComplexReturnTypes" method="getFunction()"/>
         </mtf:get-output-metadata>
         <mtf:validation>
-            <!--<mtf:assert-type fromClass="java.util.function.Function"/>-->
+            <mtf:assert-type fromClass="java.util.function.Function"/>
             <munit-tools:assert-equals actual="#[payload.'type']" expected="Object"/>
             <munit-tools:assert-equals actual="#[payload.annotations.classInformation.classname]" expected="java.util.function.Function"/>
             <munit-tools:assert-equals actual="#[payload.annotations.classInformation.genericTypes[0]]" expected="java.lang.Integer"/>
