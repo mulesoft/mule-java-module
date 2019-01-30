@@ -10,8 +10,10 @@ package org.mule.extensions.internal.unit;
 import static java.util.Collections.emptyMap;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
+import static org.mockito.Mockito.RETURNS_DEFAULTS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
+
 import org.mule.extensions.java.api.exception.ClassNotFoundModuleException;
 import org.mule.extensions.java.api.exception.InvocationModuleException;
 import org.mule.extensions.java.internal.util.JavaExceptionUtils;
@@ -24,6 +26,7 @@ import java.lang.reflect.Parameter;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
+import org.mockito.internal.creation.MockSettingsImpl;
 import org.mockito.runners.MockitoJUnitRunner;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -79,7 +82,7 @@ public class JavaErrorUtilsTestCase {
   }
 
   private Throwable createInvocationException(InvocationTargetException invocationException) {
-    Executable executableMock = mock(Executable.class);
+    Executable executableMock = mock(Executable.class, new MockSettingsImpl().defaultAnswer(RETURNS_DEFAULTS).lenient());
     when(executableMock.getParameterCount()).thenReturn(0);
     when(executableMock.getParameters()).thenReturn(new Parameter[] {});
 

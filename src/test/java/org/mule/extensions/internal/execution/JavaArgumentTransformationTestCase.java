@@ -51,7 +51,7 @@ public class JavaArgumentTransformationTestCase extends JavaModuleAbstractTestCa
                                   + "from Class 'org.mule.extensions.internal.model.AnotherExecutableElement' "
                                   + "with arguments [java.util.ArrayList<?> arg0, java.lang.String arg1] resulted in an error.\n"
                                   + "Expected arguments are [java.util.List<org.mule.extensions.internal.model.Car> cars, int index].\n"
-                                  + "Cause: java.lang.ClassCastException - java.lang.String cannot be cast to org.mule.extensions.internal.model.Car");
+                                  + "Cause: java.lang.ClassCastException -");
     flowRunner("invokeGetCarFromListWithParameterizedItem")
         .withVariable("item", "MyString")
         .run();
@@ -68,7 +68,7 @@ public class JavaArgumentTransformationTestCase extends JavaModuleAbstractTestCa
 
   @Test
   public void invokeStaticWithMapParameter() throws Exception {
-    TypedValue<String> payload = flowRunner("invokeStaticWithMapParameter")
+    TypedValue<Integer> payload = flowRunner("invokeStaticWithMapParameter")
         .run()
         .getMessage()
         .getPayload();
@@ -77,7 +77,7 @@ public class JavaArgumentTransformationTestCase extends JavaModuleAbstractTestCa
 
   @Test
   public void invokeStaticWithMapParameterByPositionIndexInsteadOfName() throws Exception {
-    TypedValue<String> payload = flowRunner("invokeStaticWithMapParameterByPositionIndexInsteadOfName")
+    TypedValue<Integer> payload = flowRunner("invokeStaticWithMapParameterByPositionIndexInsteadOfName")
         .run()
         .getMessage()
         .getPayload();
@@ -131,7 +131,7 @@ public class JavaArgumentTransformationTestCase extends JavaModuleAbstractTestCa
 
   @Test
   public void invokeStaticWithListOfMapsAndStringsTransformed() throws Exception {
-    TypedValue<String> payload = flowRunner("invokeStaticWithListOfMapsAndStringsTransformed")
+    TypedValue<Integer> payload = flowRunner("invokeStaticWithListOfMapsAndStringsTransformed")
         .run()
         .getMessage()
         .getPayload();

@@ -23,7 +23,6 @@ import org.mule.extensions.java.internal.metadata.InstanceMethodTypeResolver;
 import org.mule.extensions.java.internal.metadata.StaticMethodTypeResolver;
 import org.mule.extensions.java.internal.parameters.MethodIdentifier;
 import org.mule.extensions.java.internal.parameters.StaticMethodIdentifier;
-import org.mule.runtime.api.meta.model.operation.ExecutionType;
 import org.mule.runtime.api.metadata.TypedValue;
 import org.mule.runtime.api.transformation.TransformationService;
 import org.mule.runtime.core.api.el.ExpressionManager;
@@ -45,7 +44,6 @@ import java.lang.reflect.Method;
 import java.util.Map;
 
 import javax.inject.Inject;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
