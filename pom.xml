@@ -20,6 +20,7 @@
         <commonsLang.version>3.7</commonsLang.version>
         <springCore.version>5.0.5.RELEASE</springCore.version>
         <muleJmsConnectorVersion>1.0.0</muleJmsConnectorVersion>
+        <mockitoVersion>2.23.4</mockitoVersion>
 
         <!-- Remove when a new parent version with MTF is available -->
         <munit.input.directory>src/test/munit</munit.input.directory>
@@ -107,6 +108,13 @@
             <groupId>org.springframework</groupId>
             <artifactId>spring-core</artifactId>
             <version>${springCore.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.mockito</groupId>
+            <artifactId>mockito-core</artifactId>
+            <version>${mockitoVersion}</version>
+            <scope>test</scope>
         </dependency>
 
         <!--Test dependency to use the POJOs in its API-->
