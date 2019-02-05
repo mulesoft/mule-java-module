@@ -2,7 +2,8 @@
 
 <mule xmlns:java="http://www.mulesoft.org/schema/mule/java"
       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:munit="http://www.mulesoft.org/schema/mule/munit"
-      xmlns:munit-tools="http://www.mulesoft.org/schema/mule/munit-tools" xmlns="http://www.mulesoft.org/schema/mule/core"
+      xmlns:munit-tools="http://www.mulesoft.org/schema/mule/munit-tools"
+      xmlns="http://www.mulesoft.org/schema/mule/core"
       xsi:schemaLocation="
 		http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
 		http://www.mulesoft.org/schema/mule/munit http://www.mulesoft.org/schema/mule/munit/current/mule-munit.xsd
@@ -59,12 +60,7 @@ windows: 'windows'
                     is="#[MunitTools::equalTo(true)]"/>
             <set-payload value="#[output application/json --- payload]"
             />
-            <munit-tools:assert>
-                <munit-tools:that><![CDATA[#[import * from dw::test::Asserts
- ---
-payload must equalTo(vars.expected)
-]]]></munit-tools:that>
-            </munit-tools:assert>
+            <flow-ref name="assertCar"/>
         </munit:validation>
     </munit:test>
     <munit:test name="new-instance-with-constructor-with-multiple-args-by-position" description="MUnit Test"
@@ -84,18 +80,43 @@ arg2: 'windows'
             <munit-tools:assert-that
                     expression="#[Java::isInstanceOf(payload, 'org.mule.extensions.internal.model.Car')]"
                     is="#[MunitTools::equalTo(true)]"/>
-            <munit-tools:assert>
-                <munit-tools:that><![CDATA[#[import * from dw::test::Asserts
- ---
-payload must equalTo({ doors: 'doors', windows: 'windows', engine: 'engine', wheels: 'wheels' })
-]]]></munit-tools:that>
-            </munit-tools:assert>
+            <flow-ref name="assertCar"/>
         </munit:validation>
     </munit:test>
+
+    <flow name="assertCar">
+        <munit-tools:assert>
+            <munit-tools:that><![CDATA[#[import * from dw::test::Asserts
+ ---
+payload.doors must equalTo('doors')
+]]]></munit-tools:that>
+        </munit-tools:assert>
+        <munit-tools:assert>
+            <munit-tools:that><![CDATA[#[import * from dw::test::Asserts
+ ---
+payload.windows must equalTo('windows')
+]]]></munit-tools:that>
+        </munit-tools:assert>
+        <munit-tools:assert>
+            <munit-tools:that><![CDATA[#[import * from dw::test::Asserts
+ ---
+payload.engine must equalTo('engine')
+]]]></munit-tools:that>
+        </munit-tools:assert>
+        <munit-tools:assert>
+            <munit-tools:that><![CDATA[#[import * from dw::test::Asserts
+ ---
+payload.wheels must equalTo('wheels')
+]]]></munit-tools:that>
+        </munit-tools:assert>
+    </flow>
+
+
     <munit:test name="new-instance-nested-values" description="MUnit Test">
         <munit:execution>
             <java:new
-                    class="org.mule.extensions.internal.model.CompositePojo" constructor="CompositePojo(String)" target="rick">
+                    class="org.mule.extensions.internal.model.CompositePojo" constructor="CompositePojo(String)"
+                    target="rick">
                 <java:args><![CDATA[#[{arg0: 'Rick'}]]]></java:args>
             </java:new>
             <java:new
@@ -154,7 +175,8 @@ payload must equalTo({ doors: 'doors', windows: 'windows', engine: 'engine', whe
         </munit:execution>
     </munit:test>
 
-    <munit:test name="new-fails-with-arguments-mismatch" description="MUnit Test" expectedErrorType="JAVA:ARGUMENTS_MISMATCH">
+    <munit:test name="new-fails-with-arguments-mismatch" description="MUnit Test"
+                expectedErrorType="JAVA:ARGUMENTS_MISMATCH">
         <munit:execution>
             <java:new class="org.mule.extensions.internal.model.ExecutableElement"
                       constructor="ExecutableElement(Phase)">
