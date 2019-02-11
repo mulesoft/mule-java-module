@@ -73,7 +73,6 @@ http://www.mulesoft.org/schema/mule/java http://www.mulesoft.org/schema/mule/jav
             <java:invoke class="org.mule.extensions.internal.model.ComplexReturnTypes" method="tripleStateBoolean(boolean)"/>
         </mtf:get-output-metadata>
         <mtf:validation>
-            <mtf:assert-type fromClass="java.util.Optional"/>
             <munit-tools:assert-equals actual="#[payload.'type']" expected="Object"/>
             <munit-tools:assert-equals actual="#[payload.annotations.classInformation.classname]" expected="java.util.Optional"/>
             <munit-tools:assert-equals actual="#[payload.annotations.classInformation.genericTypes[0]]" expected="java.lang.Boolean"/>
@@ -85,7 +84,6 @@ http://www.mulesoft.org/schema/mule/java http://www.mulesoft.org/schema/mule/jav
             <java:invoke class="org.mule.extensions.internal.model.ComplexReturnTypes" method="getFunction()"/>
         </mtf:get-output-metadata>
         <mtf:validation>
-            <mtf:assert-type fromClass="java.util.function.Function"/>
             <munit-tools:assert-equals actual="#[payload.'type']" expected="Object"/>
             <munit-tools:assert-equals actual="#[payload.annotations.classInformation.classname]" expected="java.util.function.Function"/>
             <munit-tools:assert-equals actual="#[payload.annotations.classInformation.genericTypes[0]]" expected="java.lang.Integer"/>
