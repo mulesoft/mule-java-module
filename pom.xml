@@ -94,6 +94,12 @@
                         <version>${munit.version}</version>
                         <classifier>mule-plugin</classifier>
                     </dependency>
+                    <dependency>
+                        <groupId>com.mulesoft.munit</groupId>
+                        <artifactId>mtf-tools</artifactId>
+                        <version>${mtf.tools.version}</version>
+                        <classifier>mule-plugin</classifier>
+                    </dependency>
                 </dependencies>
             </plugin>
         </plugins>
@@ -124,14 +130,6 @@
             <artifactId>mule-jms-connector</artifactId>
             <classifier>mule-plugin</classifier>
             <version>${muleJmsConnectorVersion}</version>
-            <scope>test</scope>
-        </dependency>
-        <!--Test dependency for metadata testing-->
-        <dependency>
-            <groupId>com.mulesoft.munit</groupId>
-            <artifactId>mtf-tools</artifactId>
-            <version>${mtf.tools.version}</version>
-            <classifier>mule-plugin</classifier>
             <scope>test</scope>
         </dependency>
     </dependencies>
