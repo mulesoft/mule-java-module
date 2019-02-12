@@ -41,6 +41,7 @@ http://www.mulesoft.org/schema/mule/java http://www.mulesoft.org/schema/mule/jav
             <java:invoke-static class="org.mule.extensions.internal.model.ExecutableElement" method="create(Phase)"/>
         </mtf:get-input-metadata>
         <mtf:validation>
+            <!--re-enable when MU-1539 is done-->
             <!--<mtf:assert-type fromClass="org.mule.extensions.internal.model.ExecutableElement$Phase"/>-->
             <munit-tools:assert-equals actual="#[payload.'type']" expected="Object"/>
             <munit-tools:assert-equals actual="#[payload.fields[0].key.name]" expected="initPhase"/>
@@ -72,6 +73,7 @@ http://www.mulesoft.org/schema/mule/java http://www.mulesoft.org/schema/mule/jav
             <java:new class="org.mule.extensions.internal.model.CompositePojo" constructor="CompositePojo(CompositePojo)"/>
         </mtf:get-input-metadata>
         <mtf:validation>
+            <!--re-enable when MU-1539 is done-->
             <!--<mtf:assert-type fromClass="org.mule.extensions.internal.model.CompositePojo"/>-->
             <munit-tools:assert-equals actual="#[payload.'type']" expected="Object"/>
             <munit-tools:assert-equals actual="#[payload.fields[0].key.name]" expected="child"/>

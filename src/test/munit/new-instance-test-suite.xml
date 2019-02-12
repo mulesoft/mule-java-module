@@ -80,16 +80,7 @@ arg2: 'windows'
             <munit-tools:assert-that
                     expression="#[Java::isInstanceOf(payload, 'org.mule.extensions.internal.model.Car')]"
                     is="#[MunitTools::equalTo(true)]"/>
-<<<<<<< HEAD
             <flow-ref name="assertCar"/>
-=======
-            <munit-tools:assert>
-                <munit-tools:that><![CDATA[#[import * from dw::test::Asserts
- ---
-payload must equalTo({ doors: 'doors', windows: 'windows', engine: 'engine', wheels: 'wheels' }, { unordered: true})
-]]]></munit-tools:that>
-            </munit-tools:assert>
->>>>>>> Make tests pass on 4.2.0 and 4.1.x
         </munit:validation>
     </munit:test>
 
