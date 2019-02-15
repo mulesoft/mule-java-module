@@ -28,6 +28,7 @@
         <munit.extensions.maven.plugin.version>1.0.0-SNAPSHOT</munit.extensions.maven.plugin.version>
         <munit.version>2.2.0-SNAPSHOT</munit.version>
         <mavenResources.version>3.0.2</mavenResources.version>
+        <mtf.tools.version>1.0.0-SNAPSHOT</mtf.tools.version>
     </properties>
 
 
@@ -91,6 +92,12 @@
                         <groupId>com.mulesoft.munit</groupId>
                         <artifactId>munit-tools</artifactId>
                         <version>${munit.version}</version>
+                        <classifier>mule-plugin</classifier>
+                    </dependency>
+                    <dependency>
+                        <groupId>com.mulesoft.munit</groupId>
+                        <artifactId>mtf-tools</artifactId>
+                        <version>${mtf.tools.version}</version>
                         <classifier>mule-plugin</classifier>
                     </dependency>
                 </dependencies>
