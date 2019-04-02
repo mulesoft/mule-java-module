@@ -10,6 +10,7 @@ import static java.lang.String.format;
 import static org.mule.extensions.java.internal.util.JavaModuleUtils.getSortedAndTransformedArgs;
 import static org.mule.extensions.java.internal.util.JavaModuleUtils.logTooManyArgsWarning;
 import static org.mule.runtime.api.meta.model.operation.ExecutionType.CPU_INTENSIVE;
+import static org.mule.runtime.extension.api.annotation.param.MediaType.ANY;
 
 import org.mule.extensions.java.api.exception.ArgumentMismatchModuleException;
 import org.mule.extensions.java.api.exception.ClassNotFoundModuleException;
@@ -33,6 +34,7 @@ import org.mule.runtime.extension.api.annotation.metadata.MetadataKeyId;
 import org.mule.runtime.extension.api.annotation.metadata.OutputResolver;
 import org.mule.runtime.extension.api.annotation.metadata.TypeResolver;
 import org.mule.runtime.extension.api.annotation.param.Content;
+import org.mule.runtime.extension.api.annotation.param.MediaType;
 import org.mule.runtime.extension.api.annotation.param.NullSafe;
 import org.mule.runtime.extension.api.annotation.param.Optional;
 import org.mule.runtime.extension.api.annotation.param.ParameterGroup;
@@ -85,6 +87,7 @@ public class JavaNewInstanceOperation {
   @Throws(JavaNewInstanceErrorProvider.class)
   @OutputResolver(output = ConstructorTypeResolver.class)
   @Execution(CPU_INTENSIVE)
+  @MediaType(value = ANY, strict = false)
   public Object newInstance(
                             @ParameterGroup(
                                 name = "Constructor") @MetadataKeyId(ConstructorTypeResolver.class) ConstructorIdentifier identifier,
