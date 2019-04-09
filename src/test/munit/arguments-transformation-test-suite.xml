@@ -204,7 +204,7 @@ http://www.mulesoft.org/schema/mule/java http://www.mulesoft.org/schema/mule/jav
             <munit-tools:assert>
                 <munit-tools:that><![CDATA[#[import * from dw::test::Asserts
  ---
-payload.description must equalTo("Invocation of static Method 'getClassFromFirstItem(List)' from Class 'org.mule.extensions.internal.model.AnotherExecutableElement' with arguments [java.util.ArrayList<?> items] resulted in an error.\nExpected arguments are [java.util.List<org.mule.extensions.internal.model.ExecutableElement> items].\nCause: java.lang.ClassCastException - java.lang.String cannot be cast to org.mule.extensions.internal.model.ExecutableElement")
+payload.description must contain("Invocation of static Method 'getClassFromFirstItem(List)' from Class 'org.mule.extensions.internal.model.AnotherExecutableElement' with arguments [java.util.ArrayList<?> items] resulted in an error.\nExpected arguments are [java.util.List<org.mule.extensions.internal.model.ExecutableElement> items].\nCause: java.lang.ClassCastException - ")
 ]]]></munit-tools:that>
             </munit-tools:assert>
         </munit:validation>
@@ -364,7 +364,7 @@ payload.description must equalTo("Invocation of static Method 'getClassFromFirst
             <munit-tools:assert>
                 <munit-tools:that><![CDATA[#[import * from dw::test::Asserts
  ---
-payload.description must equalTo("Invocation of static Method 'getCarFromList(List, int)' from Class 'org.mule.extensions.internal.model.AnotherExecutableElement' with arguments [java.util.ArrayList<?> arg0, java.lang.String arg1] resulted in an error.\nExpected arguments are [java.util.List<org.mule.extensions.internal.model.Car> cars, int index].\nCause: java.lang.ClassCastException - java.lang.String cannot be cast to org.mule.extensions.internal.model.Car")]]]></munit-tools:that>
+payload.description must contain("Invocation of static Method 'getCarFromList(List, int)' from Class 'org.mule.extensions.internal.model.AnotherExecutableElement' with arguments [java.util.ArrayList<?> arg0, java.lang.String arg1] resulted in an error.\nExpected arguments are [java.util.List<org.mule.extensions.internal.model.Car> cars, int index].\nCause: java.lang.ClassCastException - ")]]]></munit-tools:that>
             </munit-tools:assert>
         </munit:validation>
     </munit:test>

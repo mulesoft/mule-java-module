@@ -14,13 +14,14 @@ http://www.mulesoft.org/schema/mule/java http://www.mulesoft.org/schema/mule/jav
 
     <munit:config name="keys-metadata-test-suite.xml"/>
 
-    <mtf:tooling-test name="instanceMethodKeys" >
+    <mtf:tooling-test name="instanceMethodKeys">
         <mtf:get-metadata-keys>
-            <java:invoke class="org.mule.extensions.internal.model.ExecutableElement" />
+            <java:invoke class="org.mule.extensions.internal.model.ExecutableElement"/>
         </mtf:get-metadata-keys>
         <mtf:validation>
-            <set-variable value="#[payload.'org.mule.extensions.internal.model.ExecutableElement'.childs pluck $]" variableName="childKeys"/>
-            <munit-tools:assert-equals actual="#[vars.childKeys.id]" expected="#[[
+            <set-variable value="#[payload.'org.mule.extensions.internal.model.ExecutableElement'.childs pluck $]"
+                          variableName="childKeys"/>
+            <munit-tools:assert-equals actual="#[vars.childKeys.id orderBy ($)]" expected="#[[
             'getPhaseId()' ,
             'addToList(java.util.LinkedList)' ,
             'toString()' ,
@@ -42,8 +43,8 @@ http://www.mulesoft.org/schema/mule/java http://www.mulesoft.org/schema/mule/jav
             'nextPhase()' ,
             'equals(java.lang.Object)' ,
             'wait(long)'
-            ]]"/>
-            <munit-tools:assert-equals actual="#[vars.childKeys.displayName]" expected="#[[
+            ] orderBy($) ]"/>
+            <munit-tools:assert-equals actual="#[vars.childKeys.displayName orderBy ($)]" expected="#[[
             'getPhaseId()',
              'addToList(LinkedList linkedList)',
              'toString()',
@@ -64,17 +65,18 @@ http://www.mulesoft.org/schema/mule/java http://www.mulesoft.org/schema/mule/jav
              'sayHi(int id)',
              'nextPhase()',
              'equals(Object arg0)',
-             'wait(long arg0)']]"/>
+             'wait(long arg0)'] orderBy ($) ]"/>
         </mtf:validation>
     </mtf:tooling-test>
 
-    <mtf:tooling-test name="staticMethodKeys" >
+    <mtf:tooling-test name="staticMethodKeys">
         <mtf:get-metadata-keys>
             <java:invoke-static class="org.mule.extensions.internal.model.ExecutableElement" method="create(Phase)"/>
         </mtf:get-metadata-keys>
         <mtf:validation>
-            <set-variable value="#[payload.'org.mule.extensions.internal.model.ExecutableElement'.childs pluck $]" variableName="childKeys"/>
-            <munit-tools:assert-equals actual="#[vars.childKeys.id]" expected="#[[
+            <set-variable value="#[payload.'org.mule.extensions.internal.model.ExecutableElement'.childs pluck $]"
+                          variableName="childKeys"/>
+            <munit-tools:assert-equals actual="#[vars.childKeys.id orderBy ($)]" expected="#[[
             'getNull()',
             'throwException(java.lang.String)',
             'className()',
@@ -82,8 +84,8 @@ http://www.mulesoft.org/schema/mule/java http://www.mulesoft.org/schema/mule/jav
             'makeCatSaySomething(org.mule.extensions.internal.model.robot.Cat)',
             'makeCatsSaySomething(org.mule.extensions.internal.model.robot.Cat,org.mule.extensions.internal.model.real.Cat)',
             'create(org.mule.extensions.internal.model.ExecutableElement.Phase)',
-            'create()']]"/>
-            <munit-tools:assert-equals actual="#[vars.childKeys.displayName]" expected="#[[
+            'create()'] orderBy ($)]"/>
+            <munit-tools:assert-equals actual="#[vars.childKeys.displayName orderBy ($)]" expected="#[[
             'getNull()',
             'throwException(String message)',
             'className()',
@@ -91,16 +93,17 @@ http://www.mulesoft.org/schema/mule/java http://www.mulesoft.org/schema/mule/jav
             'makeCatSaySomething(org.mule.extensions.internal.model.robot.Cat cat)',
             'makeCatsSaySomething(org.mule.extensions.internal.model.robot.Cat robotCat, org.mule.extensions.internal.model.real.Cat realCat)',
             'create(Phase initPhase)',
-            'create()']]"/>
+            'create()'] orderBy($)]"/>
         </mtf:validation>
     </mtf:tooling-test>
 
-    <mtf:tooling-test name="constructorKeys" >
+    <mtf:tooling-test name="constructorKeys">
         <mtf:get-metadata-keys>
             <java:new class="org.mule.extensions.internal.model.CompositePojo" constructor="CompositePojo(String)"/>
         </mtf:get-metadata-keys>
         <mtf:validation>
-            <set-variable value="#[payload.'org.mule.extensions.internal.model.CompositePojo'.childs pluck $]" variableName="childKeys"/>
+            <set-variable value="#[payload.'org.mule.extensions.internal.model.CompositePojo'.childs pluck $]"
+                          variableName="childKeys"/>
             <munit-tools:assert-equals actual="#[vars.childKeys.id]" expected="#[[
             'CompositePojo(org.mule.extensions.internal.model.CompositePojo)',
             'CompositePojo(java.lang.String)',
