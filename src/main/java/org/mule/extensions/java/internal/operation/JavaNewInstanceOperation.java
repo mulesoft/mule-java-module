@@ -33,6 +33,7 @@ import org.mule.runtime.extension.api.annotation.metadata.MetadataKeyId;
 import org.mule.runtime.extension.api.annotation.metadata.OutputResolver;
 import org.mule.runtime.extension.api.annotation.metadata.TypeResolver;
 import org.mule.runtime.extension.api.annotation.param.Content;
+import org.mule.runtime.extension.api.annotation.param.MediaType;
 import org.mule.runtime.extension.api.annotation.param.NullSafe;
 import org.mule.runtime.extension.api.annotation.param.Optional;
 import org.mule.runtime.extension.api.annotation.param.ParameterGroup;
@@ -82,6 +83,7 @@ public class JavaNewInstanceOperation {
    * @throws NonInstantiableTypeModuleException if the given {@code class} is not instantiable
    */
   @Alias("new")
+  @MediaType(value = "application/java")
   @Throws(JavaNewInstanceErrorProvider.class)
   @OutputResolver(output = ConstructorTypeResolver.class)
   @Execution(CPU_INTENSIVE)

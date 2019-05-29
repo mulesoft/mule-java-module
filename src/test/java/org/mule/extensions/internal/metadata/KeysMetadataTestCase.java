@@ -23,12 +23,12 @@ public class KeysMetadataTestCase extends AbstractMetadataTestCase {
   public void instanceMethodKeys() throws Exception {
 
     Set<MetadataKey> keys = getKeys(flow(INVOKE, EXECUTABLE_ELEMENT), INSTANCE_CATEGORY);
-    assertThat(keys.iterator().next().getChilds().size(), is(21));
+    assertThat(keys.iterator().next().getChilds().size(), is(22));
     assertThat(getIds(keys), containsInAnyOrder(
                                                 "getPhase()", "getPhaseId()", "equals(java.lang.Object)", "sayHi(int)",
                                                 "notify()", "sayHi()", "hashCode()", "addToList(java.util.List)",
                                                 "createEmptyPojo()", "notifyAll()", "sayHi(java.lang.String,int)", "wait()",
-                                                "addToMap(java.util.Map)",
+                                                "addToMap(java.util.Map)", "sayHi(java.util.Optional)",
                                                 "addToList(java.util.ArrayList)", "nextPhase()", "wait(long)", "getClass()",
                                                 "wait(long,int)", "addToList(java.util.LinkedList)", "sayHi(java.lang.String)",
                                                 "toString()"));
@@ -39,7 +39,7 @@ public class KeysMetadataTestCase extends AbstractMetadataTestCase {
                                                          "addToMap(Map input)", "addToList(ArrayList list)",
                                                          "nextPhase()", "wait(long arg0)", "getClass()",
                                                          "wait(long arg0, int arg1)", "addToList(LinkedList linkedList)",
-                                                         "sayHi(String name)", "toString()"));
+                                                         "sayHi(String name)", "toString()", "sayHi(Optional name)"));
   }
 
   @Test

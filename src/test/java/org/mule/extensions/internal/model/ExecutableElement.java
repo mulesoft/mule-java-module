@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 public class ExecutableElement {
 
@@ -60,6 +61,10 @@ public class ExecutableElement {
 
   public String sayHi(String name, int id) {
     return "Hi " + name + "::" + id;
+  }
+
+  public String sayHi(Optional<String> name) {
+    return "Hi " + name.orElse("there");
   }
 
   public ComplexReturnTypes createEmptyPojo() {
