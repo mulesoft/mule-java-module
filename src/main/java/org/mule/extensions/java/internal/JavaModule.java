@@ -28,4 +28,6 @@ import org.mule.runtime.extension.api.annotation.error.ErrorTypes;
 @ErrorTypes(JavaModuleError.class)
 public class JavaModule {
 
+  public static final String APPLICATION_JAVA = "application/java";
+
 }
