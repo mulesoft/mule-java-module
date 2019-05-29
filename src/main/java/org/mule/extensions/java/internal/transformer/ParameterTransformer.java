@@ -102,11 +102,11 @@ public class ParameterTransformer {
 
   private boolean parameterNeedsTransformation(Object value, ResolvableType parameterResolvableType) {
 
+    Class<?> wrappedParameterType = wrap(resolveType(parameterResolvableType));
     if (value == null) {
-      return false;
+      return Optional.class.isAssignableFrom(wrappedParameterType);
     }
 
-    Class<?> wrappedParameterType = wrap(resolveType(parameterResolvableType));
     if (wrappedParameterType.isAssignableFrom(value.getClass())) {
       if (Map.class.isAssignableFrom(value.getClass())) {
         for (Map.Entry<Object, Object> entry : ((Map<Object, Object>) value).entrySet()) {
@@ -152,7 +152,7 @@ public class ParameterTransformer {
     Class<?> wrappedParameterType = wrap(resolveType(expectedType));
 
     if (value == null) {
-      return empty();
+      return Optional.class.isAssignableFrom(wrappedParameterType) ? Optional.of(empty()) : empty();
     }
 
     if (mapResolutionNeeded(value, expectedType)) {

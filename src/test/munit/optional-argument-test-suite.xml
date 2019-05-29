@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:java="http://www.mulesoft.org/schema/mule/java"
+      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:munit="http://www.mulesoft.org/schema/mule/munit"
+      xmlns:munit-tools="http://www.mulesoft.org/schema/mule/munit-tools"
+      xmlns="http://www.mulesoft.org/schema/mule/core"
+      xsi:schemaLocation="
+		http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+		http://www.mulesoft.org/schema/mule/munit http://www.mulesoft.org/schema/mule/munit/current/mule-munit.xsd
+		http://www.mulesoft.org/schema/mule/munit-tools  http://www.mulesoft.org/schema/mule/munit-tools/current/mule-munit-tools.xsd
+http://www.mulesoft.org/schema/mule/java http://www.mulesoft.org/schema/mule/java/current/mule-java.xsd">
+    <munit:config name="optional-argument-test-suite.xml" minMuleVersion="4.1.5"/>
+
+    <munit:test name="invoke-instance-with-null-optional-argument-type">
+        <munit:behavior>
+            <java:new class="org.mule.extensions.internal.model.ExecutableElement" constructor="ExecutableElement()"/>
+        </munit:behavior>
+        <munit:execution>
+            <java:invoke class="org.mule.extensions.internal.model.ExecutableElement" instance="#[payload]"
+                         method="sayHi(Optional)">
+                <java:args>#[
+                    {
+                    name: null
+                    }
+                    ]
+                </java:args>
+            </java:invoke>
+        </munit:execution>
+        <munit:validation>
+            <munit-tools:assert-that expression="#[payload]" is="#[MunitTools::equalTo('Hi there')]"/>
+        </munit:validation>
+    </munit:test>
+
+    <munit:test name="invoke-instance-with-string-optional-argument-type">
+        <munit:behavior>
+            <java:new class="org.mule.extensions.internal.model.ExecutableElement" constructor="ExecutableElement()"/>
+        </munit:behavior>
+        <munit:execution>
+            <java:invoke class="org.mule.extensions.internal.model.ExecutableElement" instance="#[payload]"
+                         method="sayHi(Optional)">
+                <java:args>#[
+                    {
+                    name: 'Sarah'
+                    }
+                    ]
+                </java:args>
+            </java:invoke>
+        </munit:execution>
+        <munit:validation>
+            <munit-tools:assert-that expression="#[payload]" is="#[MunitTools::equalTo('Hi Sarah')]"/>
+        </munit:validation>
+    </munit:test>
+
+    <munit:test name="invoke-instance-with-null-string-argument-type">
+        <munit:behavior>
+            <java:new class="org.mule.extensions.internal.model.ExecutableElement" constructor="ExecutableElement()"/>
+        </munit:behavior>
+        <munit:execution>
+            <java:invoke class="org.mule.extensions.internal.model.ExecutableElement" instance="#[payload]"
+                         method="sayHi(String)">
+                <java:args>#[
+                    {
+                    name: null
+                    }
+                    ]
+                </java:args>
+            </java:invoke>
+        </munit:execution>
+        <munit:validation>
+            <munit-tools:assert-that expression="#[payload]" is="#[MunitTools::equalTo('Hi null')]"/>
+        </munit:validation>
+    </munit:test>
+
+</mule>

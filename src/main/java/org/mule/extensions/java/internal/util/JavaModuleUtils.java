@@ -100,8 +100,8 @@ public final class JavaModuleUtils {
           continue;
         }
         Object originalValue = value.getValue();
-        if (originalValue != null && parameterTransformer.parameterNeedsTransformation(value.getValue(), i)) {
-          Optional<Object> transformedValue = parameterTransformer.transformParameter(value.getValue(), i);
+        if (parameterTransformer.parameterNeedsTransformation(originalValue, i)) {
+          Optional<Object> transformedValue = parameterTransformer.transformParameter(originalValue, i);
           if (transformedValue.isPresent()) {
             sortedArgs.add(transformedValue.get());
           } else {
