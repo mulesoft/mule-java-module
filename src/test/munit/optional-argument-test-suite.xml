@@ -51,4 +51,24 @@ http://www.mulesoft.org/schema/mule/java http://www.mulesoft.org/schema/mule/jav
         </munit:validation>
     </munit:test>
 
+    <munit:test name="invoke-instance-with-null-string-argument-type">
+        <munit:behavior>
+            <java:new class="org.mule.extensions.internal.model.ExecutableElement" constructor="ExecutableElement()"/>
+        </munit:behavior>
+        <munit:execution>
+            <java:invoke class="org.mule.extensions.internal.model.ExecutableElement" instance="#[payload]"
+                         method="sayHi(String)">
+                <java:args>#[
+                    {
+                    name: null
+                    }
+                    ]
+                </java:args>
+            </java:invoke>
+        </munit:execution>
+        <munit:validation>
+            <munit-tools:assert-that expression="#[payload]" is="#[MunitTools::equalTo('Hi null')]"/>
+        </munit:validation>
+    </munit:test>
+
 </mule>

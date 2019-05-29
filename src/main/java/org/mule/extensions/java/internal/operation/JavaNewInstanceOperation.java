@@ -7,6 +7,7 @@
 package org.mule.extensions.java.internal.operation;
 
 import static java.lang.String.format;
+import static org.mule.extensions.java.internal.JavaModule.APPLICATION_JAVA;
 import static org.mule.extensions.java.internal.util.JavaModuleUtils.getSortedAndTransformedArgs;
 import static org.mule.extensions.java.internal.util.JavaModuleUtils.logTooManyArgsWarning;
 import static org.mule.runtime.api.meta.model.operation.ExecutionType.CPU_INTENSIVE;
@@ -83,7 +84,7 @@ public class JavaNewInstanceOperation {
    * @throws NonInstantiableTypeModuleException if the given {@code class} is not instantiable
    */
   @Alias("new")
-  @MediaType(value = "application/java")
+  @MediaType(value = APPLICATION_JAVA)
   @Throws(JavaNewInstanceErrorProvider.class)
   @OutputResolver(output = ConstructorTypeResolver.class)
   @Execution(CPU_INTENSIVE)
