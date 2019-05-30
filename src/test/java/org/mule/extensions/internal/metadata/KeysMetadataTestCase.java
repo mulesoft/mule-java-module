@@ -10,6 +10,7 @@ import static java.util.stream.Collectors.toList;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.Matchers.is;
+
 import org.mule.runtime.api.metadata.MetadataKey;
 
 import java.util.List;
@@ -23,7 +24,7 @@ public class KeysMetadataTestCase extends AbstractMetadataTestCase {
   public void instanceMethodKeys() throws Exception {
 
     Set<MetadataKey> keys = getKeys(flow(INVOKE, EXECUTABLE_ELEMENT), INSTANCE_CATEGORY);
-    assertThat(keys.iterator().next().getChilds().size(), is(22));
+    assertThat(keys.iterator().next().getChilds().size(), is(24));
     assertThat(getIds(keys), containsInAnyOrder(
                                                 "getPhase()", "getPhaseId()", "equals(java.lang.Object)", "sayHi(int)",
                                                 "notify()", "sayHi()", "hashCode()", "addToList(java.util.List)",
@@ -31,7 +32,8 @@ public class KeysMetadataTestCase extends AbstractMetadataTestCase {
                                                 "addToMap(java.util.Map)", "sayHi(java.util.Optional)",
                                                 "addToList(java.util.ArrayList)", "nextPhase()", "wait(long)", "getClass()",
                                                 "wait(long,int)", "addToList(java.util.LinkedList)", "sayHi(java.lang.String)",
-                                                "toString()"));
+                                                "toString()", "sayHi(java.util.Optional,java.lang.String)",
+                                                "adopt(java.util.Optional)"));
     assertThat(getDisplayNames(keys), containsInAnyOrder("getPhase()", "getPhaseId()", "equals(Object arg0)",
                                                          "sayHi(int id)", "notify()", "sayHi()",
                                                          "hashCode()", "addToList(List list)", "createEmptyPojo()",
@@ -39,7 +41,9 @@ public class KeysMetadataTestCase extends AbstractMetadataTestCase {
                                                          "addToMap(Map input)", "addToList(ArrayList list)",
                                                          "nextPhase()", "wait(long arg0)", "getClass()",
                                                          "wait(long arg0, int arg1)", "addToList(LinkedList linkedList)",
-                                                         "sayHi(String name)", "toString()", "sayHi(Optional name)"));
+                                                         "sayHi(String name)", "toString()", "sayHi(Optional name)",
+                                                         "sayHi(Optional name, String lasname)",
+                                                         "adopt(Optional cat)"));
   }
 
   @Test
