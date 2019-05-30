@@ -67,6 +67,10 @@ public class ExecutableElement {
     return "Hi " + name.orElse("there");
   }
 
+  public String sayHi(Optional<String> name, String lasname) {
+    return "Hi " + name.orElse("there") + " " + lasname;
+  }
+
   public ComplexReturnTypes createEmptyPojo() {
     return new ComplexReturnTypes();
   }
