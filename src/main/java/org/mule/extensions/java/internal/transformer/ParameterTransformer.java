@@ -151,8 +151,10 @@ public class ParameterTransformer {
   private Optional<Object> transformParameter(Object value, ResolvableType expectedType) {
     Class<?> wrappedParameterType = wrap(resolveType(expectedType));
 
+    boolean isOptional = Optional.class.isAssignableFrom(wrappedParameterType);
+
     if (value == null) {
-      return Optional.class.isAssignableFrom(wrappedParameterType) ? Optional.of(empty()) : empty();
+      return isOptional ? Optional.of(empty()) : empty();
     }
 
     if (mapResolutionNeeded(value, expectedType)) {
@@ -165,6 +167,11 @@ public class ParameterTransformer {
 
     if (wrappedParameterType.isAssignableFrom(value.getClass())) {
       return Optional.of(value);
+    } else if (isOptional) {
+      Class<?> subjectClass = expectedType.hasGenerics() ? expectedType.getGeneric(0).resolve() : Object.class;
+      if (subjectClass.isAssignableFrom(value.getClass())) {
+        return Optional.of(Optional.of(value)); // (:-D
+      }
     }
 
     Optional<Object> transformedValue = doServiceTransform(value, wrappedParameterType);
