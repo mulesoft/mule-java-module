@@ -41,7 +41,7 @@ http://www.mulesoft.org/schema/mule/java http://www.mulesoft.org/schema/mule/jav
                 <java:args>#[
                     {
                     name: null,
-                    lastname: 'Smith'
+                    lasname: 'Smith'
                     }
                     ]
                 </java:args>
@@ -51,6 +51,55 @@ http://www.mulesoft.org/schema/mule/java http://www.mulesoft.org/schema/mule/jav
             <munit-tools:assert-that expression="#[payload]" is="#[MunitTools::equalTo('Hi there Smith')]"/>
         </munit:validation>
     </munit:test>
+
+    <munit:test name="invoke-instance-with-optional-pojo">
+        <munit:behavior>
+            <java:new class="org.mule.extensions.internal.model.ExecutableElement" constructor="ExecutableElement()"/>
+        </munit:behavior>
+        <munit:execution>
+            <java:new class="org.mule.extensions.internal.model.robot.Cat" constructor="Cat(String)" target="cat">
+                <java:args>#[
+                    {
+                    name: 'Mauricio'
+                    }
+                    ]
+                </java:args>
+            </java:new>
+            <java:invoke class="org.mule.extensions.internal.model.ExecutableElement" instance="#[payload]"
+                         method="adopt(Optional)">
+                <java:args>#[
+                    {
+                    cat: vars.cat
+                    }
+                    ]
+                </java:args>
+            </java:invoke>
+        </munit:execution>
+        <munit:validation>
+            <munit-tools:assert-that expression="#[payload]" is="#[MunitTools::equalTo('I love you Mauricio')]"/>
+        </munit:validation>
+    </munit:test>
+
+    <munit:test name="invoke-instance-with-empty-optional-pojo">
+        <munit:behavior>
+            <java:new class="org.mule.extensions.internal.model.ExecutableElement" constructor="ExecutableElement()"/>
+        </munit:behavior>
+        <munit:execution>
+            <java:invoke class="org.mule.extensions.internal.model.ExecutableElement" instance="#[payload]"
+                         method="adopt(Optional)">
+                <java:args>#[
+                    {
+                    cat: null
+                    }
+                    ]
+                </java:args>
+            </java:invoke>
+        </munit:execution>
+        <munit:validation>
+            <munit-tools:assert-that expression="#[payload]" is="#[MunitTools::equalTo('I am better on my own.')]"/>
+        </munit:validation>
+    </munit:test>
+
 
     <munit:test name="invoke-instance-with-string-optional-argument-type">
         <munit:behavior>

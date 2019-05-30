@@ -6,6 +6,8 @@
  */
 package org.mule.extensions.internal.model;
 
+import org.mule.extensions.internal.model.robot.Cat;
+
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
@@ -69,6 +71,10 @@ public class ExecutableElement {
 
   public String sayHi(Optional<String> name, String lasname) {
     return "Hi " + name.orElse("there") + " " + lasname;
+  }
+
+  public String adopt(Optional<Cat> cat) {
+    return cat.map(c -> "I love you " + c.getName()).orElse("I am better on my own.");
   }
 
   public ComplexReturnTypes createEmptyPojo() {
