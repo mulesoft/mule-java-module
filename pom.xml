@@ -6,7 +6,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.mule.module</groupId>
     <artifactId>mule-java-module</artifactId>
-    <version>1.2.4-SNAPSHOT</version>
+    <version>1.2.5-SNAPSHOT</version>
     <packaging>mule-extension</packaging>
     <name>Mule Java Module</name>
 
