@@ -39,6 +39,8 @@ http://www.mulesoft.org/schema/mule/java http://www.mulesoft.org/schema/mule/jav
             'addToMap(java.util.Map)' ,
             'sayHi()' ,
             'sayHi(java.util.Optional)' ,
+            'sayHi(java.util.Optional,java.lang.String)',
+            'adopt(java.util.Optional)' ,
             'notify()' ,
             'sayHi(int)' ,
             'nextPhase()' ,
@@ -65,6 +67,8 @@ http://www.mulesoft.org/schema/mule/java http://www.mulesoft.org/schema/mule/jav
              'sayHi()',
              'notify()',
              'sayHi(int id)',
+             'sayHi(Optional name, String lasname)',
+             'adopt(Optional cat)',
              'nextPhase()',
              'equals(Object arg0)',
              'wait(long arg0)'] orderBy ($) ]"/>
