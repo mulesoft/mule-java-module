@@ -8,7 +8,7 @@ package org.mule.extensions.java.internal.operation;
 
 import static org.mule.extensions.java.internal.util.JavaModuleUtils.validateType;
 import static org.mule.extensions.java.internal.util.MethodInvoker.invokeMethod;
-import static org.mule.runtime.api.meta.model.operation.ExecutionType.CPU_INTENSIVE;
+import static org.mule.runtime.api.meta.model.operation.ExecutionType.BLOCKING;
 
 import org.mule.extensions.java.api.exception.ArgumentMismatchModuleException;
 import org.mule.extensions.java.api.exception.ClassNotFoundModuleException;
@@ -101,7 +101,7 @@ public class JavaInvokeOperations {
    */
   @Throws(JavaStaticInvokeErrorProvider.class)
   @OutputResolver(output = StaticMethodTypeResolver.class)
-  @Execution(CPU_INTENSIVE)
+  @Execution(BLOCKING)
   public Result<Object, Void> invokeStatic(
                                            @ParameterGroup(
                                                name = "Method") @MetadataKeyId(StaticMethodTypeResolver.class) StaticMethodIdentifier identifier,
@@ -157,7 +157,7 @@ public class JavaInvokeOperations {
    */
   @Throws(JavaInvokeErrorProvider.class)
   @OutputResolver(output = InstanceMethodTypeResolver.class)
-  @Execution(CPU_INTENSIVE)
+  @Execution(BLOCKING)
   public Result<Object, Void> invoke(
                                      @ParameterGroup(
                                          name = "Method") @MetadataKeyId(InstanceMethodTypeResolver.class) MethodIdentifier identifier,

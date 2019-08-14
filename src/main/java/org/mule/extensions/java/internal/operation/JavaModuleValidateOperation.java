@@ -7,7 +7,6 @@
 package org.mule.extensions.java.internal.operation;
 
 import static org.mule.runtime.api.meta.ExpressionSupport.NOT_SUPPORTED;
-import static org.mule.runtime.api.meta.model.operation.ExecutionType.CPU_INTENSIVE;
 
 import org.mule.extensions.java.api.exception.ClassNotFoundModuleException;
 import org.mule.extensions.java.api.exception.WrongTypeModuleException;
@@ -15,11 +14,9 @@ import org.mule.extensions.java.internal.JavaModule;
 import org.mule.extensions.java.internal.util.JavaModuleUtils;
 import org.mule.extensions.java.internal.cache.JavaModuleLoadingCache;
 import org.mule.extensions.java.internal.error.JavaValidateTypeErrorProvider;
-import org.mule.runtime.api.meta.model.operation.ExecutionType;
 import org.mule.runtime.extension.api.annotation.Alias;
 import org.mule.runtime.extension.api.annotation.Expression;
 import org.mule.runtime.extension.api.annotation.error.Throws;
-import org.mule.runtime.extension.api.annotation.execution.Execution;
 import org.mule.runtime.extension.api.annotation.param.Optional;
 import org.mule.runtime.extension.api.annotation.param.display.ClassValue;
 import org.mule.runtime.extension.api.annotation.param.stereotype.Validator;
