@@ -8,6 +8,8 @@ package org.mule.extensions.java.internal.operation;
 
 import static org.mule.extensions.java.internal.JavaModuleUtils.invokeMethod;
 import static org.mule.extensions.java.internal.JavaModuleUtils.validateType;
+import static org.mule.runtime.api.meta.model.operation.ExecutionType.BLOCKING;
+
 import org.mule.extensions.java.api.exception.ArgumentMismatchModuleException;
 import org.mule.extensions.java.api.exception.ClassNotFoundModuleException;
 import org.mule.extensions.java.api.exception.InvocationModuleException;
@@ -25,6 +27,7 @@ import org.mule.runtime.api.metadata.TypedValue;
 import org.mule.runtime.api.transformation.TransformationService;
 import org.mule.runtime.core.api.el.ExpressionManager;
 import org.mule.runtime.extension.api.annotation.error.Throws;
+import org.mule.runtime.extension.api.annotation.execution.Execution;
 import org.mule.runtime.extension.api.annotation.metadata.MetadataKeyId;
 import org.mule.runtime.extension.api.annotation.metadata.OutputResolver;
 import org.mule.runtime.extension.api.annotation.metadata.TypeResolver;
@@ -92,6 +95,7 @@ public class JavaInvokeOperations {
    */
   @Throws(JavaStaticInvokeErrorProvider.class)
   @OutputResolver(output = StaticMethodTypeResolver.class)
+  @Execution(BLOCKING)
   public Object invokeStatic(
                              @ParameterGroup(
                                  name = "Method") @MetadataKeyId(StaticMethodTypeResolver.class) StaticMethodIdentifier identifier,
@@ -141,6 +145,7 @@ public class JavaInvokeOperations {
    */
   @Throws(JavaInvokeErrorProvider.class)
   @OutputResolver(output = InstanceMethodTypeResolver.class)
+  @Execution(BLOCKING)
   public Object invoke(
                        @ParameterGroup(
                            name = "Method") @MetadataKeyId(InstanceMethodTypeResolver.class) MethodIdentifier identifier,

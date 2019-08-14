@@ -9,6 +9,7 @@ package org.mule.extensions.java.internal.operation;
 import static java.lang.String.format;
 import static org.mule.extensions.java.internal.JavaModuleUtils.getSortedAndTransformedArgs;
 import static org.mule.extensions.java.internal.JavaModuleUtils.logTooManyArgsWarning;
+import static org.mule.runtime.api.meta.model.operation.ExecutionType.CPU_LITE;
 import org.mule.extensions.java.api.exception.ArgumentMismatchModuleException;
 import org.mule.extensions.java.api.exception.ClassNotFoundModuleException;
 import org.mule.extensions.java.api.exception.InvocationModuleException;
@@ -26,6 +27,7 @@ import org.mule.runtime.api.transformation.TransformationService;
 import org.mule.runtime.core.api.el.ExpressionManager;
 import org.mule.runtime.extension.api.annotation.Alias;
 import org.mule.runtime.extension.api.annotation.error.Throws;
+import org.mule.runtime.extension.api.annotation.execution.Execution;
 import org.mule.runtime.extension.api.annotation.metadata.MetadataKeyId;
 import org.mule.runtime.extension.api.annotation.metadata.OutputResolver;
 import org.mule.runtime.extension.api.annotation.metadata.TypeResolver;
@@ -81,6 +83,7 @@ public class JavaNewInstanceOperation {
   @Alias("new")
   @Throws(JavaNewInstanceErrorProvider.class)
   @OutputResolver(output = ConstructorTypeResolver.class)
+  @Execution(CPU_LITE)
   public Object newInstance(
                             @ParameterGroup(
                                 name = "Constructor") @MetadataKeyId(ConstructorTypeResolver.class) ConstructorIdentifier identifier,
