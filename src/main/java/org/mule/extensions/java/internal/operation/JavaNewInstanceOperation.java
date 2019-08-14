@@ -11,6 +11,7 @@ import static org.mule.extensions.java.internal.JavaModule.APPLICATION_JAVA;
 import static org.mule.extensions.java.internal.util.JavaModuleUtils.getSortedAndTransformedArgs;
 import static org.mule.extensions.java.internal.util.JavaModuleUtils.logTooManyArgsWarning;
 import static org.mule.runtime.api.meta.model.operation.ExecutionType.CPU_INTENSIVE;
+import static org.mule.runtime.api.meta.model.operation.ExecutionType.CPU_LITE;
 
 import org.mule.extensions.java.api.exception.ArgumentMismatchModuleException;
 import org.mule.extensions.java.api.exception.ClassNotFoundModuleException;
@@ -87,7 +88,7 @@ public class JavaNewInstanceOperation {
   @MediaType(value = APPLICATION_JAVA)
   @Throws(JavaNewInstanceErrorProvider.class)
   @OutputResolver(output = ConstructorTypeResolver.class)
-  @Execution(CPU_INTENSIVE)
+  @Execution(CPU_LITE)
   public Object newInstance(
                             @ParameterGroup(
                                 name = "Constructor") @MetadataKeyId(ConstructorTypeResolver.class) ConstructorIdentifier identifier,
