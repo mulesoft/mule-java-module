@@ -11,6 +11,10 @@ import org.mule.runtime.extension.api.stereotype.StereotypeDefinition;
 
 /**
  * Marker interface that identifies a given {@link StereotypeDefinition} as a Mule stereotype.
+ * <p>
+ * Note: duplicated class from mule-extensions-api as the sub class stereotype is not present in the version
+ * used by the connector but we won't want to increase the minMuleVersion in order to make use of it.
+ * </p>
  */
 @NoExtend
 public abstract class MuleStereotypeDefinition implements StereotypeDefinition {

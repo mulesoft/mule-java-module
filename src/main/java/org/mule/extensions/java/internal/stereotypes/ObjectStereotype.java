@@ -10,7 +10,11 @@ import org.mule.runtime.extension.api.stereotype.MuleStereotypeDefinition;
 import org.mule.runtime.extension.api.stereotype.StereotypeDefinition;
 
 /**
- * {@link StereotypeDefinition} for a generic {@link Object} definition
+ * {@link StereotypeDefinition} for a generic {@link Object} definition.
+ * <p>
+ * Note: duplicated class from mule-extensions-api as this stereotype is not present in the version
+ * used by the connector but we won't want to increase the minMuleVersion in order to make use of it.
+ * </p>
  */
 public class ObjectStereotype extends MuleStereotypeDefinition {
 
