@@ -23,7 +23,6 @@ import org.mule.extensions.java.internal.metadata.InstanceMethodTypeResolver;
 import org.mule.extensions.java.internal.metadata.StaticMethodTypeResolver;
 import org.mule.extensions.java.internal.parameters.MethodIdentifier;
 import org.mule.extensions.java.internal.parameters.StaticMethodIdentifier;
-import org.mule.extensions.java.internal.stereotypes.ObjectStereotype;
 import org.mule.runtime.api.metadata.TypedValue;
 import org.mule.runtime.api.transformation.TransformationService;
 import org.mule.runtime.core.api.el.ExpressionManager;
@@ -39,14 +38,12 @@ import org.mule.runtime.extension.api.annotation.param.Optional;
 import org.mule.runtime.extension.api.annotation.param.ParameterGroup;
 import org.mule.runtime.extension.api.annotation.param.display.Placement;
 import org.mule.runtime.extension.api.annotation.param.display.Summary;
-import org.mule.runtime.extension.api.annotation.param.stereotype.AllowedStereotypes;
 import org.mule.runtime.extension.api.runtime.operation.Result;
 
 import java.lang.reflect.Method;
 import java.util.Map;
 
 import javax.inject.Inject;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -164,7 +161,7 @@ public class JavaInvokeOperations {
   public Result<Object, Void> invoke(
                                      @ParameterGroup(
                                          name = "Method") @MetadataKeyId(InstanceMethodTypeResolver.class) MethodIdentifier identifier,
-                                     @AllowedStereotypes(ObjectStereotype.class) Object instance,
+                                     Object instance,
                                      @Optional @NullSafe @Content @TypeResolver(InstanceMethodTypeResolver.class) Map<String, TypedValue<Object>> args,
                                      @Optional @Placement(
                                          tab = MIME_TYPE_TAB) @Summary("The mime type of the payload that this invocation will output") String outputMimeType,
