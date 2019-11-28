@@ -12,6 +12,7 @@ import static org.junit.Assert.assertThat;
 import static org.mule.metadata.api.model.MetadataFormat.JAVA;
 import static org.mule.runtime.api.component.location.Location.builder;
 import static org.mule.runtime.api.metadata.MetadataService.METADATA_SERVICE_KEY;
+
 import org.mule.extensions.internal.JavaModuleAbstractTestCase;
 import org.mule.metadata.api.ClassTypeLoader;
 import org.mule.metadata.api.builder.BaseTypeBuilder;
@@ -48,6 +49,7 @@ public abstract class AbstractMetadataTestCase extends JavaModuleAbstractTestCas
   static final String INVOKE_STATIC = "invokeStatic";
 
   static final String EXECUTABLE_ELEMENT = "ExecutableElement";
+  static final String GET_NULL = "getNull";
   static final String SAY_HI = "sayHi()";
   static final String SAY_HI_STRING_INT = "sayHi(String,int)";
   static final String NEXT_PHASE = "nextPhase()";

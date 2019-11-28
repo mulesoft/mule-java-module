@@ -72,4 +72,8 @@
         <java:invoke-static class="org.mule.extensions.internal.model.ExecutableElement" method="create()"/>
     </flow>
 
+    <flow name="invokeStaticExecutableElementgetNull">
+        <java:invoke-static class="org.mule.extensions.internal.model.ExecutableElement" method="getNull()"/>
+    </flow>
+
 </mule>

@@ -16,6 +16,7 @@ import static java.util.stream.Collectors.toList;
 import static org.mule.runtime.api.metadata.MetadataKeyBuilder.newKey;
 import static org.mule.runtime.api.metadata.resolving.FailureCode.INVALID_METADATA_KEY;
 import static org.mule.runtime.core.api.util.StringUtils.isBlank;
+
 import org.mule.extensions.java.internal.parameters.ExecutableIdentifier;
 import org.mule.extensions.java.internal.parameters.ExecutableIdentifierFactory;
 import org.mule.metadata.api.ClassTypeLoader;
@@ -38,15 +39,12 @@ import java.lang.reflect.Executable;
 import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
 import java.lang.reflect.Type;
-import java.util.Arrays;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.function.Function;
-import java.util.function.Supplier;
 
 /**
  * Base {@link InputTypeResolver}, {@link OutputTypeResolver} and {@link TypeKeysResolver} for any {@link Executable} element.
@@ -103,6 +101,9 @@ abstract class ExecutableElementTypeResolver implements OutputTypeResolver<Execu
         ? ((Method) element).getGenericReturnType()
         : loadClass(key.getClazz());
 
+    if (output.getTypeName().equals(Object.class.getTypeName())) {
+      return context.getTypeBuilder().anyType().build();
+    }
     return context.getTypeLoader().load(output);
   }
 
