@@ -50,6 +50,17 @@ http://www.mulesoft.org/schema/mule/java http://www.mulesoft.org/schema/mule/jav
         </mtf:validation>
     </mtf:tooling-test>
 
+    <mtf:tooling-test name="staticMethodInputObjectParameter">
+        <mtf:get-input-metadata parameter="args">
+            <java:invoke-static class="org.mule.extensions.internal.model.ExecutableElement" method="create(Object)"/>
+        </mtf:get-input-metadata>
+        <mtf:validation>
+            <munit-tools:assert-equals actual="#[payload.'type']" expected="Object"/>
+            <munit-tools:assert-equals actual="#[payload.fields[0].key.name]" expected="phase"/>
+            <munit-tools:assert-equals actual="#[payload.fields[0].model.'type']" expected="Any"/>
+        </mtf:validation>
+    </mtf:tooling-test>
+
     <mtf:tooling-test name="staticMethodInputParametersNoArgs" >
         <mtf:get-input-metadata parameter="args">
             <java:invoke-static class="org.mule.extensions.internal.model.ExecutableElement" method="create()"/>

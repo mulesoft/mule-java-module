@@ -79,9 +79,19 @@ abstract class ExecutableElementTypeResolver implements OutputTypeResolver<Execu
 
     ObjectTypeBuilder inputParameters = ctx.getTypeBuilder().objectType().id(key.getElementId() + "_INPUT");
     stream(element.getParameters())
-        .forEach(param -> inputParameters.addField()
-            .key(param.getName())
-            .value(getTypeLoader(ctx, param).load(param.getType())));
+        .forEach(param -> {
+          MetadataType type;
+          if (param.getType().equals(Object.class)) {
+            type = ctx.getTypeBuilder().anyType().build();
+          } else {
+            ClassTypeLoader typeLoader = getTypeLoader(ctx, param);
+            type = typeLoader.load(param.getType());
+          }
+
+          inputParameters.addField()
+              .key(param.getName())
+              .value(type);
+        });
 
     return inputParameters.build();
   }

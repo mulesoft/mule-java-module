@@ -65,6 +65,7 @@ public abstract class AbstractMetadataTestCase extends JavaModuleAbstractTestCas
   static final String SET_CHILDS = "setChilds(Map)";
   static final String CREATE = "create";
   static final String PHASE = "Phase";
+  static final String OBJECT = "Object";
 
   @Inject
   @Named(METADATA_SERVICE_KEY)
