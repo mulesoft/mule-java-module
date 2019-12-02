@@ -68,8 +68,16 @@
         <java:invoke-static class="org.mule.extensions.internal.model.ExecutableElement" method="create(Phase)"/>
     </flow>
 
+    <flow name="invokeStaticExecutableElementcreateObject">
+        <java:invoke-static class="org.mule.extensions.internal.model.ExecutableElement" method="create(Object)"/>
+    </flow>
+
     <flow name="invokeStaticExecutableElementcreate">
         <java:invoke-static class="org.mule.extensions.internal.model.ExecutableElement" method="create()"/>
+    </flow>
+
+    <flow name="invokeStaticExecutableElementgetNull">
+        <java:invoke-static class="org.mule.extensions.internal.model.ExecutableElement" method="getNull()"/>
     </flow>
 
 </mule>

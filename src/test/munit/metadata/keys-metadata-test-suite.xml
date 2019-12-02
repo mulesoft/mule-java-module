@@ -89,6 +89,7 @@ http://www.mulesoft.org/schema/mule/java http://www.mulesoft.org/schema/mule/jav
             'makeCatSaySomething(org.mule.extensions.internal.model.real.Cat)',
             'makeCatSaySomething(org.mule.extensions.internal.model.robot.Cat)',
             'makeCatsSaySomething(org.mule.extensions.internal.model.robot.Cat,org.mule.extensions.internal.model.real.Cat)',
+            'create(java.lang.Object)',
             'create(org.mule.extensions.internal.model.ExecutableElement.Phase)',
             'create()'] orderBy ($)]"/>
             <munit-tools:assert-equals actual="#[vars.childKeys.displayName orderBy ($)]" expected="#[[
@@ -98,6 +99,7 @@ http://www.mulesoft.org/schema/mule/java http://www.mulesoft.org/schema/mule/jav
             'makeCatSaySomething(org.mule.extensions.internal.model.real.Cat cat)',
             'makeCatSaySomething(org.mule.extensions.internal.model.robot.Cat cat)',
             'makeCatsSaySomething(org.mule.extensions.internal.model.robot.Cat robotCat, org.mule.extensions.internal.model.real.Cat realCat)',
+            'create(Object phase)',
             'create(Phase initPhase)',
             'create()'] orderBy($)]"/>
         </mtf:validation>
