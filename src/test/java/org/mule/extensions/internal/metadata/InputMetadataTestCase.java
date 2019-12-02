@@ -11,6 +11,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.instanceOf;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.fail;
+
 import org.mule.extensions.internal.model.CompositePojo;
 import org.mule.extensions.internal.model.ExecutableElement;
 import org.mule.metadata.api.model.MetadataType;
@@ -49,6 +50,14 @@ public class InputMetadataTestCase extends AbstractMetadataTestCase {
     ObjectType args = getArgs(metadata);
     assertThat(getFieldType(args, "initPhase", EXECUTABLE_ELEMENT, CREATE + PHASE),
                is(typeLoader.load(ExecutableElement.Phase.class)));
+  }
+
+  @Test
+  public void staticMethodInputObjectParameter() throws Exception {
+    OperationModel metadata = getMetadata(flow(INVOKE_STATIC, EXECUTABLE_ELEMENT, CREATE, OBJECT));
+    ObjectType args = getArgs(metadata);
+    assertThat(getFieldType(args, "phase", EXECUTABLE_ELEMENT, CREATE),
+               is(typeBuilder.anyType().build()));
   }
 
   @Test

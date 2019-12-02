@@ -9,8 +9,10 @@ package org.mule.extensions.internal.metadata;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.instanceOf;
 import static org.hamcrest.Matchers.is;
+
 import org.mule.extensions.internal.model.CompositePojo;
 import org.mule.extensions.internal.model.ExecutableElement;
+import org.mule.metadata.api.model.AnyType;
 import org.mule.metadata.api.model.StringType;
 import org.mule.metadata.api.model.VoidType;
 import org.mule.metadata.java.api.annotation.ClassInformationAnnotation;
@@ -23,6 +25,12 @@ import java.util.function.Function;
 import org.junit.Test;
 
 public class OutputMetadataTestCase extends AbstractMetadataTestCase {
+
+  @Test
+  public void staticMethodObjectOutput() throws Exception {
+    OperationModel metadata = getMetadata(flow(INVOKE_STATIC, EXECUTABLE_ELEMENT, GET_NULL));
+    assertThat(metadata.getOutput().getType(), instanceOf(AnyType.class));
+  }
 
   @Test
   public void instanceMethodSimpleOutput() throws Exception {
