@@ -41,6 +41,15 @@ http://www.mulesoft.org/schema/mule/java http://www.mulesoft.org/schema/mule/jav
         </mtf:validation>
     </mtf:tooling-test>
 
+    <mtf:tooling-test name="staticMethodObjectOutput">
+        <mtf:get-output-metadata>
+            <java:invoke-static class="org.mule.extensions.internal.model.ExecutableElement" method="getNull()"/>
+        </mtf:get-output-metadata>
+        <mtf:validation>
+            <munit-tools:assert-equals actual="#[payload.'type']" expected="Any"/>
+        </mtf:validation>
+    </mtf:tooling-test>
+
     <mtf:tooling-test name="staticMethodBuilderOutputNoArgs" >
         <mtf:get-output-metadata>
             <java:invoke-static class="org.mule.extensions.internal.model.ExecutableElement" method="create()"/>

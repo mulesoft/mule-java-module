@@ -29,6 +29,10 @@ public class ExecutableElement {
     return new ExecutableElement(initPhase);
   }
 
+  public static ExecutableElement create(Object phase) {
+    return new ExecutableElement((Phase) phase);
+  }
+
   public static Object getNull() {
     return null;
   }

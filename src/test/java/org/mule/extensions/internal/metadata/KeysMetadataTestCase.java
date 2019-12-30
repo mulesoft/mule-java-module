@@ -50,13 +50,14 @@ public class KeysMetadataTestCase extends AbstractMetadataTestCase {
   public void staticMethodKeys() throws Exception {
     Set<MetadataKey> keys = getKeys(flow(INVOKE_STATIC, EXECUTABLE_ELEMENT, CREATE + PHASE), STATIC_CATEGORY);
     assertThat(getIds(keys),
-               containsInAnyOrder("create(org.mule.extensions.internal.model.ExecutableElement.Phase)", "create()", "className()",
+               containsInAnyOrder("create(org.mule.extensions.internal.model.ExecutableElement.Phase)", "create()",
+                                  "className()", "create(java.lang.Object)",
                                   "throwException(java.lang.String)", "getNull()",
                                   "makeCatSaySomething(org.mule.extensions.internal.model.robot.Cat)",
                                   "makeCatSaySomething(org.mule.extensions.internal.model.real.Cat)",
                                   "makeCatsSaySomething(org.mule.extensions.internal.model.robot.Cat,org.mule.extensions.internal.model.real.Cat)"));
     assertThat(getDisplayNames(keys), containsInAnyOrder("create(Phase initPhase)", "create()", "className()",
-                                                         "throwException(String message)", "getNull()",
+                                                         "create(Object phase)", "throwException(String message)", "getNull()",
                                                          "makeCatSaySomething(org.mule.extensions.internal.model.robot.Cat cat)",
                                                          "makeCatSaySomething(org.mule.extensions.internal.model.real.Cat cat)",
                                                          "makeCatsSaySomething(org.mule.extensions.internal.model.robot.Cat robotCat, org.mule.extensions.internal.model.real.Cat realCat)"));

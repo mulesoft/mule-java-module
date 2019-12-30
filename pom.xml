@@ -13,14 +13,14 @@
     <parent>
         <groupId>org.mule.extensions</groupId>
         <artifactId>mule-core-modules-parent</artifactId>
-        <version>1.1.3</version>
+        <version>1.1.6</version>
     </parent>
 
     <properties>
-        <commonsLang.version>3.8.1</commonsLang.version>
-        <springCore.version>5.1.6.RELEASE</springCore.version>
+        <commonsLang.version>3.9</commonsLang.version>
+        <springCore.version>5.2.2.RELEASE</springCore.version>
         <muleJmsConnectorVersion>1.2.3</muleJmsConnectorVersion>
-        <mockitoVersion>2.27.0</mockitoVersion>
+        <mockitoVersion>3.2.4</mockitoVersion>
 
         <!-- Remove when a new parent version with MTF is available -->
         <munit.input.directory>src/test/munit</munit.input.directory>
