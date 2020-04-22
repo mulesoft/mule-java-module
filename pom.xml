@@ -28,8 +28,7 @@
         <munit.extensions.maven.plugin.version>1.0.0</munit.extensions.maven.plugin.version>
         <munit.version>2.2.4</munit.version>
         <mavenResources.version>3.0.2</mavenResources.version>
-        <mtf.tools.version>1.0.0</mtf.tools.version>
-        <runtimeVersion>4.3.0-SNAPSHOT</runtimeVersion>
+        <mtf.tools.version>1.0.0</mtf.tools.version>       
     </properties>
 
 
@@ -79,6 +78,7 @@
                         <discoverRuntimes>
                             <product>EE</product>
                             <includeSnapshots>true</includeSnapshots>
+                            <minMuleVersion>4.3.0</minMuleVersion>
                         </discoverRuntimes>
                     </runtimeConfiguration>
                 </configuration>
