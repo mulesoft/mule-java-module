@@ -18,7 +18,7 @@
 
     <properties>
         <commonsLang.version>3.10</commonsLang.version>
-        <springCore.version>5.2.7.RELEASE</springCore.version>
+        <springCore.version>5.2.8.RELEASE</springCore.version>
         <muleJmsConnectorVersion>1.2.3</muleJmsConnectorVersion>
         <mockitoVersion>3.4.3</mockitoVersion>
 
