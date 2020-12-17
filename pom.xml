@@ -20,7 +20,7 @@
         <commonsLang.version>3.11</commonsLang.version>
         <springCore.version>5.3.2</springCore.version>
         <muleJmsConnectorVersion>1.2.3</muleJmsConnectorVersion>
-        <mockitoVersion>3.6.0</mockitoVersion>
+        <mockitoVersion>3.6.28</mockitoVersion>
 
         <!-- Remove when a new parent version with MTF is available -->
         <munit.input.directory>src/test/munit</munit.input.directory>
