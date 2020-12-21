@@ -5,12 +5,12 @@
           http://www.mulesoft.org/schema/mule/java http://www.mulesoft.org/schema/mule/java/current/mule-java.xsd">
 
     <flow name="createEmptyPojo">
-        <java:new class="org.mule.jms.commons.api.message.JmsxProperties" constructor="JmsxProperties()"/>
-        <java:invoke class="org.mule.jms.commons.api.message.JmsxProperties" method="asMap()" instance="#[payload]"/>
+        <java:new class="org.mule.extensions.jms.api.message.JmsxProperties" constructor="JmsxProperties()"/>
+        <java:invoke class="org.mule.extensions.jms.api.message.JmsxProperties" method="asMap()" instance="#[payload]"/>
     </flow>
 
     <flow name="createInitialisedPojo">
-        <java:new class="org.mule.jms.commons.api.message.JmsxProperties"
+        <java:new class="org.mule.extensions.jms.api.message.JmsxProperties"
                   constructor="JmsxProperties(String, String, Integer, String, Integer, String, String, Long)">
             <java:args>
                 #[{
@@ -25,7 +25,7 @@
                 }]
             </java:args>
         </java:new>
-        <java:invoke class="org.mule.jms.commons.api.message.JmsxProperties" method="asMap()" instance="#[payload]"/>
+        <java:invoke class="org.mule.extensions.jms.api.message.JmsxProperties" method="asMap()" instance="#[payload]"/>
     </flow>
 
 </mule>
