@@ -18,7 +18,7 @@
 
     <properties>
         <commonsLang.version>3.11</commonsLang.version>
-        <muleJmsConnectorVersion>1.7.1</muleJmsConnectorVersion>
+        <muleJmsClientVersion>1.11.0</muleJmsClientVersion>
         <springCore.version>5.3.2</springCore.version>
         <mockitoVersion>3.6.28</mockitoVersion>
 
@@ -127,9 +127,8 @@
         <!--Test dependency to use the POJOs in its API-->
         <dependency>
             <groupId>org.mule.connectors</groupId>
-            <artifactId>mule-jms-connector</artifactId>
-            <classifier>mule-plugin</classifier>
-            <version>${muleJmsConnectorVersion}</version>
+            <artifactId>mule-jms-client</artifactId>
+            <version>${muleJmsClientVersion}</version>
             <scope>test</scope>
         </dependency>
     </dependencies>
