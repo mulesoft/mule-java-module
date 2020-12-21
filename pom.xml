@@ -18,18 +18,16 @@
 
     <properties>
         <commonsLang.version>3.11</commonsLang.version>
-
         <muleJmsConnectorVersion>1.7.1</muleJmsConnectorVersion>
-        <springCore.version>5.3.0</springCore.version>
-        <mockitoVersion>3.6.0</mockitoVersion>
-
+        <springCore.version>5.3.2</springCore.version>
+        <mockitoVersion>3.6.28</mockitoVersion>
 
         <!-- Remove when a new parent version with MTF is available -->
         <munit.input.directory>src/test/munit</munit.input.directory>
         <munit.output.directory>${basedir}/target/test-mule/munit</munit.output.directory>
         <munit.extensions.maven.plugin.version>1.0.0</munit.extensions.maven.plugin.version>
         <munit.version>2.3.1</munit.version>
-        <mavenResources.version>3.0.2</mavenResources.version>
+        <mavenResources.version>3.2.0</mavenResources.version>
         <mtf.tools.version>1.0.0</mtf.tools.version>
     </properties>
 
