@@ -6,7 +6,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.mule.module</groupId>
     <artifactId>mule-java-module</artifactId>
-    <version>1.2.8-SNAPSHOT</version>
+    <version>1.2.8</version>
     <packaging>mule-extension</packaging>
     <name>Mule Java Module</name>
 
@@ -14,21 +14,22 @@
         <groupId>org.mule.extensions</groupId>
         <artifactId>mule-core-modules-parent</artifactId>
         <version>1.1.8</version>
+        <relativePath></relativePath>
     </parent>
 
     <properties>
-        <commonsLang.version>3.11</commonsLang.version>
-        <springCore.version>5.3.0</springCore.version>
+        <commonsLang.version>3.12.0</commonsLang.version>
+        <springCore.version>5.3.5</springCore.version>
         <muleJmsConnectorVersion>1.2.3</muleJmsConnectorVersion>
-        <mockitoVersion>3.6.0</mockitoVersion>
+        <mockitoVersion>3.8.0</mockitoVersion>
 
         <!-- Remove when a new parent version with MTF is available -->
         <munit.input.directory>src/test/munit</munit.input.directory>
         <munit.output.directory>${basedir}/target/test-mule/munit</munit.output.directory>
-        <munit.extensions.maven.plugin.version>1.0.0</munit.extensions.maven.plugin.version>
-        <munit.version>2.3.1</munit.version>
-        <mavenResources.version>3.0.2</mavenResources.version>
-        <mtf.tools.version>1.0.0</mtf.tools.version>
+        <munit.extensions.maven.plugin.version>1.1.1</munit.extensions.maven.plugin.version>
+        <munit.version>2.3.4</munit.version>
+        <mavenResources.version>3.2.0</mavenResources.version>
+        <mtf.tools.version>1.1.0</mtf.tools.version>
     </properties>
 
 
@@ -110,11 +111,18 @@
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-lang3</artifactId>
             <version>${commonsLang.version}</version>
-        </dependency>
+        </dependency> 
+
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-core</artifactId>
             <version>${springCore.version}</version>
+            <exclusions>
+            	<exclusion>
+            		<groupId>org.springframework</groupId>
+            		<artifactId>spring-jcl</artifactId>
+            	</exclusion>
+            </exclusions>
         </dependency>
 
         <dependency>
