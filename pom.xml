@@ -20,7 +20,7 @@
     <properties>
         <commonsLang.version>3.12.0</commonsLang.version>
         <springCore.version>5.3.17</springCore.version>
-        <muleJmsConnectorVersion>1.2.3</muleJmsConnectorVersion>
+        <muleJmsConnectorVersion>1.8.3</muleJmsConnectorVersion>
         <mockitoVersion>4.4.0</mockitoVersion>
 
         <!-- Remove when a new parent version with MTF is available -->
