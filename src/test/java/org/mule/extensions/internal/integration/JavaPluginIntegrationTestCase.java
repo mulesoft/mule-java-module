@@ -44,7 +44,6 @@ public class JavaPluginIntegrationTestCase extends JavaModuleAbstractTestCase {
     for (String name : CAR_DUMP_NAMES) {
       assertThat("Missing property " + name, result.get(name), is(notNullValue()));
     }
-
     assertThat(result.get("doors"), is("doors"));
   }
 }
