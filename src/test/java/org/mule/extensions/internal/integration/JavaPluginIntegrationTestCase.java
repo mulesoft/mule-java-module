@@ -48,5 +48,4 @@ public class JavaPluginIntegrationTestCase extends JavaModuleAbstractTestCase {
     assertThat(result.get("doors"), is("doors"));
 
   }
-
 }
