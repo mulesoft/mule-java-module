@@ -18,7 +18,7 @@ import java.util.Map;
 
 import org.junit.Test;
 
-public class gitJavaPluginIntegrationTestCase extends JavaModuleAbstractTestCase {
+public class JavaPluginIntegrationTestCase extends JavaModuleAbstractTestCase {
 
   private static final List<String> CAR_DUMP_NAMES = of("doors", "wheels", "windows", "engine");
 
