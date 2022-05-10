@@ -18,10 +18,9 @@ import java.util.Map;
 
 import org.junit.Test;
 
-public class JavaPluginIntegrationTestCase extends JavaModuleAbstractTestCase {
+public class gitJavaPluginIntegrationTestCase extends JavaModuleAbstractTestCase {
 
-  private static final List<String> JMSX_NAMES = of("JMSXUserID", "JMSXAppID", "JMSXDeliveryCount", "JMSXGroupID", "JMSXGroupSeq",
-                                                    "JMSXProducerTXID", "JMSXConsumerTXID", "JMSXRcvTimestamp");
+  private static final List<String> CAR_DUMP_NAMES = of("doors", "wheels", "windows", "engine");
 
   @Override
   protected String getConfigFile() {
@@ -32,7 +31,7 @@ public class JavaPluginIntegrationTestCase extends JavaModuleAbstractTestCase {
   public void createEmptyPojo() throws Exception {
     Map<String, Object> result = (Map<String, Object>) flowRunner("createEmptyPojo").run().getMessage().getPayload().getValue();
     assertThat(result, is(notNullValue()));
-    for (String name : JMSX_NAMES) {
+    for (String name : CAR_DUMP_NAMES) {
       assertThat("Unexpected property " + name, result.get(name), is(nullValue()));
     }
   }
@@ -42,13 +41,10 @@ public class JavaPluginIntegrationTestCase extends JavaModuleAbstractTestCase {
     Map<String, Object> result =
         (Map<String, Object>) flowRunner("createInitialisedPojo").run().getMessage().getPayload().getValue();
     assertThat(result, is(notNullValue()));
-    for (String name : JMSX_NAMES) {
+    for (String name : CAR_DUMP_NAMES) {
       assertThat("Missing property " + name, result.get(name), is(notNullValue()));
     }
-
-    assertThat(result.get("JMSXUserID"), is("JMSXUserID"));
+    assertThat(result.get("doors"), is("doors"));
 
   }
-
-
 }
