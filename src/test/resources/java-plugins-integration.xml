@@ -5,27 +5,22 @@
           http://www.mulesoft.org/schema/mule/java http://www.mulesoft.org/schema/mule/java/current/mule-java.xsd">
 
     <flow name="createEmptyPojo">
-        <java:new class="org.mule.extensions.jms.api.message.JmsxProperties" constructor="JmsxProperties()"/>
-        <java:invoke class="org.mule.extensions.jms.api.message.JmsxProperties" method="asMap()" instance="#[payload]"/>
+        <java:new class="org.mule.extensions.internal.model.CarDummyTest" constructor="CarDummyTest()"/>
+        <java:invoke class="org.mule.extensions.internal.model.CarDummyTest" method="asMap()" instance="#[payload]"/>
     </flow>
 
     <flow name="createInitialisedPojo">
-        <java:new class="org.mule.extensions.jms.api.message.JmsxProperties"
-                  constructor="JmsxProperties(String, String, Integer, String, Integer, String, String, Long)">
+        <java:new class="org.mule.extensions.internal.model.CarDummyTest"
+                  constructor="CarDummyTest(String, String, String, String)">
             <java:args>
                 #[{
-                JMSXUserID: 'JMSXUserID',
-                JMSXAppID: 'JMSXAppID',
-                JMSXGroupID: 'JMSXGroupID',
-                JMSXProducerTXID: 'JMSXProducerTXID',
-                JMSXConsumerTXID: 'JMSXConsumerTXID',
-                JMSXDeliveryCount: 0,
-                JMSXGroupSeq: 10,
-                JMSXRcvTimestamp: 100 as Number {class: "java.lang.Long"}
+                doors: 'doors',
+                wheels: 'wheels',
+                windows: 'windows',
+                engine: 'engine'
                 }]
             </java:args>
         </java:new>
-        <java:invoke class="org.mule.extensions.jms.api.message.JmsxProperties" method="asMap()" instance="#[payload]"/>
+        <java:invoke class="org.mule.extensions.internal.model.CarDummyTest" method="asMap()" instance="#[payload]"/>
     </flow>
-
 </mule>
