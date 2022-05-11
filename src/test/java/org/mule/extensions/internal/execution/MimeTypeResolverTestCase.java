@@ -7,6 +7,7 @@
 package org.mule.extensions.internal.execution;
 
 import static org.hamcrest.MatcherAssert.assertThat;
+
 import org.mule.extensions.internal.model.ExecutableElement;
 import org.mule.extensions.java.internal.parameters.MethodIdentifier;
 import org.mule.extensions.java.internal.util.MethodInvoker;
@@ -25,9 +26,9 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.runners.MockitoJUnitRunner;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.mockito.junit.MockitoJUnitRunner;
 
 @RunWith(MockitoJUnitRunner.class)
 public class MimeTypeResolverTestCase {
