@@ -19,7 +19,7 @@
 
     <properties>
         <commonsLang.version>3.12.0</commonsLang.version>
-        <springCore.version>5.3.25</springCore.version>
+        <springCore.version>5.3.27</springCore.version>
         <mockitoVersion>4.11.0</mockitoVersion>
 
         <!-- Remove when a new parent version with MTF is available -->
