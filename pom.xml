@@ -6,7 +6,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.mule.module</groupId>
     <artifactId>mule-java-module</artifactId>
-    <version>1.2.12-SNAPSHOT</version>
+    <version>1.3.0-SNAPSHOT</version>
     <packaging>mule-extension</packaging>
     <name>Mule Java Module</name>
 
@@ -20,7 +20,7 @@
     <properties>
         <commonsLang.version>3.12.0</commonsLang.version>
         <springCore.version>5.3.28</springCore.version>
-        <mockitoVersion>4.6.1</mockitoVersion>
+        <mockitoVersion>4.11.0</mockitoVersion>
 
         <!-- Remove when a new parent version with MTF is available -->
         <munit.input.directory>src/test/munit</munit.input.directory>
@@ -31,14 +31,47 @@
         <mtf.tools.version>1.2.0-rc1</mtf.tools.version>
         <jacoco.version>0.8.10</jacoco.version>
 
-
-        <mule.sdk.api.version>0.7.0</mule.sdk.api.version>
-        <munit.failIfNoTests>false</munit.failIfNoTests>
+        <mulesoftLicenseVersion>1.4.0</mulesoftLicenseVersion>
+        <license.maven.plugin.version>4.2</license.maven.plugin.version>
+        <licensePath>LICENSE_HEADER_CPAL.txt</licensePath>
+        <licenseYear>2023</licenseYear>
     </properties>
 
 
     <build>
         <plugins>
+            <plugin>
+                <groupId>com.mycila</groupId>
+                <artifactId>license-maven-plugin</artifactId>
+                <version>${license.maven.plugin.version}</version>
+                <dependencies>
+                    <dependency>
+                        <groupId>com.mulesoft.license</groupId>
+                        <artifactId>license</artifactId>
+                        <version>${mulesoftLicenseVersion}</version>
+                    </dependency>
+                </dependencies>
+                <configuration>
+                    <header>${licensePath}</header>
+                    <properties>
+                        <year>${licenseYear}</year>
+                    </properties>
+                    <includes>
+                        <include>**/*.java</include>
+                    </includes>
+                    <mapping>
+                        <java>SLASHSTAR_STYLE</java>
+                    </mapping>
+                </configuration>
+                <executions>
+                    <execution>
+                        <phase>compile</phase>
+                        <goals>
+                            <goal>check</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
             <plugin>
                 <artifactId>maven-resources-plugin</artifactId>
                 <version>${mavenResources.version}</version>
