@@ -29,6 +29,7 @@
         <munit.version>3.1.0-SNAPSHOT</munit.version>
         <mavenResources.version>3.3.1</mavenResources.version>
         <mtf.tools.version>1.2.0-SNAPSHOT</mtf.tools.version>
+        <jacoco.version>0.8.10</jacoco.version>
 
         <mulesoftLicenseVersion>1.4.0</mulesoftLicenseVersion>
         <license.maven.plugin.version>4.2</license.maven.plugin.version>
@@ -108,7 +109,7 @@
                 <configuration>
                     <argLines>
                         <argLine>
-                            -javaagent:${settings.localRepository}/org/jacoco/org.jacoco.agent/0.8.10/org.jacoco.agent-0.8.10-runtime.jar=destfile=${session.executionRootDirectory}/target/jacoco.exec
+                            -javaagent:${settings.localRepository}/org/jacoco/org.jacoco.agent/${jacoco.version}/org.jacoco.agent-${jacoco.version}-runtime.jar=destfile=${session.executionRootDirectory}/target/jacoco.exec
                         </argLine>
                     </argLines>
                     <jvm>/Library/Java/JavaVirtualMachines/temurin-17.0.9/Contents/Home/bin/java</jvm>
