@@ -171,6 +171,12 @@
             <version>${mockitoVersion}</version>
             <scope>test</scope>
         </dependency>
+
+        <dependency>
+            <groupId>org.mule.sdk</groupId>
+            <artifactId>mule-sdk-api</artifactId>
+            <version>0.7.0</version>
+        </dependency>
     </dependencies>
 
     <repositories>
