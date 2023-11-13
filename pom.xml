@@ -31,10 +31,7 @@
         <mtf.tools.version>1.2.0-rc1</mtf.tools.version>
         <jacoco.version>0.8.10</jacoco.version>
 
-        <mulesoftLicenseVersion>1.4.0</mulesoftLicenseVersion>
-        <license.maven.plugin.version>4.2</license.maven.plugin.version>
-        <licensePath>LICENSE_HEADER_CPAL.txt</licensePath>
-        <licenseYear>2023</licenseYear>
+
         <mule.sdk.api.version>0.7.0</mule.sdk.api.version>
         <munit.failIfNoTests>false</munit.failIfNoTests>
     </properties>
@@ -138,6 +135,12 @@
             <artifactId>mockito-core</artifactId>
             <version>${mockitoVersion}</version>
             <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.mule.sdk</groupId>
+            <artifactId>mule-sdk-api</artifactId>
+            <version>${mule.sdk.api.version}</version>
         </dependency>
     </dependencies>
 

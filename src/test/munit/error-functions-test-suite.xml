@@ -78,7 +78,7 @@ http://www.mulesoft.org/schema/mule/java http://www.mulesoft.org/schema/mule/jav
         <munit:validation>
             <munit-tools:assert-equals actual="#[Java::isInstanceOf(payload, 'java.lang.NullPointerException')]"
                                        expected="#[true]"/>
-            <munit-tools:assert-equals actual="#[payload.detailMessage]" expected="#[vars.errorMessage]"/>
+            <munit-tools:assert-equals actual="#[payload.message]" expected="#[vars.errorMessage]"/>
         </munit:validation>
     </munit:test>
 

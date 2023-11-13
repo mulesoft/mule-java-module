@@ -226,7 +226,11 @@ payload.wheels must equalTo('wheels')
 payload.description must contain(vars.errorMessage)
 ]]]></munit-tools:that>
             </munit-tools:assert>
-            <munit-tools:assert-equals actual="#[payload.cause.cause.target.class]"
+            <munit-tools:assert-equals actual="#[payload.cause.^class]"
+                                       expected="#['org.mule.extensions.java.api.exception.InvocationModuleException']"/>
+            <munit-tools:assert-equals actual="#[payload.cause.cause.^class]"
+                                       expected="#['java.lang.reflect.InvocationTargetException']"/>
+            <munit-tools:assert-equals actual="#[payload.cause.cause.cause.^class]"
                                        expected="#['org.mule.extensions.internal.model.CustomIllegalArgumentException']"/>
         </munit:validation>
     </munit:test>
