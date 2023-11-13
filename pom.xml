@@ -35,6 +35,7 @@
         <license.maven.plugin.version>4.2</license.maven.plugin.version>
         <licensePath>LICENSE_HEADER_CPAL.txt</licensePath>
         <licenseYear>2023</licenseYear>
+        <mule.sdk.api.version>0.6.0</mule.sdk.api.version>
     </properties>
 
 
@@ -149,7 +150,13 @@
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-lang3</artifactId>
             <version>${commonsLang.version}</version>
-        </dependency> 
+        </dependency>
+
+        <dependency>
+            <groupId>org.mule.sdk</groupId>
+            <artifactId>mule-sdk-api</artifactId>
+            <version>${mule.sdk.api.version}</version>
+        </dependency>
 
         <dependency>
             <groupId>org.springframework</groupId>
