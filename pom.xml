@@ -114,7 +114,6 @@
                             -javaagent:${settings.localRepository}/org/jacoco/org.jacoco.agent/${jacoco.version}/org.jacoco.agent-${jacoco.version}-runtime.jar=destfile=${session.executionRootDirectory}/target/jacoco.exec
                         </argLine>
                     </argLines>
-                    <runtimeProduct>EE</runtimeProduct>
                     <runtimeConfiguration>
                         <discoverRuntimes>
                             <product>EE</product>
