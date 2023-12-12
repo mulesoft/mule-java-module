@@ -85,7 +85,7 @@
                     <runtimeConfiguration>
                         <discoverRuntimes>
                             <minMuleVersion>${minVersion}</minMuleVersion>
-                            <includeSnapshots>true</includeSnapshots>
+                            <includeSnapshots>false</includeSnapshots>
                             <product>EE</product>
                         </discoverRuntimes>
                     </runtimeConfiguration>
