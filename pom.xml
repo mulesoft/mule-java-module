@@ -141,6 +141,11 @@
                         <version>${mtf.tools.version}</version>
                         <classifier>mule-plugin</classifier>
                     </dependency>
+                    <dependency>
+                        <groupId>javax.xml.bind</groupId>
+                        <artifactId>jaxb-api</artifactId>
+                        <version>2.3.1</version>
+                    </dependency>
                 </dependencies>
             </plugin>
         </plugins>
