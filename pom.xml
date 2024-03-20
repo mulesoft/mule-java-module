@@ -178,11 +178,6 @@
             <scope>test</scope>
         </dependency>
 
-        <dependency>
-            <groupId>org.mule.sdk</groupId>
-            <artifactId>mule-sdk-api</artifactId>
-            <version>${mule.sdk.api.version}</version>
-        </dependency>
     </dependencies>
 
     <repositories>
