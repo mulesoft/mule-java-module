@@ -20,7 +20,7 @@
     <properties>
         <commonsLang.version>3.12.0</commonsLang.version>
         <springCore.version>5.3.33</springCore.version>
-        <mockitoVersion>4.11.0</mockitoVersion>
+        <mockitoVersion>5.11.0</mockitoVersion>
 
         <!-- Remove when a new parent version with MTF is available -->
         <munit.input.directory>src/test/munit</munit.input.directory>
