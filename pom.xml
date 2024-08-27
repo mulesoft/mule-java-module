@@ -18,7 +18,7 @@
     </parent>
 
     <properties>
-        <commonsLang.version>3.12.0</commonsLang.version>
+        <commonsLang.version>3.16.0</commonsLang.version>
         <springCore.version>5.3.33</springCore.version>
         <mockitoVersion>4.11.0</mockitoVersion>
 
