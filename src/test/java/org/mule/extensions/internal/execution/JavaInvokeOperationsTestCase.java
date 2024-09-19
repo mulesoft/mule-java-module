@@ -188,6 +188,30 @@ public class JavaInvokeOperationsTestCase extends JavaModuleAbstractTestCase {
   }
 
   @Test
+  public void invokeInstanceWithWrongArgumentNamePosition() throws Exception {
+    String errorMessage =
+        "Failed to invoke Method 'sayHi(int)' from Class 'org.mule.extensions.internal.model.ExecutableElement'. "
+            + "The given arguments could not be transformed to match those expected by the Method. \n"
+            + "Expected arguments are [int id] and invocation was attempted with arguments [java.lang.Boolean arg0].\n"
+            + "No suitable transformation was found to match the expected type for the parameter [id].";
+
+    //expectedError.expectError("JAVA", "ARGUMENTS_MISMATCH", ArgumentMismatchModuleException.class, errorMessage);
+    invoke("sayHi(int)", new ExecutableElement(), Args.create("arg0", 5));
+  }
+
+  @Test
+  public void invokeInstanceWithWrongArgumentNameName() throws Exception {
+    String errorMessage =
+        "Failed to invoke Method 'sayHi(int)' from Class 'org.mule.extensions.internal.model.ExecutableElement'. "
+            + "The given arguments could not be transformed to match those expected by the Method. \n"
+            + "Expected arguments are [int id] and invocation was attempted with arguments [java.lang.Boolean arg0].\n"
+            + "No suitable transformation was found to match the expected type for the parameter [id].";
+
+    //expectedError.expectError("JAVA", "ARGUMENTS_MISMATCH", ArgumentMismatchModuleException.class, errorMessage);
+    invoke("sayHi(int)", new ExecutableElement(), Args.create("id", 5));
+  }
+
+  @Test
   public void invokeInstanceWithMissingArgument() throws Exception {
     String errorMessage =
         "Failed to invoke Method 'sayHi(int)' from Class 'org.mule.extensions.internal.model.ExecutableElement'. "

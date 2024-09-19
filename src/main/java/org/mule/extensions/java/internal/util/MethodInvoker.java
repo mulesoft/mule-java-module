@@ -81,8 +81,19 @@ public final class MethodInvoker {
       logTooManyArgsWarning(method, args, identifier, logger);
     }
 
+
     if (transformationResult.isSuccess()) {
       return doInvoke(method, args, instance, identifier, transformationResult);
+    }
+    logger.debug("Failed Transform: " + transformationResult.getFailedToTransform());
+    logger.debug("Missing Args: " + transformationResult.getMissing());
+
+    if (transformationResult.getMissing().size() > 0) {
+      throw new ArgumentMismatchModuleException(format(
+                                                       "Failed to invoke %s '%s' from Class '%s'. The given arguments don't match those expected by the %s",
+                                                       identifier.getExecutableTypeName(), identifier.getElementId(),
+                                                       identifier.getClazz(), identifier.getExecutableTypeName()),
+                                                method, args, transformationResult);
     }
 
     throw new ArgumentMismatchModuleException(format(

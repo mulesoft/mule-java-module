@@ -16,6 +16,7 @@ import static org.mule.runtime.core.api.util.ClassUtils.isInstance;
 import org.mule.extensions.java.api.exception.ClassNotFoundModuleException;
 import org.mule.extensions.java.api.exception.WrongTypeModuleException;
 import org.mule.extensions.java.internal.cache.JavaModuleLoadingCache;
+import org.mule.extensions.java.internal.operation.JavaInvokeOperations;
 import org.mule.extensions.java.internal.parameters.ExecutableIdentifier;
 import org.mule.extensions.java.internal.transformer.ParameterTransformer;
 import org.mule.extensions.java.internal.transformer.ParametersTransformationResult;
@@ -28,6 +29,7 @@ import java.lang.reflect.Executable;
 import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -35,6 +37,7 @@ import java.util.Optional;
 import java.util.function.Function;
 
 import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.core.ResolvableType;
 
 /**
@@ -85,6 +88,7 @@ public final class JavaModuleUtils {
       return new ParametersTransformationResult(emptyList(), emptyList(), emptyList());
     }
 
+
     boolean useCanonicalArgName = args.containsKey(ARG_0);
     ParameterTransformer parameterTransformer = new ParameterTransformer(executable, transformationService, expressionManager);
     List<Object> sortedArgs = new ArrayList<>(parameters.length);
@@ -97,6 +101,7 @@ public final class JavaModuleUtils {
         TypedValue<Object> value = useCanonicalArgName ? args.get(ARG_PREFIX + i) : args.get(parameter.getName());
         if (value == null) {
           missingArgs.add(parameter.getName());
+          logger.debug("Missing arg:" + parameter.getName() + " ,position:" + i);
           continue;
         }
         Object originalValue = value.getValue();
@@ -106,6 +111,7 @@ public final class JavaModuleUtils {
             sortedArgs.add(transformedValue.get());
           } else {
             failedToTransformArgs.add(parameter.getName());
+            logger.debug("Failed to transform arg:" + parameter.getName() + " ,position:" + i);
           }
         } else {
           sortedArgs.add(originalValue);
@@ -115,6 +121,7 @@ public final class JavaModuleUtils {
           logger.debug("An unexpected error occurred while transforming the parameter '" + parameter.getName() + "'", e);
         }
         failedToTransformArgs.add(parameter.getName());
+        logger.debug("Failed to transform arg:" + parameter.getName() + " ,position:" + i + ", exception" + e.getMessage());
       }
     }
 
