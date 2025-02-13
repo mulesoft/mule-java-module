@@ -169,7 +169,7 @@ public final class JavaModuleUtils {
    * https://docs.oracle.com/javase/tutorial/java/generics/bridgeMethods.html
    * </p>
    *
-   * @param clazz the Java class for which we want its Public methods.
+   * @param clazz        the Java class for which we want its Public methods.
    * @param expectStatic true to get only static methods, false to get only non static methods.
    * @return List of Methods for the class.
    */

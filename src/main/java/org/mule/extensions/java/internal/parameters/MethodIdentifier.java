@@ -41,8 +41,8 @@ public class MethodIdentifier extends ExecutableIdentifier {
   /**
    * Represents the Method signature containing the method name and it's argument types.
    * <p>
-   * For example, for the method with signature {@code public String log(String msg, boolean verbose)}
-   * then the identifier of the method will be {@code "log(String, boolean)"}
+   * For example, for the method with signature {@code public String log(String msg, boolean verbose)} then the identifier of the
+   * method will be {@code "log(String, boolean)"}
    */
   @Parameter
   @MetadataKeyPart(order = 2)

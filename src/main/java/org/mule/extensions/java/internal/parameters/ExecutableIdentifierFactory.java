@@ -13,8 +13,7 @@ import java.lang.reflect.Executable;
 import java.lang.reflect.Method;
 
 /**
- * Factory implementation for obtaining an {@link ExecutableIdentifier}
- * from a given {@link Executable} element
+ * Factory implementation for obtaining an {@link ExecutableIdentifier} from a given {@link Executable} element
  *
  * @since 1.0
  */

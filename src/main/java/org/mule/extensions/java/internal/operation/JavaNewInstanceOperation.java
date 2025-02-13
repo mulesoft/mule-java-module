@@ -68,20 +68,20 @@ public class JavaNewInstanceOperation {
   private ExpressionManager expressionManager;
 
   /**
-   * Operation that allows the user to create a new instance of the given {@code class}
-   * The identifier of the {@link Constructor} to be used includes the {@code class} and {@code constructor} names,
-   * being the {@code constructor} a full description of its signature including the types of each parameter.
+   * Operation that allows the user to create a new instance of the given {@code class} The identifier of the {@link Constructor}
+   * to be used includes the {@code class} and {@code constructor} names, being the {@code constructor} a full description of its
+   * signature including the types of each parameter.
    * <p>
-   * For example, if we want to invoke the constructor {@code Foo(String name, int age)}
-   * which belongs to {@link Class} {@code org.bar.Foo}, then the identifier of the method will be {@code "Foo(String,int)"}
+   * For example, if we want to invoke the constructor {@code Foo(String name, int age)} which belongs to {@link Class}
+   * {@code org.bar.Foo}, then the identifier of the method will be {@code "Foo(String,int)"}
    *
    * @param identifier the unique identifier for the constructor to be invoked
-   * @param args the arguments used to invoke the given {@link Constructor}
+   * @param args       the arguments used to invoke the given {@link Constructor}
    * @return a new instance of the given {@code class}
-   * @throws ClassNotFoundModuleException if the given {@code class} is not found in the current context
-   * @throws NoSuchConstructorModuleException if the given {@code class} does not declare a constructor with the given signature
-   * @throws ArgumentMismatchModuleException if the {@code method} requires a different set of arguments than the ones provided
-   * @throws InvocationModuleException if an error occurs during the execution of the method
+   * @throws ClassNotFoundModuleException       if the given {@code class} is not found in the current context
+   * @throws NoSuchConstructorModuleException   if the given {@code class} does not declare a constructor with the given signature
+   * @throws ArgumentMismatchModuleException    if the {@code method} requires a different set of arguments than the ones provided
+   * @throws InvocationModuleException          if an error occurs during the execution of the method
    * @throws NonInstantiableTypeModuleException if the given {@code class} is not instantiable
    */
   @Alias("new")
