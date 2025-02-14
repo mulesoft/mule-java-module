@@ -17,8 +17,6 @@ import org.mule.runtime.extension.api.annotation.Operations;
 import org.mule.runtime.extension.api.annotation.error.ErrorTypes;
 import org.mule.sdk.api.annotation.JavaVersionSupport;
 
-import static org.mule.sdk.api.meta.JavaVersion.JAVA_8;
-import static org.mule.sdk.api.meta.JavaVersion.JAVA_11;
 import static org.mule.sdk.api.meta.JavaVersion.JAVA_17;
 
 /**
