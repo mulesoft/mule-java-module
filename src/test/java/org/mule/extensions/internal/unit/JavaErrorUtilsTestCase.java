@@ -21,6 +21,7 @@ import org.mule.runtime.api.exception.TypedException;
 
 import java.lang.reflect.Executable;
 import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
 
 import org.junit.Test;
@@ -82,7 +83,7 @@ public class JavaErrorUtilsTestCase {
   }
 
   private Throwable createInvocationException(InvocationTargetException invocationException) {
-    Executable executableMock = mock(Executable.class, new MockSettingsImpl().defaultAnswer(RETURNS_DEFAULTS).lenient());
+    Executable executableMock = mock(Method.class, new MockSettingsImpl().defaultAnswer(RETURNS_DEFAULTS).lenient());
     when(executableMock.getParameterCount()).thenReturn(0);
     when(executableMock.getParameters()).thenReturn(new Parameter[] {});
 
