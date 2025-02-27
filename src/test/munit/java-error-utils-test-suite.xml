@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:java="http://www.mulesoft.org/schema/mule/java"
+      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:munit="http://www.mulesoft.org/schema/mule/munit"
+      xmlns:munit-tools="http://www.mulesoft.org/schema/mule/munit-tools"
+      xmlns="http://www.mulesoft.org/schema/mule/core"
+      xsi:schemaLocation="
+		http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+		http://www.mulesoft.org/schema/mule/munit http://www.mulesoft.org/schema/mule/munit/current/mule-munit.xsd
+		http://www.mulesoft.org/schema/mule/munit-tools  http://www.mulesoft.org/schema/mule/munit-tools/current/mule-munit-tools.xsd
+http://www.mulesoft.org/schema/mule/java http://www.mulesoft.org/schema/mule/java/current/mule-java.xsd">
+    <munit:config name="java-error-utils-test-suite.xml"/>
+
+    <munit:test name="getRootCauseObtainsNestedCause">
+        <munit:execution>
+            <java:invoke-static
+                    class="org.mule.extensions.java.internal.util.JavaExceptionUtils"
+                    method="getRootCause(Throwable)">
+                <java:args>
+                    #[{ 'exception' : vars.nullValue } ]
+                </java:args>
+            </java:invoke-static>
+        </munit:execution>
+        <munit:validation>
+            <logger level="INFO" message="LOGGER: #[payload]"/>
+            <munit-tools:assert-that
+                    expression="#[payload]" is="#[MunitTools::equalTo(null)]"/>
+        </munit:validation>
+    </munit:test>
+
+</mule>
