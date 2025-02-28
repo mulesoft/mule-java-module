@@ -62,6 +62,52 @@ http://www.mulesoft.org/schema/mule/java http://www.mulesoft.org/schema/mule/jav
                     is="#[MunitTools::equalTo(vars.NPE)]"/>
         </munit:validation>
     </munit:test>
+
+    <munit:test name="isCausedByIsTrueTopExactType">
+        <munit:execution>
+            <flow-ref name="dummyFlow"/>
+
+            <java:new class="java.lang.NullPointerException" constructor="NullPointerException(java.lang.String)">
+                <java:args>
+                    #[{
+                    arg0: "Some NPE"
+                    }]
+                </java:args>
+            </java:new>
+
+            <set-variable variableName="NPE" value="#[payload]"/>
+
+            <java:new class="java.lang.RuntimeException" constructor="RuntimeException(java.lang.String,java.lang.Throwable)">
+                <java:args>
+                    #[{
+                    arg0: "Some Runtime",
+                    arg1: vars.NPE
+                    }]
+                </java:args>
+            </java:new>
+
+            <set-variable variableName="WITH_NPE_CAUSE" value="#[payload]"/>
+
+            <java:invoke-static class="org.mule.extensions.java.internal.util.JavaExceptionUtils" method="isCausedBy(java.lang.Throwable,java.lang.Class,boolean)">
+                <java:args>
+                    #[{
+                    arg0: vars.WITH_NPE_CAUSE,
+                    arg1: "java.lang.RuntimeException",
+                    arg2: false
+                    }]
+                </java:args>
+            </java:invoke-static>
+
+
+        </munit:execution>
+        <munit:validation>
+            <munit-tools:assert-that
+                    expression="#[payload]"
+                    is="#[MunitTools::equalTo(true)]"/>
+        </munit:validation>
+    </munit:test>
+
+
     <flow name="dummyFlow">
         <set-payload value="Test Event"/>
     </flow>
