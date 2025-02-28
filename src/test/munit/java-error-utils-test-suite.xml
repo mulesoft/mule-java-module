@@ -13,19 +13,57 @@ http://www.mulesoft.org/schema/mule/java http://www.mulesoft.org/schema/mule/jav
 
     <munit:test name="getRootCauseObtainsNestedCause">
         <munit:execution>
-            <java:invoke-static
-                    class="org.mule.extensions.java.internal.util.JavaExceptionUtils"
-                    method="getRootCause(Throwable)">
+            <flow-ref name="dummyFlow"/>
+
+            <java:new class="java.lang.NullPointerException" constructor="NullPointerException(java.lang.String)">
                 <java:args>
-                    #[{ 'exception' : vars.nullValue } ]
+                    #[{
+                    arg0: "Some NPE"
+                    }]
+                </java:args>
+            </java:new>
+
+            <set-variable variableName="NPE" value="#[payload]"/>
+
+            <java:new class="java.lang.RuntimeException" constructor="RuntimeException(java.lang.String,java.lang.Throwable)">
+                <java:args>
+                    #[{
+                    arg0: "Some Runtime",
+                    arg1: vars.NPE
+                    }]
+                </java:args>
+            </java:new>
+
+            <set-variable variableName="WITH_NPE_CAUSE" value="#[payload]"/>
+
+            <java:new class="org.mule.extensions.java.api.exception.ClassNotFoundModuleException" constructor="ClassNotFoundModuleException(java.lang.String,java.lang.Throwable)">
+                <java:args>
+                    #[{
+                    arg0: "No class",
+                    arg1: vars.WITH_NPE_CAUSE
+                    }]
+                </java:args>
+            </java:new>
+
+            <set-variable variableName="testException" value="#[payload]"/>
+
+            <java:invoke-static class="org.mule.extensions.java.internal.util.JavaExceptionUtils" method="getRootCause(java.lang.Throwable)">
+                <java:args>
+                    #[{
+                    arg0: vars.testException
+                    }]
                 </java:args>
             </java:invoke-static>
+
         </munit:execution>
         <munit:validation>
-            <logger level="INFO" message="LOGGER: #[payload]"/>
             <munit-tools:assert-that
-                    expression="#[payload]" is="#[MunitTools::equalTo(null)]"/>
+                    expression="#[payload]"
+                    is="#[MunitTools::equalTo(vars.NPE)]"/>
         </munit:validation>
     </munit:test>
+    <flow name="dummyFlow">
+        <set-payload value="Test Event"/>
+    </flow>
 
 </mule>
