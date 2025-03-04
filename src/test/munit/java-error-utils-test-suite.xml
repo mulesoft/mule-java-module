@@ -1,40 +1,21 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <mule xmlns:java="http://www.mulesoft.org/schema/mule/java"
-      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:munit="http://www.mulesoft.org/schema/mule/munit"
-      xmlns:munit-tools="http://www.mulesoft.org/schema/mule/munit-tools"
       xmlns="http://www.mulesoft.org/schema/mule/core"
+      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xmlns:munit="http://www.mulesoft.org/schema/mule/munit"
+      xmlns:munit-tools="http://www.mulesoft.org/schema/mule/munit-tools"
       xsi:schemaLocation="
-		http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
-		http://www.mulesoft.org/schema/mule/munit http://www.mulesoft.org/schema/mule/munit/current/mule-munit.xsd
-		http://www.mulesoft.org/schema/mule/munit-tools  http://www.mulesoft.org/schema/mule/munit-tools/current/mule-munit-tools.xsd
-http://www.mulesoft.org/schema/mule/java http://www.mulesoft.org/schema/mule/java/current/mule-java.xsd">
+        http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+        http://www.mulesoft.org/schema/mule/munit http://www.mulesoft.org/schema/mule/munit/current/mule-munit.xsd
+        http://www.mulesoft.org/schema/mule/munit-tools  http://www.mulesoft.org/schema/mule/munit-tools/current/mule-munit-tools.xsd
+        http://www.mulesoft.org/schema/mule/java http://www.mulesoft.org/schema/mule/java/current/mule-java.xsd">
     <munit:config name="java-error-utils-test-suite.xml"/>
 
     <munit:test name="getRootCauseObtainsNestedCause">
         <munit:execution>
-            <flow-ref name="dummyFlow"/>
 
-            <java:new class="java.lang.NullPointerException" constructor="NullPointerException(java.lang.String)">
-                <java:args>
-                    #[{
-                    arg0: "Some NPE"
-                    }]
-                </java:args>
-            </java:new>
-
-            <set-variable variableName="NPE" value="#[payload]"/>
-
-            <java:new class="java.lang.RuntimeException" constructor="RuntimeException(java.lang.String,java.lang.Throwable)">
-                <java:args>
-                    #[{
-                    arg0: "Some Runtime",
-                    arg1: vars.NPE
-                    }]
-                </java:args>
-            </java:new>
-
-            <set-variable variableName="WITH_NPE_CAUSE" value="#[payload]"/>
+            <flow-ref name="runtimeExceptionFlow" />
 
             <java:new class="org.mule.extensions.java.api.exception.ClassNotFoundModuleException" constructor="ClassNotFoundModuleException(java.lang.String,java.lang.Throwable)">
                 <java:args>
@@ -65,28 +46,8 @@ http://www.mulesoft.org/schema/mule/java http://www.mulesoft.org/schema/mule/jav
 
     <munit:test name="isCausedByIsTrueTopExactType">
         <munit:execution>
-            <flow-ref name="dummyFlow"/>
 
-            <java:new class="java.lang.NullPointerException" constructor="NullPointerException(java.lang.String)">
-                <java:args>
-                    #[{
-                    arg0: "Some NPE"
-                    }]
-                </java:args>
-            </java:new>
-
-            <set-variable variableName="NPE" value="#[payload]"/>
-
-            <java:new class="java.lang.RuntimeException" constructor="RuntimeException(java.lang.String,java.lang.Throwable)">
-                <java:args>
-                    #[{
-                    arg0: "Some Runtime",
-                    arg1: vars.NPE
-                    }]
-                </java:args>
-            </java:new>
-
-            <set-variable variableName="WITH_NPE_CAUSE" value="#[payload]"/>
+            <flow-ref name="runtimeExceptionFlow"/>
 
             <java:invoke-static class="org.mule.extensions.java.internal.util.JavaExceptionUtils" method="isCausedBy(java.lang.Throwable,java.lang.Class,boolean)">
                 <java:args>
@@ -107,9 +68,135 @@ http://www.mulesoft.org/schema/mule/java http://www.mulesoft.org/schema/mule/jav
         </munit:validation>
     </munit:test>
 
+    <munit:test name="getRootCauseUnwrapsReflectionInvocation">
+        <munit:execution>
+            <flow-ref name="invocationTargetExceptionFlow" />
 
-    <flow name="dummyFlow">
-        <set-payload value="Test Event"/>
+            <java:invoke-static class="org.mule.extensions.java.internal.util.JavaExceptionUtils" method="getRootCause(java.lang.Throwable)">
+                <java:args>
+                    #[{
+                    arg0: vars.invocationTargetException
+                    }]
+                </java:args>
+            </java:invoke-static>
+
+        </munit:execution>
+        <munit:validation>
+            <munit-tools:assert-that
+                    expression="#[payload]"
+                    is="#[MunitTools::equalTo(vars.NPE)]"/>
+        </munit:validation>
+    </munit:test>
+
+    <munit:test name="isCausedByIsTrueRootExactType">
+        <munit:execution>
+            <flow-ref name="invocationTargetExceptionFlow" />
+
+            <java:invoke-static class="org.mule.extensions.java.internal.util.JavaExceptionUtils"
+                                method="isCausedBy(java.lang.Throwable, java.lang.Class, boolean)">
+                <java:args>
+                    #[{
+                    arg0: vars.invocationTargetException,
+                    arg1: "java.lang.NullPointerException",
+                    arg2: false
+                    }]
+                </java:args>
+            </java:invoke-static>
+
+        </munit:execution>
+        <munit:validation>
+            <munit-tools:assert-that
+                    expression="#[payload]"
+                    is="#[MunitTools::equalTo(true)]"/>
+        </munit:validation>
+    </munit:test>
+
+    <munit:test name="isCausedByIsFalseRootExactType">
+        <munit:execution>
+            <flow-ref name="invocationTargetExceptionFlow" />
+
+            <java:invoke-static class="org.mule.extensions.java.internal.util.JavaExceptionUtils"
+                                method="isCausedBy(java.lang.Throwable, java.lang.Class, boolean)">
+                <java:args>
+                    #[{
+                    arg0: vars.invocationTargetException,
+                    arg1: "org.mule.extensions.internal.model.CustomNPException",
+                    arg2: false
+                    }]
+                </java:args>
+            </java:invoke-static>
+        </munit:execution>
+        <munit:validation>
+            <munit-tools:assert-that
+                    expression="#[payload]"
+                    is="#[MunitTools::equalTo(false)]"/>
+        </munit:validation>
+    </munit:test>
+
+    <munit:test name="isCausedByIsTrueSubtype">
+        <munit:execution>
+            <flow-ref name="runtimeExceptionFlow" />
+
+            <java:invoke-static class="org.mule.extensions.java.internal.util.JavaExceptionUtils"
+                                method="isCausedBy(java.lang.Throwable, java.lang.Class, boolean)">
+                <java:args>
+                    #[{
+                    arg0: vars.WITH_NPE_CAUSE,
+                    arg1: "java.lang.NullPointerException",
+                    arg2: true
+                    }]
+                </java:args>
+            </java:invoke-static>
+        </munit:execution>
+        <munit:validation>
+            <munit-tools:assert-that
+                    expression="#[payload]"
+                    is="#[MunitTools::equalTo(true)]"/>
+        </munit:validation>
+    </munit:test>
+
+
+    <flow name="nullPointerExceptionFlow">
+        <java:new class="java.lang.NullPointerException" constructor="NullPointerException(java.lang.String)">
+            <java:args>
+                #[{
+                arg0: "Some NPE"
+                }]
+            </java:args>
+        </java:new>
+
+        <set-variable variableName="NPE" value="#[payload]"/>
+    </flow>
+
+    <flow name="runtimeExceptionFlow">
+
+        <flow-ref name="nullPointerExceptionFlow"/>
+
+        <java:new class="java.lang.RuntimeException" constructor="RuntimeException(java.lang.String,java.lang.Throwable)">
+            <java:args>
+                #[{
+                arg0: "Some Runtime",
+                arg1: vars.NPE
+                }]
+            </java:args>
+        </java:new>
+
+        <set-variable variableName="WITH_NPE_CAUSE" value="#[payload]"/>
+    </flow>
+
+    <flow name="invocationTargetExceptionFlow">
+        <flow-ref name="runtimeExceptionFlow" />
+
+        <java:new class="java.lang.reflect.InvocationTargetException" constructor="InvocationTargetException(java.lang.Throwable)">
+            <java:args>
+                #[{
+                arg0: vars.WITH_NPE_CAUSE
+                }]
+            </java:args>
+        </java:new>
+
+        <set-variable variableName="invocationTargetException" value="#[payload]"/>
+
     </flow>
 
 </mule>
