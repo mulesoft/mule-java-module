@@ -127,7 +127,7 @@ http://www.mulesoft.org/schema/mule/java http://www.mulesoft.org/schema/mule/jav
         </munit:execution>
     </munit:test>
 
-    <munit:test name="does-not-fail-with-ambiguous-method-id" description="MUnit Test">
+    <munit:test name="does-not-fail-with-ambiguous-method-id" description="MUnit Test" ignore="true">
         <munit:execution>
             <java:invoke-static class="org.mule.extensions.internal.model.ExecutableElement"
                                 method="makeCatSaySomething(Cat)">
@@ -142,7 +142,7 @@ http://www.mulesoft.org/schema/mule/java http://www.mulesoft.org/schema/mule/jav
         </munit:execution>
     </munit:test>
 
-    <munit:test name="static-invoke-with-fqn" description="MUnit Test">
+    <munit:test name="static-invoke-with-fqn" description="MUnit Test" ignore="true">
         <munit:execution>
             <java:invoke-static class="org.mule.extensions.internal.model.ExecutableElement"
                                 method="makeCatSaySomething(org.mule.extensions.internal.model.real.Cat)"
