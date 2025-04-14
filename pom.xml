@@ -19,7 +19,7 @@
 
     <properties>
         <commonsLang.version>3.12.0</commonsLang.version>
-        <springCore.version>5.3.39-spring-framework-5.3.45</springCore.version>
+        <springCore.version>5.3.39</springCore.version>
         <mockitoVersion>4.11.0</mockitoVersion>
 
         <!-- Remove when a new parent version with MTF is available -->
@@ -37,7 +37,6 @@
         <licenseYear>2023</licenseYear>
         <mule.sdk.api.version>0.10.1</mule.sdk.api.version>
         <munit.failIfNoTests>false</munit.failIfNoTests>
-        <mule.extensions.shade.version>1.0.4</mule.extensions.shade.version>
     </properties>
 
 
@@ -143,26 +142,6 @@
                         <classifier>mule-plugin</classifier>
                     </dependency>
                 </dependencies>
-            </plugin>
-            <plugin>
-                <groupId>org.mule.runtime.plugins</groupId>
-                <artifactId>mule-extensions-shade-plugin</artifactId>
-                <version>${mule.extensions.shade.version}</version>
-                <executions>
-                    <execution>
-                        <phase>post-integration-test</phase>
-                        <goals>
-                            <goal>shade</goal>
-                        </goals>
-                    </execution>
-                </executions>
-                <configuration>
-                    <artifactSet>
-                        <includes combine.children="append">
-                            <include>org.springframework:spring-core:5.3.39-spring-framework-5.3.45</include>
-                        </includes>
-                    </artifactSet>
-                </configuration>
             </plugin>
         </plugins>
     </build>
