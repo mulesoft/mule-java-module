@@ -17,8 +17,6 @@ import org.mule.runtime.extension.api.annotation.Operations;
 import org.mule.runtime.extension.api.annotation.error.ErrorTypes;
 import org.mule.sdk.api.annotation.JavaVersionSupport;
 
-import static org.mule.sdk.api.meta.JavaVersion.JAVA_8;
-import static org.mule.sdk.api.meta.JavaVersion.JAVA_11;
 import static org.mule.sdk.api.meta.JavaVersion.JAVA_17;
 
 /**
@@ -30,7 +28,7 @@ import static org.mule.sdk.api.meta.JavaVersion.JAVA_17;
 @Operations({JavaNewInstanceOperation.class, JavaInvokeOperations.class, JavaModuleValidateOperation.class})
 @ExpressionFunctions(JavaModuleFunctions.class)
 @ErrorTypes(JavaModuleError.class)
-@JavaVersionSupport({JAVA_8, JAVA_11, JAVA_17})
+@JavaVersionSupport({JAVA_17})
 public class JavaModule {
 
   public static final String APPLICATION_JAVA = "application/java";
