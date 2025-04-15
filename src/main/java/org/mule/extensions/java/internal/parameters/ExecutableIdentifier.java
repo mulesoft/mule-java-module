@@ -30,32 +30,27 @@ public abstract class ExecutableIdentifier {
   private static final Pattern METHOD_MATCHER = Pattern.compile("(.+)\\((.*)\\)");
 
   /**
-   * @return the name of the declaring {@link Class} of {@code this} {@link Executable} element,
-   * or empty string if it is unknown.
+   * @return the name of the declaring {@link Class} of {@code this} {@link Executable} element, or empty string if it is unknown.
    */
   public abstract String getClazz();
 
   /**
-   * Provides the ID of the {@link Executable} element being represented by
-   * {@code this} {@link ExecutableIdentifierFactory}.
+   * Provides the ID of the {@link Executable} element being represented by {@code this} {@link ExecutableIdentifierFactory}.
    * <p>
-   * For example, for method {@code public void echo(String message, int times)},
-   * the result of invoking this method will be {@code "echo#String,int"}.
+   * For example, for method {@code public void echo(String message, int times)}, the result of invoking this method will be
+   * {@code "echo#String,int"}.
    *
-   * @return the ID of the {@link Executable} element being represented by
-   * {@code this} {@link ExecutableIdentifierFactory}.
+   * @return the ID of the {@link Executable} element being represented by {@code this} {@link ExecutableIdentifierFactory}.
    */
   public abstract String getElementId();
 
   /**
-   * Provides the name of the {@link Executable} element being represented by
-   * {@code this} {@link ExecutableIdentifierFactory}.
+   * Provides the name of the {@link Executable} element being represented by {@code this} {@link ExecutableIdentifierFactory}.
    * <p>
-   * For example, for method {@code public void echo(String message, int times)},
-   * the result of invoking this method will be {@code "echo"}.
+   * For example, for method {@code public void echo(String message, int times)}, the result of invoking this method will be
+   * {@code "echo"}.
    *
-   * @return the name of the {@link Executable} element being represented by
-   * {@code this} {@link ExecutableIdentifierFactory}.
+   * @return the name of the {@link Executable} element being represented by {@code this} {@link ExecutableIdentifierFactory}.
    */
   public String getElementName() {
     Matcher match = METHOD_MATCHER.matcher(getElementId().trim().replaceAll(" ", ""));

@@ -67,30 +67,21 @@ public class JavaInvokeOperations {
   private ExpressionManager expressionManager;
 
   /**
-   * Operation that allows the user to invoke static methods with the provided arguments.
-   * The identifier of the {@link Method} to be invoked includes the {@code class} and {@code method} names,
-   * being the {@code method} a full description of its signature including the types of each parameter.
+   * Operation that allows the user to invoke static methods with the provided arguments. The identifier of the {@link Method} to
+   * be invoked includes the {@code class} and {@code method} names, being the {@code method} a full description of its signature
+   * including the types of each parameter.
    * <p>
    * For example, if we want to invoke the static method {@code echo} with signature {@code public static String echo(String msg)}
    * which belongs to {@link Class} {@code org.bar.Foo}, then the identifier of the method will be {@code "echo(String)"}
    *
-   * @param identifier the unique identifier for the method to be invoked.
-   * @param args       the arguments used to invoke the given {@link Method}. This parameter must be a map with the names
-   *                   of the method arguments as keys, and each of the argument values as values.
-   *                   For example, given a method {@code echo} with signature {@code public String echo(String msg, String volume)} a
-   *                   possible value for args is:
-   *                   #[{
-   *                          msg : 'This is a message to echo',
-   *                          volume : 'Loud'
-   *                    }]
-   *                   In order to use those argument names the java class must be compiled with -parameters, in other case
-   *                   you have to use the canonical names for the arguments:
-   *                   #[{
-   *                        arg0 : 'This is a message to echo',
-   *                        arg1 : 'Loud'
-   *                   }]
-   *                   You can always use the canonical name for the arguments, even if the source code was compiled with
-   *                   -parameters.
+   * @param identifier     the unique identifier for the method to be invoked.
+   * @param args           the arguments used to invoke the given {@link Method}. This parameter must be a map with the names of
+   *                       the method arguments as keys, and each of the argument values as values. For example, given a method
+   *                       {@code echo} with signature {@code public String echo(String msg, String volume)} a possible value for
+   *                       args is: #[{ msg : 'This is a message to echo', volume : 'Loud' }] In order to use those argument names
+   *                       the java class must be compiled with -parameters, in other case you have to use the canonical names for
+   *                       the arguments: #[{ arg0 : 'This is a message to echo', arg1 : 'Loud' }] You can always use the
+   *                       canonical name for the arguments, even if the source code was compiled with -parameters.
    * @param outputMimeType The mime type of the payload that this invocation will output
    * @param outputEncoding The encoding of the payload that this invocation will output
    * @return the result of the {@link Method} invocation with the given {@code args}
@@ -121,31 +112,22 @@ public class JavaInvokeOperations {
   }
 
   /**
-   * Operation that allows the user to invoke methods with the provided {@code args} on the given {@code instance}.
-   * The identifier of the {@link Method} to be invoked includes the {@code class} and {@code method} names,
-   * being the {@code method} a full description of its signature including the types of each parameter.
+   * Operation that allows the user to invoke methods with the provided {@code args} on the given {@code instance}. The identifier
+   * of the {@link Method} to be invoked includes the {@code class} and {@code method} names, being the {@code method} a full
+   * description of its signature including the types of each parameter.
    * <p>
-   * For example, if we want to invoke the method {@code echo} with signature {@code public String echo(String msg)}
-   * which belongs to {@link Class} {@code org.bar.Foo}, then the identifier of the method will be {@code "echo(String)"}
+   * For example, if we want to invoke the method {@code echo} with signature {@code public String echo(String msg)} which belongs
+   * to {@link Class} {@code org.bar.Foo}, then the identifier of the method will be {@code "echo(String)"}
    *
-   * @param identifier the unique identifier for the method to be invoked
-   * @param instance   the instance on which the {@code method} will be invoked
-   * @param args       the arguments used to invoke the given {@link Method}. This parameter must be a map with the names
-   *                   of the method arguments as keys, and each of the argument values as values.
-   *                   For example, given a method {@code echo} with signature {@code public String echo(String msg, String volume)} a
-   *                   possible value for args is:
-   *                   #[{
-   *                          msg : 'This is a message to echo',
-   *                          volume : 'Loud'
-   *                    }]
-   *                   In order to use those argument names the java class must be compiled with -parameters, in other case
-   *                   you have to use the canonical names for the arguments:
-   *                   #[{
-   *                        arg0 : 'This is a message to echo',
-   *                        arg1 : 'Loud'
-   *                   }]
-   *                   You can always use the canonical name for the arguments, even if the source code was compiled with
-   *                   -parameters.
+   * @param identifier     the unique identifier for the method to be invoked
+   * @param instance       the instance on which the {@code method} will be invoked
+   * @param args           the arguments used to invoke the given {@link Method}. This parameter must be a map with the names of
+   *                       the method arguments as keys, and each of the argument values as values. For example, given a method
+   *                       {@code echo} with signature {@code public String echo(String msg, String volume)} a possible value for
+   *                       args is: #[{ msg : 'This is a message to echo', volume : 'Loud' }] In order to use those argument names
+   *                       the java class must be compiled with -parameters, in other case you have to use the canonical names for
+   *                       the arguments: #[{ arg0 : 'This is a message to echo', arg1 : 'Loud' }] You can always use the
+   *                       canonical name for the arguments, even if the source code was compiled with -parameters.
    * @param outputMimeType The mime type of the payload that this invocation will output
    * @param outputEncoding The encoding of the payload that this invocation will output
    * @return the result of the {@link Method} invocation with the given {@code args}

@@ -37,8 +37,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The {@link ExpressionFunction}s exposed by the {@link JavaModule} that extends the EL
- * with further Java related functions.
+ * The {@link ExpressionFunction}s exposed by the {@link JavaModule} that extends the EL with further Java related functions.
  *
  * @since 1.0
  */
@@ -56,12 +55,12 @@ public class JavaModuleFunctions {
   private ExpressionManager expressionManager;
 
   /**
-   * Function that allows the user to invoke methods with the provided {@code args} on the given {@code instance}.
-   * The identifier of the {@link Method} to be invoked includes the {@code class} and {@code method} names,
-   * being the {@code method} a full description of its signature including the types of each parameter.
+   * Function that allows the user to invoke methods with the provided {@code args} on the given {@code instance}. The identifier
+   * of the {@link Method} to be invoked includes the {@code class} and {@code method} names, being the {@code method} a full
+   * description of its signature including the types of each parameter.
    * <p>
-   * For example, if we want to invoke the method {@code echo} with signature {@code public String echo(String msg)}
-   * which belongs to {@link Class} {@code org.bar.Foo}, then the identifier of the method will be {@code "echo(String)"}
+   * For example, if we want to invoke the method {@code echo} with signature {@code public String echo(String msg)} which belongs
+   * to {@link Class} {@code org.bar.Foo}, then the identifier of the method will be {@code "echo(String)"}
    *
    * @param clazz      the fully qualified name of the class whose instance is being injected
    * @param methodName the unique identifier for the method to be invoked
@@ -111,17 +110,15 @@ public class JavaModuleFunctions {
    * Function that provides a way to obtain the root cause of a given {@link Throwable}.
    *
    * @param exception the {@link Throwable} whose root cause is wanted
-   * @return the root {@link Throwable cause} of the given {@code exception},
-   * or {@code null} if no cause is found.
+   * @return the root {@link Throwable cause} of the given {@code exception}, or {@code null} if no cause is found.
    */
   public Throwable getRootCause(Throwable exception) {
     return JavaExceptionUtils.getRootCause(exception);
   }
 
   /**
-   * This Function returns {@code true} if the given {@link Throwable} that matches
-   * the specified class in the exception cause chain.
-   * If {@code acceptSubtypes} is {@code true}, subclasses of the specified class will also match.
+   * This Function returns {@code true} if the given {@link Throwable} that matches the specified class in the exception cause
+   * chain. If {@code acceptSubtypes} is {@code true}, subclasses of the specified class will also match.
    *
    * @param exception       the {@link Throwable} to inspect
    * @param throwableType   fully qualified name of the Class you want to check against
