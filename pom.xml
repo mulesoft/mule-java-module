@@ -20,7 +20,7 @@
     <properties>
         <commonsLang.version>3.17.0</commonsLang.version>
         <springCore.version>6.2.5</springCore.version>
-        <mockitoVersion>5.10.0</mockitoVersion>
+        <mockitoVersion>5.15.2</mockitoVersion>
         <maven.compiler.source>17</maven.compiler.source>
         <maven.compiler.target>17</maven.compiler.target>
 
@@ -31,13 +31,13 @@
         <munit.version>3.4.0</munit.version>
         <mavenResources.version>3.3.1</mavenResources.version>
         <mtf.tools.version>1.2.0</mtf.tools.version>
-        <jacoco.version>0.8.10</jacoco.version>
+        <jacoco.version>0.8.12</jacoco.version>
 
         <mulesoftLicenseVersion>1.4.0</mulesoftLicenseVersion>
         <license.maven.plugin.version>4.2</license.maven.plugin.version>
         <licensePath>LICENSE_HEADER_CPAL.txt</licensePath>
         <licenseYear>2023</licenseYear>
-        <mule.sdk.api.version>0.10.1</mule.sdk.api.version>
+        <mule.sdk.api.version>0.11.0</mule.sdk.api.version>
         <munit.failIfNoTests>false</munit.failIfNoTests>
     </properties>
 
@@ -164,17 +164,6 @@
                         <classifier>mule-plugin</classifier>
                     </dependency>
                 </dependencies>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-surefire-plugin</artifactId>
-                <version>3.2.5</version>
-                <configuration>
-                    <excludes>
-                        <exclude>**/JavaPluginIntegrationTestCase.java</exclude>
-                        <exclude>**/JavaFunctionsTestCase.java</exclude>
-                    </excludes>
-                </configuration>
             </plugin>
         </plugins>
     </build>
