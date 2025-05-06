@@ -7,7 +7,6 @@
 package org.mule.extensions.java.internal.cache;
 
 import static org.mule.extensions.java.internal.util.JavaModuleUtils.getPublicMethods;
-import static java.lang.String.format;
 import static java.lang.String.join;
 import static java.lang.reflect.Modifier.isPublic;
 import static java.util.Arrays.stream;
@@ -64,7 +63,7 @@ public final class JavaModuleLoadingCache {
   public Constructor getConstructor(ConstructorIdentifier id, Class<?> declaringClass,
                                     Map<String, TypedValue<Object>> args) {
     List<Constructor> constructors =
-        constructorsCache.computeIfAbsent(String.format(METHOD_IDENTIFIER, declaringClass.getName(), id.getElementId()),
+        constructorsCache.computeIfAbsent(METHOD_IDENTIFIER.formatted(declaringClass.getName(), id.getElementId()),
                                           key -> stream(declaringClass.getConstructors())
                                               .filter(c -> isPublic(c.getModifiers()))
                                               .filter(id::matches)
@@ -78,7 +77,7 @@ public final class JavaModuleLoadingCache {
   public Method getMethod(ExecutableIdentifier id, Class<?> clazz, Map<String, TypedValue<Object>> args, boolean expectStatic) {
     Map<String, List<Method>> methodsCache = expectStatic ? classMethodsCache : instanceMethodsCache;
 
-    List<Method> methods = methodsCache.computeIfAbsent(String.format(METHOD_IDENTIFIER, clazz.getName(), id.getElementId()),
+    List<Method> methods = methodsCache.computeIfAbsent(METHOD_IDENTIFIER.formatted(clazz.getName(), id.getElementId()),
                                                         key -> getPublicMethods(clazz, expectStatic)
                                                             .stream()
                                                             .filter(id::matches)
@@ -100,7 +99,7 @@ public final class JavaModuleLoadingCache {
     } else if (executables.size() > 1) {
       if (LOGGER.isWarnEnabled()) {
         LOGGER.warn(ambiguousExecutableWarningMessages
-            .computeIfAbsent(String.format(METHOD_IDENTIFIER, declaringClass.getName(), id.getElementId()),
+            .computeIfAbsent(METHOD_IDENTIFIER.formatted(declaringClass.getName(), id.getElementId()),
                              key -> constructWarningMessage(executables, id.getExecutableTypeName(), key)));
       }
     }
@@ -111,9 +110,9 @@ public final class JavaModuleLoadingCache {
         .map(ExecutableIdentifier::getElementId).collect(toList()));
     StringBuilder sb = new StringBuilder();
 
-    sb.append(format("There where multiple %ss found with the id \"%s\"", category, executableId));
-    sb.append(format("The %s %s will be executed.\n", category, executables.get(0)));
-    sb.append(format("The Possible %ss that share the same ID are [ %s ].\n", category, possibleExecutables));
+    sb.append("There where multiple %ss found with the id \"%s\"".formatted(category, executableId));
+    sb.append("The %s %s will be executed.\n".formatted(category, executables.get(0)));
+    sb.append("The Possible %ss that share the same ID are [ %s ].\n".formatted(category, possibleExecutables));
     sb.append("To use a specific one, use the fully-qualified name for the argument types.");
 
     return sb.toString();

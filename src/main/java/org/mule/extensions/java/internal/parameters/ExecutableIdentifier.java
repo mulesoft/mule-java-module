@@ -6,7 +6,6 @@
  */
 package org.mule.extensions.java.internal.parameters;
 
-import static java.lang.String.format;
 import static java.util.Arrays.stream;
 import static java.util.Optional.empty;
 import static java.util.Optional.of;
@@ -116,14 +115,14 @@ public abstract class ExecutableIdentifier {
   }
 
   protected String buildId(String elementName, Class<?>[] argTypes) {
-    return format(METHOD_MASK,
-                  elementName.trim(),
-                  stream(argTypes).map(Class::getCanonicalName).collect(joining(ARG_SEPARATOR)));
+    return METHOD_MASK.formatted(
+                                 elementName.trim(),
+                                 stream(argTypes).map(Class::getCanonicalName).collect(joining(ARG_SEPARATOR)));
   }
 
   protected boolean matchesArguments(Class[] arguments) {
     Optional<String[]> optionalArgumentTypeNames = getArgumentTypeNames();
-    if (!optionalArgumentTypeNames.isPresent()) {
+    if (optionalArgumentTypeNames.isEmpty()) {
       return false;
     }
     String[] argumentTypeNames = optionalArgumentTypeNames.get();

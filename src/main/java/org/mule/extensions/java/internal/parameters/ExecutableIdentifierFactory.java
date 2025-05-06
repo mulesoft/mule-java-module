@@ -26,8 +26,8 @@ public final class ExecutableIdentifierFactory {
    * @return a new instance of {@link ExecutableIdentifier} that identifies the {@code executable}
    */
   public static ExecutableIdentifier create(Executable executable) {
-    if (executable instanceof Constructor) {
-      return new ConstructorIdentifier((Constructor) executable);
+    if (executable instanceof Constructor constructor) {
+      return new ConstructorIdentifier(constructor);
     }
 
     return isStatic(executable.getModifiers())

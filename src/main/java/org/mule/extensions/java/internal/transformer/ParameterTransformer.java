@@ -203,7 +203,7 @@ public class ParameterTransformer {
       }
     } catch (Exception e) {
       if (LOGGER.isDebugEnabled()) {
-        LOGGER.debug(String.format(TRANSFORMATION_SERVICE_ERROR_MESSAGE, value.getClass(), wrappedParameterType));
+        LOGGER.debug(TRANSFORMATION_SERVICE_ERROR_MESSAGE.formatted(value.getClass(), wrappedParameterType));
       }
     }
 
@@ -294,10 +294,10 @@ public class ParameterTransformer {
 
 
   private ResolvableType getResolvableType(int parameterIndex) {
-    if (executable instanceof Method) {
-      return ResolvableType.forMethodParameter((Method) executable, parameterIndex);
-    } else if (executable instanceof Constructor) {
-      return ResolvableType.forConstructorParameter((Constructor) executable, parameterIndex);
+    if (executable instanceof Method method) {
+      return ResolvableType.forMethodParameter(method, parameterIndex);
+    } else if (executable instanceof Constructor constructor) {
+      return ResolvableType.forConstructorParameter(constructor, parameterIndex);
     }
     throw new IllegalStateException("Failed when trying to retrieve Resolvable type from executable. " +
         "A 'Method' or 'Contructor' was expected, executable was a " +

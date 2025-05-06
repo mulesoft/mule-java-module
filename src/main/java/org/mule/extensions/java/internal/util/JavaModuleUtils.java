@@ -132,8 +132,8 @@ public final class JavaModuleUtils {
   }
 
   public static List<String> toHumanReadableArgs(Executable executable) {
-    Function<Integer, ResolvableType> typeResolver = executable instanceof Method
-        ? i -> ResolvableType.forMethodParameter((Method) executable, i)
+    Function<Integer, ResolvableType> typeResolver = executable instanceof Method m
+        ? i -> ResolvableType.forMethodParameter(m, i)
         : i -> ResolvableType.forConstructorParameter((Constructor<?>) executable, i);
 
     Parameter[] args = executable.getParameters();

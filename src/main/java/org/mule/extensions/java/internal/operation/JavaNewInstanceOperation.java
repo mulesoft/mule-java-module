@@ -6,7 +6,6 @@
  */
 package org.mule.extensions.java.internal.operation;
 
-import static java.lang.String.format;
 import static org.mule.extensions.java.internal.JavaModule.APPLICATION_JAVA;
 import static org.mule.extensions.java.internal.util.JavaModuleUtils.getSortedAndTransformedArgs;
 import static org.mule.extensions.java.internal.util.JavaModuleUtils.logTooManyArgsWarning;
@@ -132,16 +131,18 @@ public class JavaNewInstanceOperation {
     } catch (InstantiationException e) {
       throw new NonInstantiableTypeModuleException(identifier, args, e);
     } catch (IllegalAccessException | InvocationTargetException e) {
-      throw new InvocationModuleException(format("%s '%s' in Class '%s' ",
-                                                 identifier.getExecutableTypeName(), identifier.getElementId(),
-                                                 identifier.getClazz()),
+      throw new InvocationModuleException("%s '%s' in Class '%s' ".formatted(
+                                                                             identifier.getExecutableTypeName(),
+                                                                             identifier.getElementId(),
+                                                                             identifier.getClazz()),
                                           constructor, args, e);
     }
   }
 
   private String getBaseFailure(ExecutableIdentifier identifier) {
-    return format("Failed to instantiate Class '%s' using the Constructor '%s'",
-                  identifier.getClazz(), identifier.getElementId());
+    return "Failed to instantiate Class '%s' using the Constructor '%s'".formatted(
+                                                                                   identifier.getClazz(),
+                                                                                   identifier.getElementId());
   }
 
 }

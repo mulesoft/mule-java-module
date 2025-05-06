@@ -6,7 +6,6 @@
  */
 package org.mule.extensions.java.internal.metadata;
 
-import static java.lang.String.format;
 import static java.lang.String.join;
 import static java.lang.reflect.Modifier.isPublic;
 import static java.util.Arrays.stream;
@@ -107,8 +106,8 @@ abstract class ExecutableElementTypeResolver implements OutputTypeResolver<Execu
       throws MetadataResolvingException, ConnectionException {
 
     Executable element = findElement(key);
-    Type output = element instanceof Method
-        ? ((Method) element).getGenericReturnType()
+    Type output = element instanceof Method m
+        ? m.getGenericReturnType()
         : loadClass(key.getClazz());
 
     if (output.getTypeName().equals(Object.class.getTypeName())) {
@@ -139,8 +138,9 @@ abstract class ExecutableElementTypeResolver implements OutputTypeResolver<Execu
         .filter(m -> isPublic(m.getModifiers()))
         .filter(m -> hasExpectedSignature(m, key))
         .findFirst()
-        .orElseThrow(() -> new MetadataResolvingException(format("No public Method found in Class [%s] with signature [%s]",
-                                                                 key.getClazz(), key.getElementId()),
+        .orElseThrow(() -> new MetadataResolvingException("No public Method found in Class [%s] with signature [%s]".formatted(
+                                                                                                                               key.getClazz(),
+                                                                                                                               key.getElementId()),
                                                           INVALID_METADATA_KEY));
   }
 
@@ -205,8 +205,8 @@ abstract class ExecutableElementTypeResolver implements OutputTypeResolver<Execu
     try {
       return ClassUtils.loadClass(className, Thread.currentThread().getContextClassLoader());
     } catch (ClassNotFoundException e) {
-      throw new MetadataResolvingException(format("Failed to load Class with name [%s]: %s",
-                                                  className, e.getMessage()),
+      throw new MetadataResolvingException("Failed to load Class with name [%s]: %s".formatted(
+                                                                                               className, e.getMessage()),
                                            INVALID_METADATA_KEY);
     }
   }
@@ -228,7 +228,7 @@ abstract class ExecutableElementTypeResolver implements OutputTypeResolver<Execu
     }
 
     ExecutableIdentifier identifier = ExecutableIdentifierFactory.create(method);
-    String displayName = format("%s(%s)", identifier.getElementName(), join(", ", argTypes));
+    String displayName = "%s(%s)".formatted(identifier.getElementName(), join(", ", argTypes));
     return newKey(identifier.getElementId()).withDisplayName(displayName).build();
   }
 
