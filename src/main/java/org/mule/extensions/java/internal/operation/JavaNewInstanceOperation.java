@@ -9,7 +9,6 @@ package org.mule.extensions.java.internal.operation;
 import static org.mule.extensions.java.internal.JavaModule.APPLICATION_JAVA;
 import static org.mule.extensions.java.internal.util.JavaModuleUtils.getSortedAndTransformedArgs;
 import static org.mule.extensions.java.internal.util.JavaModuleUtils.logTooManyArgsWarning;
-import static org.mule.runtime.api.meta.model.operation.ExecutionType.CPU_INTENSIVE;
 import static org.mule.runtime.api.meta.model.operation.ExecutionType.CPU_LITE;
 
 import org.mule.extensions.java.api.exception.ArgumentMismatchModuleException;

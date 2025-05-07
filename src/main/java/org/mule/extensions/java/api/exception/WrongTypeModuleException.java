@@ -7,6 +7,7 @@
 package org.mule.extensions.java.api.exception;
 
 import static org.mule.extensions.java.api.error.JavaModuleError.WRONG_INSTANCE_CLASS;
+
 import org.mule.extensions.java.api.error.JavaModuleError;
 
 /**

@@ -7,6 +7,7 @@
 package org.mule.extensions.java.internal.transformer;
 
 import static java.util.Optional.empty;
+
 import org.mule.runtime.api.el.BindingContext;
 import org.mule.runtime.api.el.ExpressionExecutionException;
 import org.mule.runtime.api.metadata.DataType;
@@ -34,7 +35,7 @@ import org.springframework.core.ResolvableType;
  * When transforming an input into something that fits to an {@link Executable}'s parameter, this class will make a best effort in
  * order to make this transformation possible. In case that the transformation requires to transform a {@link Collection} or
  * {@link Map}, a new instance will be created for it.
- * 
+ *
  * @since 1.1
  */
 
@@ -90,7 +91,7 @@ public class ParameterTransformer {
   /**
    * Method that allows to check if a value fits a certain argument of the executable. Generic values will only be checked for
    * {@link Map} and {@link Collection} values.
-   * 
+   *
    * @param value          The value which type will be checked.
    * @param parameterIndex The index of the parameter in the executable arguments.
    * @return whether the value needs to be transformed in order to fit the parameter from the executable

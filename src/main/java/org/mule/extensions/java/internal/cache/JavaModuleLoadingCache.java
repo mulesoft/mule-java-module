@@ -7,6 +7,7 @@
 package org.mule.extensions.java.internal.cache;
 
 import static org.mule.extensions.java.internal.util.JavaModuleUtils.getPublicMethods;
+
 import static java.lang.String.join;
 import static java.lang.reflect.Modifier.isPublic;
 import static java.util.Arrays.stream;

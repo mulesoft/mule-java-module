@@ -6,11 +6,13 @@
  */
 package org.mule.extensions.java.internal.function;
 
-import static java.util.Collections.emptyMap;
-import static java.util.stream.Collectors.toMap;
 import static org.mule.extensions.java.internal.util.JavaModuleUtils.validateType;
 import static org.mule.extensions.java.internal.util.MethodInvoker.invokeMethod;
 import static org.mule.runtime.core.api.util.ClassUtils.isInstance;
+
+import static java.util.Collections.emptyMap;
+import static java.util.stream.Collectors.toMap;
+
 import org.mule.extensions.java.api.exception.ArgumentMismatchModuleException;
 import org.mule.extensions.java.api.exception.ClassNotFoundModuleException;
 import org.mule.extensions.java.api.exception.InvocationModuleException;

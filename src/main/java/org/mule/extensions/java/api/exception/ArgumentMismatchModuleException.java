@@ -6,13 +6,15 @@
  */
 package org.mule.extensions.java.api.exception;
 
-import static java.util.Arrays.stream;
-import static java.util.Optional.empty;
-import static java.util.stream.Collectors.toList;
 import static org.mule.extensions.java.api.error.JavaModuleError.ARGUMENTS_MISMATCH;
 import static org.mule.extensions.java.internal.util.JavaModuleUtils.getArgumentsMessage;
 import static org.mule.extensions.java.internal.util.JavaModuleUtils.getCauseMessage;
 import static org.mule.extensions.java.internal.util.JavaModuleUtils.toHumanReadableArgs;
+
+import static java.util.Arrays.stream;
+import static java.util.Optional.empty;
+import static java.util.stream.Collectors.toList;
+
 import org.mule.extensions.java.api.error.JavaModuleError;
 import org.mule.extensions.java.internal.transformer.ParametersTransformationResult;
 import org.mule.runtime.api.metadata.TypedValue;

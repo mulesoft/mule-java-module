@@ -12,7 +12,6 @@ import static java.util.Optional.of;
 import static java.util.stream.Collectors.joining;
 
 import java.lang.reflect.Executable;
-import java.util.List;
 import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;

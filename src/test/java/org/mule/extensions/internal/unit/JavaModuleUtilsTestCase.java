@@ -6,9 +6,10 @@
  */
 package org.mule.extensions.internal.unit;
 
+import static org.mule.extensions.java.internal.util.JavaModuleUtils.getPublicMethods;
+
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
-import static org.mule.extensions.java.internal.util.JavaModuleUtils.getPublicMethods;
 
 import java.lang.reflect.Method;
 import java.util.List;

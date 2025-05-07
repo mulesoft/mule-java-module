@@ -6,8 +6,10 @@
  */
 package org.mule.extensions.java.internal.parameters;
 
-import static java.lang.reflect.Modifier.isStatic;
 import static org.mule.runtime.api.meta.ExpressionSupport.NOT_SUPPORTED;
+
+import static java.lang.reflect.Modifier.isStatic;
+
 import org.mule.runtime.extension.api.annotation.Alias;
 import org.mule.runtime.extension.api.annotation.Expression;
 import org.mule.runtime.extension.api.annotation.metadata.MetadataKeyPart;

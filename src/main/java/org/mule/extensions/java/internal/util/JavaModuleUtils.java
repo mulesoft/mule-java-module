@@ -6,13 +6,15 @@
  */
 package org.mule.extensions.java.internal.util;
 
+import static org.mule.runtime.core.api.util.ClassUtils.isInstance;
+
 import static java.lang.String.format;
 import static java.lang.reflect.Modifier.isPublic;
 import static java.lang.reflect.Modifier.isStatic;
 import static java.util.Arrays.stream;
 import static java.util.Collections.emptyList;
 import static java.util.stream.Collectors.toList;
-import static org.mule.runtime.core.api.util.ClassUtils.isInstance;
+
 import org.mule.extensions.java.api.exception.ClassNotFoundModuleException;
 import org.mule.extensions.java.api.exception.WrongTypeModuleException;
 import org.mule.extensions.java.internal.cache.JavaModuleLoadingCache;

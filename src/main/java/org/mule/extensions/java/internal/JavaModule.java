@@ -6,6 +6,8 @@
  */
 package org.mule.extensions.java.internal;
 
+import static org.mule.sdk.api.meta.JavaVersion.JAVA_17;
+
 import org.mule.extensions.java.api.error.JavaModuleError;
 import org.mule.extensions.java.internal.function.JavaModuleFunctions;
 import org.mule.extensions.java.internal.operation.JavaInvokeOperations;
@@ -16,8 +18,6 @@ import org.mule.runtime.extension.api.annotation.Extension;
 import org.mule.runtime.extension.api.annotation.Operations;
 import org.mule.runtime.extension.api.annotation.error.ErrorTypes;
 import org.mule.sdk.api.annotation.JavaVersionSupport;
-
-import static org.mule.sdk.api.meta.JavaVersion.JAVA_17;
 
 /**
  * JavaModule MuleSoft Extension, used to invoke Java code.
