@@ -6,9 +6,9 @@
  */
 package org.mule.extensions.internal.model;
 
-import com.google.common.collect.ImmutableMap;
-
 import java.util.Map;
+
+import com.google.common.collect.ImmutableMap;
 
 public class CarDummyTest {
 

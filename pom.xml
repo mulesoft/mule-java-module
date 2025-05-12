@@ -11,38 +11,59 @@
     <name>Mule Java Module</name>
 
     <parent>
-        <groupId>org.mule.extensions</groupId>
-        <artifactId>mule-core-modules-parent</artifactId>
-        <version>1.1.9</version>
-        <relativePath></relativePath>
+        <groupId>com.mulesoft.connectors</groupId>
+        <artifactId>mule4-connectors-parent</artifactId>
+        <version>9.0.0</version>
+        <relativePath/>
     </parent>
 
     <properties>
-        <commonsLang.version>3.12.0</commonsLang.version>
-        <springCore.version>5.3.39-spring-framework-5.3.45</springCore.version>
-        <mockitoVersion>4.11.0</mockitoVersion>
+        <commonsLang.version>3.17.0</commonsLang.version>
+        <springCore.version>6.2.5</springCore.version>
+        <mockitoVersion>5.15.2</mockitoVersion>
+        <maven.compiler.source>17</maven.compiler.source>
+        <maven.compiler.target>17</maven.compiler.target>
 
         <!-- Remove when a new parent version with MTF is available -->
         <munit.input.directory>src/test/munit</munit.input.directory>
         <munit.output.directory>${basedir}/target/test-mule/munit</munit.output.directory>
-        <munit.extensions.maven.plugin.version>1.4.0</munit.extensions.maven.plugin.version>
+        <munit.extensions.maven.plugin.version>1.5.0</munit.extensions.maven.plugin.version>
         <munit.version>3.4.0</munit.version>
         <mavenResources.version>3.3.1</mavenResources.version>
         <mtf.tools.version>1.2.0</mtf.tools.version>
-        <jacoco.version>0.8.10</jacoco.version>
+        <jacoco.version>0.8.12</jacoco.version>
 
         <mulesoftLicenseVersion>1.4.0</mulesoftLicenseVersion>
         <license.maven.plugin.version>4.2</license.maven.plugin.version>
         <licensePath>LICENSE_HEADER_CPAL.txt</licensePath>
         <licenseYear>2023</licenseYear>
-        <mule.sdk.api.version>0.10.1</mule.sdk.api.version>
+        <mule.sdk.api.version>0.11.0</mule.sdk.api.version>
         <munit.failIfNoTests>false</munit.failIfNoTests>
-        <mule.extensions.shade.version>1.0.4</mule.extensions.shade.version>
     </properties>
 
 
     <build>
         <plugins>
+            <plugin>
+                <groupId>org.jacoco</groupId>
+                <artifactId>jacoco-maven-plugin</artifactId>
+                <version>0.8.13</version>
+                <executions>
+                    <execution>
+                        <id>prepare-agent</id>
+                        <goals>
+                            <goal>prepare-agent</goal>
+                        </goals>
+                    </execution>
+                    <execution>
+                        <id>report</id>
+                        <phase>verify</phase>
+                        <goals>
+                            <goal>report</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
             <plugin>
                 <groupId>com.mycila</groupId>
                 <artifactId>license-maven-plugin</artifactId>
@@ -144,26 +165,6 @@
                     </dependency>
                 </dependencies>
             </plugin>
-            <plugin>
-                <groupId>org.mule.runtime.plugins</groupId>
-                <artifactId>mule-extensions-shade-plugin</artifactId>
-                <version>${mule.extensions.shade.version}</version>
-                <executions>
-                    <execution>
-                        <phase>post-integration-test</phase>
-                        <goals>
-                            <goal>shade</goal>
-                        </goals>
-                    </execution>
-                </executions>
-                <configuration>
-                    <artifactSet>
-                        <includes combine.children="append">
-                            <include>org.springframework:spring-core:5.3.39-spring-framework-5.3.45</include>
-                        </includes>
-                    </artifactSet>
-                </configuration>
-            </plugin>
         </plugins>
     </build>
 
@@ -198,7 +199,6 @@
             <version>${mockitoVersion}</version>
             <scope>test</scope>
         </dependency>
-
     </dependencies>
 
     <repositories>

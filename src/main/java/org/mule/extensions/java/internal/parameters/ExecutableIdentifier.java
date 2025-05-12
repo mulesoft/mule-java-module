@@ -6,14 +6,12 @@
  */
 package org.mule.extensions.java.internal.parameters;
 
-import static java.lang.String.format;
 import static java.util.Arrays.stream;
 import static java.util.Optional.empty;
 import static java.util.Optional.of;
 import static java.util.stream.Collectors.joining;
 
 import java.lang.reflect.Executable;
-import java.util.List;
 import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -30,32 +28,27 @@ public abstract class ExecutableIdentifier {
   private static final Pattern METHOD_MATCHER = Pattern.compile("(.+)\\((.*)\\)");
 
   /**
-   * @return the name of the declaring {@link Class} of {@code this} {@link Executable} element,
-   * or empty string if it is unknown.
+   * @return the name of the declaring {@link Class} of {@code this} {@link Executable} element, or empty string if it is unknown.
    */
   public abstract String getClazz();
 
   /**
-   * Provides the ID of the {@link Executable} element being represented by
-   * {@code this} {@link ExecutableIdentifierFactory}.
+   * Provides the ID of the {@link Executable} element being represented by {@code this} {@link ExecutableIdentifierFactory}.
    * <p>
-   * For example, for method {@code public void echo(String message, int times)},
-   * the result of invoking this method will be {@code "echo#String,int"}.
+   * For example, for method {@code public void echo(String message, int times)}, the result of invoking this method will be
+   * {@code "echo#String,int"}.
    *
-   * @return the ID of the {@link Executable} element being represented by
-   * {@code this} {@link ExecutableIdentifierFactory}.
+   * @return the ID of the {@link Executable} element being represented by {@code this} {@link ExecutableIdentifierFactory}.
    */
   public abstract String getElementId();
 
   /**
-   * Provides the name of the {@link Executable} element being represented by
-   * {@code this} {@link ExecutableIdentifierFactory}.
+   * Provides the name of the {@link Executable} element being represented by {@code this} {@link ExecutableIdentifierFactory}.
    * <p>
-   * For example, for method {@code public void echo(String message, int times)},
-   * the result of invoking this method will be {@code "echo"}.
+   * For example, for method {@code public void echo(String message, int times)}, the result of invoking this method will be
+   * {@code "echo"}.
    *
-   * @return the name of the {@link Executable} element being represented by
-   * {@code this} {@link ExecutableIdentifierFactory}.
+   * @return the name of the {@link Executable} element being represented by {@code this} {@link ExecutableIdentifierFactory}.
    */
   public String getElementName() {
     Matcher match = METHOD_MATCHER.matcher(getElementId().trim().replaceAll(" ", ""));
@@ -121,14 +114,14 @@ public abstract class ExecutableIdentifier {
   }
 
   protected String buildId(String elementName, Class<?>[] argTypes) {
-    return format(METHOD_MASK,
-                  elementName.trim(),
-                  stream(argTypes).map(Class::getCanonicalName).collect(joining(ARG_SEPARATOR)));
+    return METHOD_MASK.formatted(
+                                 elementName.trim(),
+                                 stream(argTypes).map(Class::getCanonicalName).collect(joining(ARG_SEPARATOR)));
   }
 
   protected boolean matchesArguments(Class[] arguments) {
     Optional<String[]> optionalArgumentTypeNames = getArgumentTypeNames();
-    if (!optionalArgumentTypeNames.isPresent()) {
+    if (optionalArgumentTypeNames.isEmpty()) {
       return false;
     }
     String[] argumentTypeNames = optionalArgumentTypeNames.get();

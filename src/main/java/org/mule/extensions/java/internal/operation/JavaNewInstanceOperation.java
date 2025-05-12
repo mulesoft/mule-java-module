@@ -6,11 +6,9 @@
  */
 package org.mule.extensions.java.internal.operation;
 
-import static java.lang.String.format;
 import static org.mule.extensions.java.internal.JavaModule.APPLICATION_JAVA;
 import static org.mule.extensions.java.internal.util.JavaModuleUtils.getSortedAndTransformedArgs;
 import static org.mule.extensions.java.internal.util.JavaModuleUtils.logTooManyArgsWarning;
-import static org.mule.runtime.api.meta.model.operation.ExecutionType.CPU_INTENSIVE;
 import static org.mule.runtime.api.meta.model.operation.ExecutionType.CPU_LITE;
 
 import org.mule.extensions.java.api.exception.ArgumentMismatchModuleException;
@@ -68,20 +66,20 @@ public class JavaNewInstanceOperation {
   private ExpressionManager expressionManager;
 
   /**
-   * Operation that allows the user to create a new instance of the given {@code class}
-   * The identifier of the {@link Constructor} to be used includes the {@code class} and {@code constructor} names,
-   * being the {@code constructor} a full description of its signature including the types of each parameter.
+   * Operation that allows the user to create a new instance of the given {@code class} The identifier of the {@link Constructor}
+   * to be used includes the {@code class} and {@code constructor} names, being the {@code constructor} a full description of its
+   * signature including the types of each parameter.
    * <p>
-   * For example, if we want to invoke the constructor {@code Foo(String name, int age)}
-   * which belongs to {@link Class} {@code org.bar.Foo}, then the identifier of the method will be {@code "Foo(String,int)"}
+   * For example, if we want to invoke the constructor {@code Foo(String name, int age)} which belongs to {@link Class}
+   * {@code org.bar.Foo}, then the identifier of the method will be {@code "Foo(String,int)"}
    *
    * @param identifier the unique identifier for the constructor to be invoked
-   * @param args the arguments used to invoke the given {@link Constructor}
+   * @param args       the arguments used to invoke the given {@link Constructor}
    * @return a new instance of the given {@code class}
-   * @throws ClassNotFoundModuleException if the given {@code class} is not found in the current context
-   * @throws NoSuchConstructorModuleException if the given {@code class} does not declare a constructor with the given signature
-   * @throws ArgumentMismatchModuleException if the {@code method} requires a different set of arguments than the ones provided
-   * @throws InvocationModuleException if an error occurs during the execution of the method
+   * @throws ClassNotFoundModuleException       if the given {@code class} is not found in the current context
+   * @throws NoSuchConstructorModuleException   if the given {@code class} does not declare a constructor with the given signature
+   * @throws ArgumentMismatchModuleException    if the {@code method} requires a different set of arguments than the ones provided
+   * @throws InvocationModuleException          if an error occurs during the execution of the method
    * @throws NonInstantiableTypeModuleException if the given {@code class} is not instantiable
    */
   @Alias("new")
@@ -132,16 +130,18 @@ public class JavaNewInstanceOperation {
     } catch (InstantiationException e) {
       throw new NonInstantiableTypeModuleException(identifier, args, e);
     } catch (IllegalAccessException | InvocationTargetException e) {
-      throw new InvocationModuleException(format("%s '%s' in Class '%s' ",
-                                                 identifier.getExecutableTypeName(), identifier.getElementId(),
-                                                 identifier.getClazz()),
+      throw new InvocationModuleException("%s '%s' in Class '%s' ".formatted(
+                                                                             identifier.getExecutableTypeName(),
+                                                                             identifier.getElementId(),
+                                                                             identifier.getClazz()),
                                           constructor, args, e);
     }
   }
 
   private String getBaseFailure(ExecutableIdentifier identifier) {
-    return format("Failed to instantiate Class '%s' using the Constructor '%s'",
-                  identifier.getClazz(), identifier.getElementId());
+    return "Failed to instantiate Class '%s' using the Constructor '%s'".formatted(
+                                                                                   identifier.getClazz(),
+                                                                                   identifier.getElementId());
   }
 
 }

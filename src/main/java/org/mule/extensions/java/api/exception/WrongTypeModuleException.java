@@ -6,8 +6,8 @@
  */
 package org.mule.extensions.java.api.exception;
 
-import static java.lang.String.format;
 import static org.mule.extensions.java.api.error.JavaModuleError.WRONG_INSTANCE_CLASS;
+
 import org.mule.extensions.java.api.error.JavaModuleError;
 
 /**
@@ -18,7 +18,7 @@ import org.mule.extensions.java.api.error.JavaModuleError;
 public class WrongTypeModuleException extends JavaModuleException {
 
   public WrongTypeModuleException(String expected, String actual) {
-    super(format("Expected an instance of type [%s] but was [%s]", expected, actual), WRONG_INSTANCE_CLASS);
+    super("Expected an instance of type [%s] but was [%s]".formatted(expected, actual), WRONG_INSTANCE_CLASS);
   }
 
 }
