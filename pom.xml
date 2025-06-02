@@ -35,7 +35,7 @@
         <license.maven.plugin.version>4.2</license.maven.plugin.version>
         <licensePath>LICENSE_HEADER_CPAL.txt</licensePath>
         <licenseYear>2023</licenseYear>
-        <mule.sdk.api.version>0.10.1</mule.sdk.api.version>
+        <mule.sdk.api.version>1.0.0-20230417</mule.sdk.api.version>
         <munit.failIfNoTests>false</munit.failIfNoTests>
         <mule.extensions.shade.version>1.0.4</mule.extensions.shade.version>
     </properties>
