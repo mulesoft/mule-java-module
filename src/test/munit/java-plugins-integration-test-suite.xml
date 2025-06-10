@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mule xmlns:munit="http://www.mulesoft.org/schema/mule/munit"
+      xmlns:munit-tools="http://www.mulesoft.org/schema/mule/munit-tools"
+      xmlns="http://www.mulesoft.org/schema/mule/core"
+      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xmlns:java="http://www.mulesoft.org/schema/mule/java"
+      xsi:schemaLocation="
+        http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+        http://www.mulesoft.org/schema/mule/munit http://www.mulesoft.org/schema/mule/munit/current/mule-munit.xsd
+        http://www.mulesoft.org/schema/mule/munit-tools http://www.mulesoft.org/schema/mule/munit-tools/current/mule-munit-tools.xsd
+        http://www.mulesoft.org/schema/mule/java
+        http://www.mulesoft.org/schema/mule/java/current/mule-java.xsd">
+
+    <munit:config name="java-plugins-integration-test-suite.xml"/>
+    <munit:test name="createEmptyPojoTest">
+        <munit:execution>
+            <flow-ref name="createEmptyPojo" />
+        </munit:execution>
+        <munit:validation>
+            <munit-tools:assert-that expression="#[payload]" is="#[MunitTools::notNullValue()]"/>
+            <foreach collection="#[payload]">
+                <munit-tools:assert-that expression="#[vars.payload.'doors']" is="#[null]"/>
+                <munit-tools:assert-that expression="#[vars.payload.'wheels']" is="#[null]"/>
+                <munit-tools:assert-that expression="#[vars.payload.'windows']" is="#[null]"/>
+                <munit-tools:assert-that expression="#[vars.payload.'engine']" is="#[null]"/>
+            </foreach>
+        </munit:validation>
+    </munit:test>
+
+    <munit:test name="createInitialisedPojoTest">
+        <munit:execution>
+            <flow-ref name="createInitialisedPojo" />
+        </munit:execution>
+        <munit:validation>
+            <munit-tools:assert-that expression="#[payload]" is="#[MunitTools::notNullValue()]"/>
+            <munit-tools:assert-that expression="#[payload.'doors']" is="#[MunitTools::notNullValue()]"/>
+            <munit-tools:assert-that expression="#[payload.'wheels']" is="#[MunitTools::notNullValue()]"/>
+            <munit-tools:assert-that expression="#[payload.'windows']" is="#[MunitTools::notNullValue()]"/>
+            <munit-tools:assert-that expression="#[payload.'engine']" is="#[MunitTools::notNullValue()]"/>
+        </munit:validation>
+    </munit:test>
+
+    <flow name="createEmptyPojo">
+        <java:new class="org.mule.extensions.internal.model.CarDummyTest" constructor="CarDummyTest()"/>
+        <java:invoke class="org.mule.extensions.internal.model.CarDummyTest" method="asMap()" instance="#[payload]"/>
+    </flow>
+
+    <flow name="createInitialisedPojo">
+        <java:new class="org.mule.extensions.internal.model.CarDummyTest"
+                  constructor="CarDummyTest(String, String, String, String)">
+            <java:args>
+                #[{
+                doors: 'doors',
+                wheels: 'wheels',
+                windows: 'windows',
+                engine: 'engine'
+                }]
+            </java:args>
+        </java:new>
+        <java:invoke class="org.mule.extensions.internal.model.CarDummyTest" method="asMap()" instance="#[payload]"/>
+    </flow>
+
+
+</mule>

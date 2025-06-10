@@ -6,10 +6,12 @@
  */
 package org.mule.extensions.java.api.exception;
 
-import static java.lang.reflect.Modifier.isPublic;
-import static java.util.Arrays.stream;
 import static org.mule.extensions.java.api.error.JavaModuleError.NO_SUCH_METHOD;
 import static org.mule.extensions.java.internal.util.JavaModuleUtils.toHumanReadableArgs;
+
+import static java.lang.reflect.Modifier.isPublic;
+import static java.util.Arrays.stream;
+
 import org.mule.extensions.java.api.error.JavaModuleError;
 import org.mule.extensions.java.internal.parameters.ExecutableIdentifier;
 import org.mule.extensions.java.internal.parameters.ExecutableIdentifierFactory;

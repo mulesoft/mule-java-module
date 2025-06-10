@@ -6,12 +6,13 @@
  */
 package org.mule.extensions.internal.metadata;
 
-import static org.hamcrest.Matchers.instanceOf;
-import static org.hamcrest.core.Is.is;
-import static org.junit.Assert.assertThat;
 import static org.mule.metadata.api.model.MetadataFormat.JAVA;
 import static org.mule.runtime.api.component.location.Location.builder;
 import static org.mule.runtime.api.metadata.MetadataService.METADATA_SERVICE_KEY;
+
+import static org.hamcrest.Matchers.instanceOf;
+import static org.hamcrest.core.Is.is;
+import static org.junit.Assert.assertThat;
 
 import org.mule.extensions.internal.JavaModuleAbstractTestCase;
 import org.mule.metadata.api.ClassTypeLoader;
@@ -101,17 +102,17 @@ public abstract class AbstractMetadataTestCase extends JavaModuleAbstractTestCas
   }
 
   protected String flow(String operation, String clazz) {
-    return String.format("%s%s", operation, clazz);
+    return "%s%s".formatted(operation, clazz);
   }
 
   protected String flow(String operation, String clazz, String method) {
     method = method.replaceAll("\\(", "").replaceAll("\\)", "").replaceAll(",", "").trim();
-    return String.format("%s%s%s", operation, clazz, method);
+    return "%s%s%s".formatted(operation, clazz, method);
   }
 
   protected String flow(String operation, String clazz, String method, String args) {
     method = method.replaceAll("\\(", "").replaceAll("\\)", "");
-    return String.format("%s%s%s%s", operation, clazz, method, args);
+    return "%s%s%s%s".formatted(operation, clazz, method, args);
   }
 
   protected Set<MetadataKey> getKeys(String flow, String category) {

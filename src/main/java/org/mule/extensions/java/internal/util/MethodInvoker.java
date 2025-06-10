@@ -6,8 +6,8 @@
  */
 package org.mule.extensions.java.internal.util;
 
-import static java.lang.String.format;
 import static org.mule.extensions.java.internal.util.JavaModuleUtils.logTooManyArgsWarning;
+
 import org.mule.extensions.java.api.exception.ArgumentMismatchModuleException;
 import org.mule.extensions.java.api.exception.InvocationModuleException;
 import org.mule.extensions.java.api.exception.NoSuchMethodModuleException;
@@ -72,9 +72,10 @@ public final class MethodInvoker {
 
     if (method.getParameters().length > args.size()) {
       throw new ArgumentMismatchModuleException(
-                                                format("Failed to invoke %s '%s' from Class '%s'. Too few arguments were provided for the invocation",
-                                                       identifier.getExecutableTypeName(), identifier.getElementId(),
-                                                       identifier.getClazz()),
+                                                "Failed to invoke %s '%s' from Class '%s'. Too few arguments were provided for the invocation"
+                                                    .formatted(
+                                                               identifier.getExecutableTypeName(), identifier.getElementId(),
+                                                               identifier.getClazz()),
                                                 method, args, transformationResult);
 
     } else if (method.getParameters().length < args.size()) {
@@ -85,10 +86,10 @@ public final class MethodInvoker {
       return doInvoke(method, args, instance, identifier, transformationResult);
     }
 
-    throw new ArgumentMismatchModuleException(format(
-                                                     "Failed to invoke %s '%s' from Class '%s'. The given arguments could not be transformed to match those expected by the %s",
-                                                     identifier.getExecutableTypeName(), identifier.getElementId(),
-                                                     identifier.getClazz(), identifier.getExecutableTypeName()),
+    throw new ArgumentMismatchModuleException("Failed to invoke %s '%s' from Class '%s'. The given arguments could not be transformed to match those expected by the %s"
+        .formatted(
+                   identifier.getExecutableTypeName(), identifier.getElementId(),
+                   identifier.getClazz(), identifier.getExecutableTypeName()),
                                               method, args, transformationResult);
 
   }
@@ -99,15 +100,18 @@ public final class MethodInvoker {
       return method.invoke(instance, transformationResult.getTransformed().toArray());
 
     } catch (IllegalArgumentException e) {
-      throw new ArgumentMismatchModuleException(format("Failed to invoke %s '%s' from Class '%s'",
-                                                       identifier.getExecutableTypeName(), identifier.getElementId(),
-                                                       identifier.getClazz()),
+      throw new ArgumentMismatchModuleException("Failed to invoke %s '%s' from Class '%s'".formatted(
+                                                                                                     identifier
+                                                                                                         .getExecutableTypeName(),
+                                                                                                     identifier.getElementId(),
+                                                                                                     identifier.getClazz()),
                                                 method, args, transformationResult, e);
 
     } catch (IllegalAccessException | InvocationTargetException e) {
-      throw new InvocationModuleException(format("%s '%s' from Class '%s' ",
-                                                 identifier.getExecutableTypeName(), identifier.getElementId(),
-                                                 identifier.getClazz()),
+      throw new InvocationModuleException("%s '%s' from Class '%s' ".formatted(
+                                                                               identifier.getExecutableTypeName(),
+                                                                               identifier.getElementId(),
+                                                                               identifier.getClazz()),
                                           method, args, e);
     }
   }

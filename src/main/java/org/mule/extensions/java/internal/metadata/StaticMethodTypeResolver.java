@@ -9,6 +9,7 @@ package org.mule.extensions.java.internal.metadata;
 import static java.lang.reflect.Modifier.isStatic;
 import static java.util.Arrays.stream;
 import static java.util.stream.Collectors.toList;
+
 import org.mule.extensions.java.internal.parameters.StaticMethodIdentifier;
 import org.mule.runtime.api.connection.ConnectionException;
 import org.mule.runtime.api.metadata.MetadataContext;
@@ -23,8 +24,8 @@ import java.lang.reflect.Method;
 import java.util.List;
 
 /**
- * An {@link InputTypeResolver}, {@link OutputTypeResolver} and {@link PartialTypeKeysResolver}
- * that provides metadata related to {@code static} {@link Method}s of a given {@link Class}.
+ * An {@link InputTypeResolver}, {@link OutputTypeResolver} and {@link PartialTypeKeysResolver} that provides metadata related to
+ * {@code static} {@link Method}s of a given {@link Class}.
  *
  * @since 1.0
  */

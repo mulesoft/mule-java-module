@@ -14,7 +14,7 @@ import java.util.Optional;
 
 /**
  * The {@link ErrorTypeDefinition}s for the {@link JavaModule}
- * 
+ *
  * @since 1.0
  */
 public enum JavaModuleError implements ErrorTypeDefinition<JavaModuleError> {
