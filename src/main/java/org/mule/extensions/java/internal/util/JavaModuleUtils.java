@@ -6,13 +6,15 @@
  */
 package org.mule.extensions.java.internal.util;
 
+import static org.mule.runtime.core.api.util.ClassUtils.isInstance;
+
 import static java.lang.String.format;
 import static java.lang.reflect.Modifier.isPublic;
 import static java.lang.reflect.Modifier.isStatic;
 import static java.util.Arrays.stream;
 import static java.util.Collections.emptyList;
 import static java.util.stream.Collectors.toList;
-import static org.mule.runtime.core.api.util.ClassUtils.isInstance;
+
 import org.mule.extensions.java.api.exception.ClassNotFoundModuleException;
 import org.mule.extensions.java.api.exception.WrongTypeModuleException;
 import org.mule.extensions.java.internal.cache.JavaModuleLoadingCache;
@@ -132,8 +134,8 @@ public final class JavaModuleUtils {
   }
 
   public static List<String> toHumanReadableArgs(Executable executable) {
-    Function<Integer, ResolvableType> typeResolver = executable instanceof Method
-        ? i -> ResolvableType.forMethodParameter((Method) executable, i)
+    Function<Integer, ResolvableType> typeResolver = executable instanceof Method method
+        ? i -> ResolvableType.forMethodParameter(method, i)
         : i -> ResolvableType.forConstructorParameter((Constructor<?>) executable, i);
 
     Parameter[] args = executable.getParameters();
@@ -169,7 +171,7 @@ public final class JavaModuleUtils {
    * https://docs.oracle.com/javase/tutorial/java/generics/bridgeMethods.html
    * </p>
    *
-   * @param clazz the Java class for which we want its Public methods.
+   * @param clazz        the Java class for which we want its Public methods.
    * @param expectStatic true to get only static methods, false to get only non static methods.
    * @return List of Methods for the class.
    */

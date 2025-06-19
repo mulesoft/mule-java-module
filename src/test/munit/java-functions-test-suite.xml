@@ -1,0 +1,99 @@
+<mule xmlns="http://www.mulesoft.org/schema/mule/core"
+      xmlns:java="http://www.mulesoft.org/schema/mule/java"
+      xmlns:munit="http://www.mulesoft.org/schema/mule/munit"
+      xmlns:munit-tools="http://www.mulesoft.org/schema/mule/munit-tools"
+      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xsi:schemaLocation="
+        http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+        http://www.mulesoft.org/schema/mule/munit http://www.mulesoft.org/schema/mule/munit/current/mule-munit.xsd
+        http://www.mulesoft.org/schema/mule/munit-tools http://www.mulesoft.org/schema/mule/munit-tools/current/mule-munit-tools.xsd
+        http://www.mulesoft.org/schema/mule/java http://www.mulesoft.org/schema/mule/java/current/mule-java.xsd">
+
+    <munit:config name="java-functions-test-suite.xml"/>
+    <import file="java-module-functions.xml"/>
+
+    <munit:test name="invoke-correct">
+        <munit:behavior>
+            <java:new class="org.mule.extensions.internal.model.ExecutableElement"
+                      constructor="ExecutableElement()" target="instance"/>
+        </munit:behavior>
+        <munit:execution>
+            <java:invoke instance="#[vars.instance]"
+                         class="org.mule.extensions.internal.model.ExecutableElement"
+                         method="sayHi(String, int)"
+                         target="result">
+                <java:args><![CDATA[#[{arg0: "Rick", arg1: 137}]]]></java:args>
+            </java:invoke>
+        </munit:execution>
+        <munit:validation>
+            <munit-tools:assert-that expression="#[vars.result]"
+                                     is="#[MunitTools::equalTo('Hi Rick::137')]"/>
+        </munit:validation>
+    </munit:test>
+
+    <munit:test name="invoke-void">
+        <munit:behavior>
+            <java:new class="org.mule.extensions.internal.model.ExecutableElement"
+                      constructor="ExecutableElement()" target="instance"/>
+        </munit:behavior>
+        <munit:execution>
+            <java:invoke instance="#[vars.instance]"
+                         class="org.mule.extensions.internal.model.ExecutableElement"
+                         method="nextPhase()"
+                         target="voidResult"/>
+        </munit:execution>
+        <munit:validation>
+            <munit-tools:assert-that expression="#[vars.voidResult]"
+                                     is="#[MunitTools::equalTo(null)]"/>
+        </munit:validation>
+    </munit:test>
+
+    <munit:test name="invoke-inline-input">
+        <munit:execution>
+            <java:new class="org.mule.extensions.internal.model.CompositePojo"
+                      constructor="CompositePojo(String)"
+                      target="payload">
+                <java:args><![CDATA[#[{arg0: "inlined"}]]]></java:args>
+            </java:new>
+            <set-variable variableName="none"
+                          value="#[Java::invoke('org.mule.extensions.internal.model.CompositePojo', 'setChilds(Map)', vars.payload, {childs: {'repeat': [vars.payload, vars.payload]}})]"/>
+        </munit:execution>
+        <munit:validation>
+            <munit-tools:assert-that expression="#[vars.payload.childs.repeat]"
+                                     is="#[MunitTools::hasSize(MunitTools::equalTo(2))]"/>
+            <munit-tools:assert-that expression="#[vars.payload.childs.repeat[0].name]"
+                                     is="#[MunitTools::equalTo('inlined')]"/>
+        </munit:validation>
+    </munit:test>
+
+    <munit:test name="is-instance-of-correct">
+        <munit:behavior>
+            <java:new class="org.mule.extensions.internal.model.ExecutableElement"
+                      constructor="ExecutableElement()" target="instance"/>
+        </munit:behavior>
+        <munit:execution>
+            <set-variable variableName="isInstance"
+                          value="#[Java::isInstanceOf(vars.instance, 'org.mule.extensions.internal.model.ExecutableElement')]"/>
+        </munit:execution>
+        <munit:validation>
+            <munit-tools:assert-that expression="#[vars.isInstance]"
+                                     is="#[MunitTools::equalTo(true)]"/>
+        </munit:validation>
+    </munit:test>
+
+    <munit:test name="is-instance-of-false">
+        <munit:behavior>
+            <java:new class="org.mule.extensions.internal.model.ExecutableElement"
+                      constructor="ExecutableElement()" target="instance"/>
+        </munit:behavior>
+        <munit:execution>
+            <set-variable variableName="result"
+                          value="#[Java::isInstanceOf(vars.instance, 'java.lang.Integer')]"/>
+        </munit:execution>
+        <munit:validation>
+            <munit-tools:assert-that expression="#[vars.result]"
+                                     is="#[MunitTools::equalTo(false)]"/>
+        </munit:validation>
+    </munit:test>
+
+</mule>

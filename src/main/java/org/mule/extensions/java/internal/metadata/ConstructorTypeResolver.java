@@ -21,8 +21,8 @@ import java.util.Arrays;
 import java.util.List;
 
 /**
- * An {@link InputTypeResolver}, {@link OutputTypeResolver} and {@link PartialTypeKeysResolver}
- * that provides metadata related to {@link Constructor}s of a given {@link Class}.
+ * An {@link InputTypeResolver}, {@link OutputTypeResolver} and {@link PartialTypeKeysResolver} that provides metadata related to
+ * {@link Constructor}s of a given {@link Class}.
  *
  * @since 1.0
  */

@@ -7,6 +7,7 @@
 package org.mule.extensions.java.internal.transformer;
 
 import static java.util.Optional.empty;
+
 import org.mule.runtime.api.el.BindingContext;
 import org.mule.runtime.api.el.ExpressionExecutionException;
 import org.mule.runtime.api.metadata.DataType;
@@ -34,7 +35,7 @@ import org.springframework.core.ResolvableType;
  * When transforming an input into something that fits to an {@link Executable}'s parameter, this class will make a best effort in
  * order to make this transformation possible. In case that the transformation requires to transform a {@link Collection} or
  * {@link Map}, a new instance will be created for it.
- * 
+ *
  * @since 1.1
  */
 
@@ -71,9 +72,9 @@ public class ParameterTransformer {
   };
 
   /**
-   * @param executable The executable whose parameters will be checked against {@link Object}s.
+   * @param executable            The executable whose parameters will be checked against {@link Object}s.
    * @param transformationService An instance of a {@link TransformationService} use to tranform parameters.
-   * @param expressionManager An instance of a {@link ExpressionManager} used to execute DataWeave expressions.
+   * @param expressionManager     An instance of a {@link ExpressionManager} used to execute DataWeave expressions.
    */
   public ParameterTransformer(Executable executable, TransformationService transformationService,
                               ExpressionManager expressionManager) {
@@ -90,8 +91,8 @@ public class ParameterTransformer {
   /**
    * Method that allows to check if a value fits a certain argument of the executable. Generic values will only be checked for
    * {@link Map} and {@link Collection} values.
-   * 
-   * @param value The value which type will be checked.
+   *
+   * @param value          The value which type will be checked.
    * @param parameterIndex The index of the parameter in the executable arguments.
    * @return whether the value needs to be transformed in order to fit the parameter from the executable
    */
@@ -133,7 +134,7 @@ public class ParameterTransformer {
    * transformed. For example, if a list is transformed, a new list will be created and will contain the same instances from the
    * former list that did not needed to be transformed and new instances for the ones being transformed.
    *
-   * @param value The value that will be transformed.
+   * @param value          The value that will be transformed.
    * @param parameterIndex The index of the parameter in the executable arguments.
    * @return The value transformed to fit the executable parameter.
    */
@@ -144,7 +145,7 @@ public class ParameterTransformer {
 
   /**
    *
-   * @param value the actual value assigned to the parameter
+   * @param value        the actual value assigned to the parameter
    * @param expectedType the expected type of the assigned parameter
    * @return
    */
@@ -203,7 +204,7 @@ public class ParameterTransformer {
       }
     } catch (Exception e) {
       if (LOGGER.isDebugEnabled()) {
-        LOGGER.debug(String.format(TRANSFORMATION_SERVICE_ERROR_MESSAGE, value.getClass(), wrappedParameterType));
+        LOGGER.debug(TRANSFORMATION_SERVICE_ERROR_MESSAGE.formatted(value.getClass(), wrappedParameterType));
       }
     }
 
@@ -294,10 +295,10 @@ public class ParameterTransformer {
 
 
   private ResolvableType getResolvableType(int parameterIndex) {
-    if (executable instanceof Method) {
-      return ResolvableType.forMethodParameter((Method) executable, parameterIndex);
-    } else if (executable instanceof Constructor) {
-      return ResolvableType.forConstructorParameter((Constructor) executable, parameterIndex);
+    if (executable instanceof Method method) {
+      return ResolvableType.forMethodParameter(method, parameterIndex);
+    } else if (executable instanceof Constructor constructor) {
+      return ResolvableType.forConstructorParameter(constructor, parameterIndex);
     }
     throw new IllegalStateException("Failed when trying to retrieve Resolvable type from executable. " +
         "A 'Method' or 'Contructor' was expected, executable was a " +
