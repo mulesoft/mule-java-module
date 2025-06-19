@@ -14,15 +14,12 @@
         <groupId>com.mulesoft.connectors</groupId>
         <artifactId>mule4-connectors-parent</artifactId>
         <version>9.0.0</version>
-        <relativePath/>
     </parent>
 
     <properties>
         <commonsLang.version>3.17.0</commonsLang.version>
         <springCore.version>6.2.5</springCore.version>
         <mockitoVersion>5.15.2</mockitoVersion>
-        <maven.compiler.source>17</maven.compiler.source>
-        <maven.compiler.target>17</maven.compiler.target>
 
         <!-- Remove when a new parent version with MTF is available -->
         <munit.input.directory>src/test/munit</munit.input.directory>
@@ -37,33 +34,12 @@
         <license.maven.plugin.version>4.2</license.maven.plugin.version>
         <licensePath>LICENSE_HEADER_CPAL.txt</licensePath>
         <licenseYear>2023</licenseYear>
-        <mule.sdk.api.version>0.11.0</mule.sdk.api.version>
         <munit.failIfNoTests>false</munit.failIfNoTests>
     </properties>
 
 
     <build>
         <plugins>
-            <plugin>
-                <groupId>org.jacoco</groupId>
-                <artifactId>jacoco-maven-plugin</artifactId>
-                <version>0.8.13</version>
-                <executions>
-                    <execution>
-                        <id>prepare-agent</id>
-                        <goals>
-                            <goal>prepare-agent</goal>
-                        </goals>
-                    </execution>
-                    <execution>
-                        <id>report</id>
-                        <phase>verify</phase>
-                        <goals>
-                            <goal>report</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
             <plugin>
                 <groupId>com.mycila</groupId>
                 <artifactId>license-maven-plugin</artifactId>
