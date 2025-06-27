@@ -13,8 +13,7 @@ import java.lang.reflect.Executable;
 import java.lang.reflect.Method;
 
 /**
- * Factory implementation for obtaining an {@link ExecutableIdentifier}
- * from a given {@link Executable} element
+ * Factory implementation for obtaining an {@link ExecutableIdentifier} from a given {@link Executable} element
  *
  * @since 1.0
  */
@@ -27,8 +26,8 @@ public final class ExecutableIdentifierFactory {
    * @return a new instance of {@link ExecutableIdentifier} that identifies the {@code executable}
    */
   public static ExecutableIdentifier create(Executable executable) {
-    if (executable instanceof Constructor) {
-      return new ConstructorIdentifier((Constructor) executable);
+    if (executable instanceof Constructor constructor) {
+      return new ConstructorIdentifier(constructor);
     }
 
     return isStatic(executable.getModifiers())

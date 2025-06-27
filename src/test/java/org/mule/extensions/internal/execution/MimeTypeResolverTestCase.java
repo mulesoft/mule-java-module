@@ -7,6 +7,7 @@
 package org.mule.extensions.internal.execution;
 
 import static org.hamcrest.MatcherAssert.assertThat;
+
 import org.mule.extensions.internal.model.ExecutableElement;
 import org.mule.extensions.java.internal.parameters.MethodIdentifier;
 import org.mule.extensions.java.internal.util.MethodInvoker;
