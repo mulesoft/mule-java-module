@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:java="http://www.mulesoft.org/schema/mule/java"
+      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+      xmlns:munit="http://www.mulesoft.org/schema/mule/munit"
+      xmlns:munit-tools="http://www.mulesoft.org/schema/mule/munit-tools"
+      xmlns="http://www.mulesoft.org/schema/mule/core"
+      xsi:schemaLocation="
+        http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+        http://www.mulesoft.org/schema/mule/munit http://www.mulesoft.org/schema/mule/munit/current/mule-munit.xsd
+        http://www.mulesoft.org/schema/mule/munit-tools http://www.mulesoft.org/schema/mule/munit-tools/current/mule-munit-tools.xsd
+        http://www.mulesoft.org/schema/mule/java http://www.mulesoft.org/schema/mule/java/current/mule-java.xsd">
+
+    <munit:config name="byte-array-test-suite.xml"/>
+
+    <munit:test name="test-byte-array-processing" description="Test processing byte array data">
+        <munit:execution>
+            <set-payload value="#[%dw 2.0
+output application/octet-stream
+---
+'Hello World']"/>
+            <java:invoke-static
+                class="org.mule.extensions.internal.model.ByteArrayProcessor"
+                method="processByteArray(byte[])"
+                target="processedResult">
+                <java:args><![CDATA[#[{bytes: payload}]]]></java:args>
+            </java:invoke-static>
+        </munit:execution>
+        <munit:validation>
+            <munit-tools:assert-that
+                expression="#[vars.processedResult]"
+                is="#[MunitTools::equalTo('Hello World')]"/>
+        </munit:validation>
+    </munit:test>
+
+</mule> 
