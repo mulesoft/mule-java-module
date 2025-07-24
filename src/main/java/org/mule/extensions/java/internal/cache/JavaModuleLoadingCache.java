@@ -45,16 +45,25 @@ public final class JavaModuleLoadingCache {
 
   private final String METHOD_IDENTIFIER = "%s#%s";
 
-  private final Map<String, Class<?>> typesCache = new ConcurrentHashMap<>();
+    private final Map<String, Class<?>> typesCache = new ConcurrentHashMap<>();
   private final Map<String, List<Constructor>> constructorsCache = new ConcurrentHashMap<>();
   private final Map<String, List<Method>> classMethodsCache = new ConcurrentHashMap<>();
   private final Map<String, List<Method>> instanceMethodsCache = new ConcurrentHashMap<>();
   private final Map<String, String> ambiguousExecutableWarningMessages = new ConcurrentHashMap<>();
 
+  private String getCacheKey(String identifier, ClassLoader classLoader) {
+      // classloader identity + class/method identifier
+      String cacheKey = "%s:%s";
+      return cacheKey.formatted(System.identityHashCode(classLoader), identifier);
+  }
+
   public Class<?> loadClass(String className) {
-    return typesCache.computeIfAbsent(className, key -> {
+    ClassLoader contextClassLoader = Thread.currentThread().getContextClassLoader();
+    String cacheKey = getCacheKey(className, contextClassLoader);
+
+    return typesCache.computeIfAbsent(cacheKey, key -> {
       try {
-        return ClassUtils.loadClass(className, Thread.currentThread().getContextClassLoader());
+        return ClassUtils.loadClass(className, contextClassLoader);
       } catch (ClassNotFoundException e) {
         throw new ClassNotFoundModuleException(e.getMessage(), e);
       }
@@ -63,8 +72,11 @@ public final class JavaModuleLoadingCache {
 
   public Constructor getConstructor(ConstructorIdentifier id, Class<?> declaringClass,
                                     Map<String, TypedValue<Object>> args) {
+    String methodId = METHOD_IDENTIFIER.formatted(declaringClass.getName(), id.getElementId());
+    String cacheKey = getCacheKey(methodId, declaringClass.getClassLoader());
+
     List<Constructor> constructors =
-        constructorsCache.computeIfAbsent(METHOD_IDENTIFIER.formatted(declaringClass.getName(), id.getElementId()),
+        constructorsCache.computeIfAbsent(cacheKey,
                                           key -> stream(declaringClass.getConstructors())
                                               .filter(c -> isPublic(c.getModifiers()))
                                               .filter(id::matches)
@@ -77,8 +89,10 @@ public final class JavaModuleLoadingCache {
 
   public Method getMethod(ExecutableIdentifier id, Class<?> clazz, Map<String, TypedValue<Object>> args, boolean expectStatic) {
     Map<String, List<Method>> methodsCache = expectStatic ? classMethodsCache : instanceMethodsCache;
+    String methodId = METHOD_IDENTIFIER.formatted(clazz.getName(), id.getElementId());
+    String cacheKey = getCacheKey(methodId, clazz.getClassLoader());
 
-    List<Method> methods = methodsCache.computeIfAbsent(METHOD_IDENTIFIER.formatted(clazz.getName(), id.getElementId()),
+    List<Method> methods = methodsCache.computeIfAbsent(cacheKey,
                                                         key -> getPublicMethods(clazz, expectStatic)
                                                             .stream()
                                                             .filter(id::matches)
@@ -99,9 +113,11 @@ public final class JavaModuleLoadingCache {
       }
     } else if (executables.size() > 1) {
       if (LOGGER.isWarnEnabled()) {
+        String methodId = METHOD_IDENTIFIER.formatted(declaringClass.getName(), id.getElementId());
+        String cacheKey = getCacheKey(methodId, declaringClass.getClassLoader());
         LOGGER.warn(ambiguousExecutableWarningMessages
-            .computeIfAbsent(METHOD_IDENTIFIER.formatted(declaringClass.getName(), id.getElementId()),
-                             key -> constructWarningMessage(executables, id.getExecutableTypeName(), key)));
+            .computeIfAbsent(cacheKey,
+                             key -> constructWarningMessage(executables, id.getExecutableTypeName(), methodId)));
       }
     }
   }
