@@ -54,7 +54,7 @@ public final class JavaModuleLoadingCache {
   private String getCacheKey(String identifier, ClassLoader classLoader) {
       // classloader identity + class/method identifier
       String cacheKey = "%s:%s";
-      return cacheKey.formatted(System.identityHashCode(classLoader), identifier);
+      return String.format(cacheKey, System.identityHashCode(classLoader), identifier);
   }
 
   public Class<?> loadClass(String className) {
@@ -72,7 +72,7 @@ public final class JavaModuleLoadingCache {
 
   public Constructor getConstructor(ConstructorIdentifier id, Class<?> declaringClass,
                                     Map<String, TypedValue<Object>> args) {
-    String methodId = METHOD_IDENTIFIER.formatted(declaringClass.getName(), id.getElementId());
+    String methodId = String.format(METHOD_IDENTIFIER, declaringClass.getName(), id.getElementId());
     String cacheKey = getCacheKey(methodId, declaringClass.getClassLoader());
 
     List<Constructor> constructors =
@@ -89,7 +89,7 @@ public final class JavaModuleLoadingCache {
 
   public Method getMethod(ExecutableIdentifier id, Class<?> clazz, Map<String, TypedValue<Object>> args, boolean expectStatic) {
     Map<String, List<Method>> methodsCache = expectStatic ? classMethodsCache : instanceMethodsCache;
-    String methodId = METHOD_IDENTIFIER.formatted(clazz.getName(), id.getElementId());
+    String methodId = String.format(METHOD_IDENTIFIER, clazz.getName(), id.getElementId());
     String cacheKey = getCacheKey(methodId, clazz.getClassLoader());
 
     List<Method> methods = methodsCache.computeIfAbsent(cacheKey,
@@ -113,7 +113,7 @@ public final class JavaModuleLoadingCache {
       }
     } else if (executables.size() > 1) {
       if (LOGGER.isWarnEnabled()) {
-        String methodId = METHOD_IDENTIFIER.formatted(declaringClass.getName(), id.getElementId());
+        String methodId = String.format(METHOD_IDENTIFIER, declaringClass.getName(), id.getElementId());
         String cacheKey = getCacheKey(methodId, declaringClass.getClassLoader());
         LOGGER.warn(ambiguousExecutableWarningMessages
             .computeIfAbsent(cacheKey,
@@ -127,9 +127,9 @@ public final class JavaModuleLoadingCache {
         .map(ExecutableIdentifier::getElementId).collect(toList()));
     StringBuilder sb = new StringBuilder();
 
-    sb.append("There where multiple %ss found with the id \"%s\"".formatted(category, executableId));
-    sb.append("The %s %s will be executed.\n".formatted(category, executables.get(0)));
-    sb.append("The Possible %ss that share the same ID are [ %s ].\n".formatted(category, possibleExecutables));
+    sb.append(String.format("There where multiple %ss found with the id \"%s\"", category, executableId));
+    sb.append(String.format("The %s %s will be executed.\n", category, executables.get(0)));
+    sb.append(String.format("The Possible %ss that share the same ID are [ %s ].\n", category, possibleExecutables));
     sb.append("To use a specific one, use the fully-qualified name for the argument types.");
 
     return sb.toString();
