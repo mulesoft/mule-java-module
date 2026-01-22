@@ -29,7 +29,7 @@
         <mavenResources.version>3.3.1</mavenResources.version>
         <mtf.tools.version>1.2.0</mtf.tools.version>
         <mulesoftLicenseVersion>1.4.0</mulesoftLicenseVersion>
-        <license.maven.plugin.version>4.2</license.maven.plugin.version>
+        <license.maven.plugin.version>5.0.0</license.maven.plugin.version>
         <licensePath>LICENSE_HEADER_CPAL.txt</licensePath>
         <licenseYear>2023</licenseYear>
         <munit.failIfNoTests>false</munit.failIfNoTests>
